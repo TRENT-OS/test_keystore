@@ -10,14 +10,14 @@
 
 /* Defines -------------------------------------------------------------------*/
 // Configuration of the testKeyStoreAES
-#define AES_KEY_NAME        "AESKey"
+#define AES_KEY_NAME        "AESKey\0"
 #define AES_KEY_SIZE        32
-#define SAMPLE_STRING       "0123456789ABCDEF"
+#define SAMPLE_STRING       "0123456789ABCDEF\0"
 #define AES_BLOCK_LEN       16
 
 // Configuration of the testKeyStoreKeyPair
-#define PRV_KEY_NAME        "PrivateKey"
-#define PUB_KEY_NAME        "PublicKey"
+#define PRV_KEY_NAME        "PrivateKey\0"
+#define PUB_KEY_NAME        "PublicKey\0"
 #define RSA_KEY_SIZE        1024
 #define DH_KEY_SIZE         256
 
