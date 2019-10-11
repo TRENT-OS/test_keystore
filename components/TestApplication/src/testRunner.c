@@ -183,8 +183,8 @@ int run()
     /***************************** Destruction *******************************/
     keyStoreContext_dtor(&keyStoreCtx);
 
-    SeosCrypto_deInit(cryptoApiLocal);
-    SeosCryptoClient_deInit(cryptoApiRpc);
+    SeosCrypto_free(cryptoApiLocal);
+    SeosCryptoClient_free(cryptoApiRpc);
 
     SeosKeyStore_deInit(keyStoreApiLocal);
     SeosKeyStoreClient_deInit(keyStoreApiRpc);
