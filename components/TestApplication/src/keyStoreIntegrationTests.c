@@ -21,22 +21,42 @@
 #define RSA_KEY_SIZE        1024
 #define DH_KEY_SIZE         256
 
-/* Private variables -------------------------------------------------------------------*/
-static SeosCryptoKey_RSAPrv rsaPrvKey;
-static SeosCryptoKey_RSAPub rsaPubKey;
-static SeosCryptoKey_DHPrv dhPrvKey;
-static SeosCryptoKey_DHPub dhPubKey;
+static const SeosCryptoKey_Spec aes256Spec =
+{
+    .type = SeosCryptoKey_SpecType_BITS,
+    .key = {
+        .type = SeosCryptoKey_Type_AES,
+        .attribs.flags = SeosCryptoKey_Flags_EXPORTABLE_RAW,
+        .params.bits = 256
+    }
+};
+static const SeosCryptoKey_Spec dh64Spec =
+{
+    .type = SeosCryptoKey_SpecType_BITS,
+    .key = {
+        .type = SeosCryptoKey_Type_DH_PRV,
+        .attribs.flags = SeosCryptoKey_Flags_EXPORTABLE_RAW,
+        .params.bits = 64
+    }
+};
+static const SeosCryptoKey_Spec rsa128Spec =
+{
+    .type = SeosCryptoKey_SpecType_BITS,
+    .key = {
+        .type = SeosCryptoKey_Type_RSA_PRV,
+        .attribs.flags = SeosCryptoKey_Flags_EXPORTABLE_RAW,
+        .params.bits = 128
+    }
+};
+
+/* Private variables ---------------------------------------------------------*/
+static SeosCryptoKey_Data keyData;
 
 /* Private functions prototypes ----------------------------------------------*/
 static bool
-importExportKeyPairTest(SeosKeyStoreCtx* keyStoreCtx,
-                        SeosCryptoCtx* cryptoCtx,
-                        size_t keySize,
-                        unsigned int type,
-                        void* pPrvKey,
-                        void* pPubKey,
-                        size_t exportedKeyLen1,
-                        size_t exportedKeyLen2);
+importExportKeyPairTest(SeosKeyStoreCtx*            keyStoreCtx,
+                        SeosCryptoCtx*              cryptoCtx,
+                        const SeosCryptoKey_Spec*   spec);
 static seos_err_t
 aesEncrypt(SeosCryptoCtx* cryptoCtx,
            SeosCrypto_KeyHandle keyHandle,
@@ -56,15 +76,9 @@ aesDecrypt(SeosCryptoCtx* cryptoCtx,
 /* Public functions -----------------------------------------------------------*/
 bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx, SeosCryptoCtx* cryptoCtx)
 {
-
     SeosCrypto_KeyHandle writeKey;
     SeosCrypto_KeyHandle readKey;
-    SeosCryptoKey_AES aesKeyWrite;
-    SeosCryptoKey_AES aesKeyRead;
-    SeosCryptoKey_Flags flags;
-    SeosCryptoKey_Type type;
-    size_t exportedKeyLen = sizeof(aesKeyWrite);
-    size_t readKeyLen = 0;
+    size_t len;
     size_t decOutSize = 0;
     size_t encOutSize = 0;
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -72,8 +86,7 @@ bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx, SeosCryptoCtx* cryptoCtx)
     char buffDec[AES_BLOCK_LEN] = {0};
 
     /********************************** TestKeyStore_testCase_04 ************************************/
-    err = SeosCryptoApi_keyGenerate(cryptoCtx, &writeKey, SeosCryptoKey_Type_AES,
-                                    SeosCryptoKey_Flags_EXPORTABLE_RAW, AES_KEY_SIZE * 8);
+    err = SeosCryptoApi_keyGenerate(cryptoCtx, &writeKey, &aes256Spec);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosCryptoApi_keyGenerate failed with err %d", err);
 
@@ -83,13 +96,12 @@ bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx, SeosCryptoCtx* cryptoCtx)
                           err);
 
     /********************************** TestKeyStore_testCase_05 ************************************/
-    err = SeosCryptoApi_keyExport(cryptoCtx, writeKey, NULL, &type, &flags, &aesKeyWrite,
-                                  &exportedKeyLen);
+    err = SeosCryptoApi_keyExport(cryptoCtx, writeKey, NULL, &keyData);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosCryptoApi_keyExport failed with err %d", err);
 
-    err = SeosKeyStoreApi_importKey(keyStoreCtx, AES_KEY_NAME, &aesKeyWrite,
-                                    exportedKeyLen);
+    err = SeosKeyStoreApi_importKey(keyStoreCtx, AES_KEY_NAME, &keyData,
+                                    sizeof(keyData));
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStoreApi_importKey failed with err %d", err);
 
@@ -98,13 +110,13 @@ bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx, SeosCryptoCtx* cryptoCtx)
                           "SeosCryptoApi_keyFree failed with err %d", err);
 
     /********************************** TestKeyStore_testCase_06 ************************************/
-    err = SeosKeyStoreApi_getKey(keyStoreCtx, AES_KEY_NAME, &aesKeyRead,
-                                 &readKeyLen);
+    len = sizeof(keyData);
+    err = SeosKeyStoreApi_getKey(keyStoreCtx, AES_KEY_NAME, &keyData, &len);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStoreApi_getKey failed with err %d", err);
+    Debug_ASSERT(len == sizeof(keyData));
 
-    err = SeosCryptoApi_keyImport(cryptoCtx, &readKey, NULL, SeosCryptoKey_Type_AES,
-                                  SeosCryptoKey_Flags_EXPORTABLE_RAW, &aesKeyRead, readKeyLen);
+    err = SeosCryptoApi_keyImport(cryptoCtx, &readKey, NULL, &keyData);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosCryptoApi_keyImport failed with err %d", err);
 
@@ -123,8 +135,8 @@ bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx, SeosCryptoCtx* cryptoCtx)
                           "SeosKeyStoreApi_getKey supposed to fail with SEOS_ERROR_NOT_FOUND, but returned %d",
                           err);
 
-    err = SeosKeyStoreApi_getKey(keyStoreCtx, AES_KEY_NAME, &aesKeyRead,
-                                 &readKeyLen);
+    len = sizeof(keyData);
+    err = SeosKeyStoreApi_getKey(keyStoreCtx, AES_KEY_NAME, &keyData, &len);
     Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_NOT_FOUND,
                           "SeosKeyStoreApi_getKey supposed to fail with SEOS_ERROR_NOT_FOUND, but returned %d",
                           err);
@@ -134,41 +146,19 @@ bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx, SeosCryptoCtx* cryptoCtx)
 
 bool testKeyStoreKeyPair(SeosKeyStoreCtx* keyStoreCtx, SeosCryptoCtx* cryptoCtx)
 {
-    /********************************** RSA key-pair ************************************/
-    void* pRsaPrvKey = &rsaPrvKey;
-    void* pRsaPubKey = &rsaPubKey;
-    size_t exportedKeyLenRSA1 = sizeof(rsaPrvKey);
-    size_t exportedKeyLenRSA2 = sizeof(rsaPubKey);
-
-    /********************************** DH key-pair ************************************/
-    void* pdhPrvKey = &dhPrvKey;
-    void* pdhPubKey = &dhPubKey;
-    size_t exportedKeyLenDH1 = sizeof(dhPrvKey);
-    size_t exportedKeyLenDH2 = sizeof(dhPubKey);
-
     bool result = false;
 
     /********************************** TestKeyStore_testCase_09 - 11 for RSA keys ************************************/
     result = importExportKeyPairTest(keyStoreCtx,
                                      cryptoCtx,
-                                     RSA_KEY_SIZE,
-                                     SeosCryptoKey_PairType_RSA,
-                                     pRsaPrvKey,
-                                     pRsaPubKey,
-                                     exportedKeyLenRSA1,
-                                     exportedKeyLenRSA2);
+                                     &rsa128Spec);
     Debug_ASSERT_PRINTFLN(true == result,
                           "importExportKeyPairTest failed for RSA keys");
 
     /********************************** TestKeyStore_testCase_09 - 11 for DH keys ************************************/
     result = importExportKeyPairTest(keyStoreCtx,
                                      cryptoCtx,
-                                     DH_KEY_SIZE,
-                                     SeosCryptoKey_PairType_DH,
-                                     pdhPrvKey,
-                                     pdhPubKey,
-                                     exportedKeyLenDH1,
-                                     exportedKeyLenDH2);
+                                     &dh64Spec);
     Debug_ASSERT_PRINTFLN(true == result,
                           "importExportKeyPairTest failed for DH keys");
 
@@ -177,44 +167,40 @@ bool testKeyStoreKeyPair(SeosKeyStoreCtx* keyStoreCtx, SeosCryptoCtx* cryptoCtx)
 
 /* Private functions ---------------------------------------------------------*/
 static bool
-importExportKeyPairTest(SeosKeyStoreCtx* keyStoreCtx,
-                        SeosCryptoCtx* cryptoCtx,
-                        size_t keySize,
-                        unsigned int pairType,
-                        void* pPrvKey,
-                        void* pPubKey,
-                        size_t exportedKeyLen1,
-                        size_t exportedKeyLen2)
+importExportKeyPairTest(SeosKeyStoreCtx*            keyStoreCtx,
+                        SeosCryptoCtx*              cryptoCtx,
+                        const SeosCryptoKey_Spec*   spec)
 {
-    SeosCryptoKey_Flags flags;
-    SeosCryptoKey_Type type;
+    seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCrypto_KeyHandle prvKeyHandle;
     SeosCrypto_KeyHandle pubKeyHandle;
-    seos_err_t err = SEOS_ERROR_GENERIC;
+    size_t len;
 
     /********************************** TestKeyStore_testCase_09 ************************************/
-    err = SeosCryptoApi_keyGeneratePair(cryptoCtx, &prvKeyHandle, &pubKeyHandle, pairType, SeosCryptoKey_Flags_EXPORTABLE_RAW, SeosCryptoKey_Flags_EXPORTABLE_RAW, keySize);
+    err = SeosCryptoApi_keyGenerate(cryptoCtx, &prvKeyHandle, spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err,
-                          "SeosCryptoApi_keyGeneratePair failed with err %d", err);
+                          "SeosCryptoApi_keyGenerate failed with err %d", err);
+    err = SeosCryptoApi_keyMakePublic(cryptoCtx, &pubKeyHandle, prvKeyHandle,
+                                      &spec->key.attribs);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err,
+                          "SeosCryptoApi_keyMakePublic failed with err %d", err);
 
     /********************************** TestKeyStore_testCase_10 ************************************/
-    err = SeosCryptoApi_keyExport(cryptoCtx, prvKeyHandle, NULL, &type, &flags, pPrvKey,
-                                  &exportedKeyLen1);
+    err = SeosCryptoApi_keyExport(cryptoCtx, prvKeyHandle, NULL, &keyData);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosCryptoApi_keyExport failed with err %d", err);
 
-    err = SeosCryptoApi_keyExport(cryptoCtx, pubKeyHandle, NULL, &type, &flags, pPubKey,
-                                  &exportedKeyLen2);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
-                          "SeosCryptoApi_keyExport failed with err %d", err);
-
-    err = SeosKeyStoreApi_importKey(keyStoreCtx, PRV_KEY_NAME, pPrvKey,
-                                    exportedKeyLen1);
+    err = SeosKeyStoreApi_importKey(keyStoreCtx, PRV_KEY_NAME, &keyData,
+                                    sizeof(SeosCryptoKey_Data));
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStoreApi_importKey failed with err %d", err);
 
-    err = SeosKeyStoreApi_importKey(keyStoreCtx, PUB_KEY_NAME, pPubKey,
-                                    exportedKeyLen2);
+    err = SeosCryptoApi_keyExport(cryptoCtx, pubKeyHandle, NULL, &keyData);
+    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
+                          "SeosCryptoApi_keyExport failed with err %d", err);
+
+    err = SeosKeyStoreApi_importKey(keyStoreCtx, PUB_KEY_NAME, &keyData,
+                                    sizeof(SeosCryptoKey_Data));
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStoreApi_importKey failed with err %d", err);
 
@@ -227,14 +213,12 @@ importExportKeyPairTest(SeosKeyStoreCtx* keyStoreCtx,
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStoreApi_deleteKey failed with err %d", err);
 
-    err = SeosKeyStoreApi_getKey(keyStoreCtx, PRV_KEY_NAME, pPrvKey,
-                                 &exportedKeyLen1);
+    err = SeosKeyStoreApi_getKey(keyStoreCtx, PRV_KEY_NAME, &keyData, &len);
     Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_NOT_FOUND,
                           "SeosKeyStoreApi_getKey supposed to fail with SEOS_ERROR_NOT_FOUND, but returned %d",
                           err);
 
-    err = SeosKeyStoreApi_getKey(keyStoreCtx, PUB_KEY_NAME, pPubKey,
-                                 &exportedKeyLen2);
+    err = SeosKeyStoreApi_getKey(keyStoreCtx, PUB_KEY_NAME, &keyData, &len);
     Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_NOT_FOUND,
                           "SeosKeyStoreApi_getKey supposed to fail with SEOS_ERROR_NOT_FOUND, but returned %d",
                           err);
