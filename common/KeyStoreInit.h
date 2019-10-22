@@ -9,14 +9,23 @@
 #include "SpiffsFileStreamFactory.h"
 #include "SeosKeyStore.h"
 
+#include "seos_fs.h"    // include path to fs-core must be set in cmakelists.txt
+#include "seos_pm.h"    // include path to partition manager must be set in cmakelists.txt
+#include "SeosFileStream.h"
+#include "SeosFileStreamFactory.h"
+#include "handle_resolver.h"
+#include "partition_io_layer.h"
+#include "api_pm.h"
+
+
 typedef struct KeyStoreContext
 {
     ProxyNVM proxyNVM;
     ChanMuxClient chanMuxClient;
     AesNvm aesNvm;
     SeosSpiffs fs;
+    hPartition_t partition;
     FileStreamFactory* fileStreamFactory;
-    SeosKeyStore keyStore;
 } KeyStoreContext;
 
 bool keyStoreContext_ctor(KeyStoreContext*  keyStoreCtx,
@@ -24,3 +33,5 @@ bool keyStoreContext_ctor(KeyStoreContext*  keyStoreCtx,
                           void*             dataport);
 
 bool keyStoreContext_dtor(KeyStoreContext* keyStoreCtx);
+int8_t InitFatFS(KeyStoreContext* keyStoreCtx);
+int8_t InitSpifFS(KeyStoreContext* keyStoreCtx);

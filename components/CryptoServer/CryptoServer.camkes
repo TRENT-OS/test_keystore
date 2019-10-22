@@ -12,5 +12,9 @@ component CryptoServer {
     dataport    Buf                 chanMuxDataPort;
     uses        ChanMuxInInf        ChanMuxRpc;
     consumes    DataAvailableEvent  ChanMuxSignal_dataAvailable;
+
+    attribute disk_info disk_information;
+    attribute chanmux_channel chanmux_ch;
+    attribute partition_cat partition_conf;
 }
 

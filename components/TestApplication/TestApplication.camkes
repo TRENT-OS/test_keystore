@@ -4,6 +4,24 @@
 import "../../interfaces/Crypto.camkes";
 import "../../interfaces/ChanMuxInf.camkes";
 
+struct disk_info {
+    int disk_size;
+    int block_size_default;
+}
+
+struct chanmux_channel{
+    int channel;
+}
+
+struct partition_config {
+    string partition_name;
+    int partition_size;
+}
+
+struct partition_cat {
+    partition_config partition[];
+}
+
 component TestApplication {
     control;
 
@@ -18,5 +36,9 @@ component TestApplication {
     dataport    Buf                 chanMuxDataPort;
     uses        ChanMuxInInf        ChanMuxRpc;
     consumes    DataAvailableEvent  ChanMuxSignal_dataAvailable;
+
+    attribute disk_info disk_information;
+    attribute chanmux_channel chanmux_ch;
+    attribute partition_cat partition_conf;
 }
 

@@ -27,14 +27,8 @@
 #define NVM_CHANNEL_NUMBER      (6)
 #define KEY_STORE_INSTANCE_NAME "KeyStore1"
 
-int entropyFunc(void*           ctx,
-                unsigned char*  buf,
-                size_t          len)
-{
-    // This would be the platform specific function to obtain entropy
-    memset(buf, 0, len);
-    return 0;
-}
+/* Private function prototypes -----------------------------------------------------------*/
+static int entropyFunc(void* ctx, unsigned char* buf, size_t len);
 
 /**
  * @weakgroup KeyStoreApi_test_scenarios
@@ -97,9 +91,28 @@ int run()
                           "SeosCryptoClient_init failed with error code %d!", err);
 
     /************************** Init KeyStore local version ****************************/
-    Debug_ASSERT_PRINTFLN(keyStoreContext_ctor(&keyStoreCtx, NVM_CHANNEL_NUMBER,
-                                               (void*)chanMuxDataPort) == true,
-                          "keyStoreContext_ctor failed!");
+    Debug_ASSERT_PRINTFLN(keyStoreContext_ctor(&keyStoreCtx,
+                                                NVM_CHANNEL_NUMBER,
+                                                (void*)chanMuxDataPort) == true,
+                            "keyStoreContext_ctor failed!");
+
+    /************************** Init FS ****************************/
+#ifdef FAT_FS
+    int8_t ret = InitFatFS(&keyStoreCtx);
+    if(ret < 0)
+    {
+        Debug_LOG_ERROR("%s: InitFatFS failed!", __func__);
+        return 0;
+    }
+#endif
+#ifdef SPIF_FS
+    int8_t ret = InitSpifFS(&keyStoreCtx);
+    if(ret < 0)
+    {
+        Debug_LOG_ERROR("%s: InitSpifFS failed!", __func__);
+        return 0;
+    }
+#endif
 
     err = SeosKeyStore_init(&localKeyStore,
                             keyStoreCtx.fileStreamFactory,
@@ -197,4 +210,15 @@ int run()
 
     return 0;
 }
+
+/* Private functios -----------------------------------------------------------*/
+static int entropyFunc(void*           ctx,
+                unsigned char*  buf,
+                size_t          len)
+{
+    // This would be the platform specific function to obtain entropy
+    memset(buf, 0, len);
+    return 0;
+}
+
 ///@}

@@ -8,17 +8,13 @@
 #include "KeyStoreInit.h"
 #include <camkes.h>
 
+/* Private function prototypes -----------------------------------------------------------*/
+static int entropyFunc(void* ctx, unsigned char* buf, size_t len);
+
+/* Private variables -----------------------------------------------------------*/
 static SeosCrypto    cryptoCore;
 
-int entropyFunc(void*           ctx,
-                unsigned char*  buf,
-                size_t          len)
-{
-    // This would be the platform specific function to obtain entropy
-    memset(buf, 0, len);
-    return 0;
-}
-
+/* Public functions -----------------------------------------------------------*/
 seos_err_t
 Crypto_getRpcHandle(SeosCryptoRpc_Handle* instance)
 {
@@ -62,6 +58,23 @@ KeyStore_getRpcHandle(SeosKeyStoreRpc_Handle* instance)
         return 0;
     }
 
+#ifdef FAT_FS
+    int8_t ret = InitFatFS(&keyStoreCtx);
+    if(ret < 0)
+    {
+        Debug_LOG_ERROR("%s: InitFatFS failed!", __func__);
+        return 0;
+    }
+#endif
+#ifdef SPIF_FS
+    int8_t ret = InitSpifFS(&keyStoreCtx);
+    if(ret < 0)
+    {
+        Debug_LOG_ERROR("%s: InitSpifFS failed!", __func__);
+        return 0;
+    }
+#endif
+
     seos_err_t retval = SeosKeyStore_init(&keyStore,
                                           keyStoreCtx.fileStreamFactory,
                                           &cryptoCore,
@@ -98,4 +111,14 @@ void
 KeyStore_closeRpcHandle(SeosKeyStoreRpc_Handle instance)
 {
     /// TODO
+}
+
+/* Private functios -----------------------------------------------------------*/
+static int entropyFunc(void*           ctx,
+                unsigned char*  buf,
+                size_t          len)
+{
+    // This would be the platform specific function to obtain entropy
+    memset(buf, 0, len);
+    return 0;
 }
