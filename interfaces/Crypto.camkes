@@ -50,7 +50,7 @@ procedure KeyStoreRpcInf {
     include "SeosKeyStoreRpc.h";
 
     seos_err_t      importKey       (in SeosKeyStoreRpc_Handle handle, in size_t keySize);
-    seos_err_t      getKey          (in SeosKeyStoreRpc_Handle handle, out size_t keySize);
+    seos_err_t      getKey          (in SeosKeyStoreRpc_Handle handle, inout size_t keySize);
     seos_err_t      deleteKey       (in SeosKeyStoreRpc_Handle handle);
     seos_err_t      copyKey         (in SeosKeyStoreRpc_Handle handle, in SeosKeyStoreRpc_Handle destKeyStore);
     seos_err_t      moveKey         (in SeosKeyStoreRpc_Handle handle, in SeosKeyStoreRpc_Handle destKeyStore);

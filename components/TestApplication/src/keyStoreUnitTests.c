@@ -93,14 +93,20 @@ testGetKey(SeosKeyStoreCtx* keyStoreCtx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     char keyData[128] = {0};
-    size_t keySize = 0;
+    size_t keySize = sizeof(keyData);
 
     /********************************** TestKeyStore_testCase_02 ************************************/
     err = SeosKeyStoreApi_getKey(keyStoreCtx, KEY_NAME, keyData, &keySize);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStoreApi_getKey failed with err %d", err);
-    Debug_ASSERT_PRINTFLN(keySize == 128,
+    Debug_ASSERT_PRINTFLN(keySize == sizeof(keyData),
                           "KeySize after GetKey expected %zu, but is equal %zu", 128, keySize);
+
+    keySize = 0;
+    err = SeosKeyStoreApi_getKey(keyStoreCtx, KEY_NAME, keyData, &keySize);
+    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_BUFFER_TOO_SMALL,
+                          "SeosKeyStoreApi_importKey supposed to fail with SEOS_ERROR_BUFFER_TOO_SMALL, but returned %d",
+                          err);
 
     err = SeosKeyStoreApi_getKey(keyStoreCtx, KEY_NAME_NOT_THERE, keyData,
                                  &keySize);

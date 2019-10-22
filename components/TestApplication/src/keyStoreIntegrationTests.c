@@ -174,7 +174,7 @@ importExportKeyPairTest(SeosKeyStoreCtx*            keyStoreCtx,
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCrypto_KeyHandle prvKeyHandle;
     SeosCrypto_KeyHandle pubKeyHandle;
-    size_t len;
+    size_t len = 0;
 
     /********************************** TestKeyStore_testCase_09 ************************************/
     err = SeosCryptoApi_keyGenerate(cryptoCtx, &prvKeyHandle, spec);
