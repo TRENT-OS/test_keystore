@@ -11,15 +11,11 @@
 /* Defines -------------------------------------------------------------------*/
 // Configuration of the testKeyStoreAES
 #define AES_KEY_NAME        "AESKey"
-#define AES_KEY_SIZE        32
 #define SAMPLE_STRING       "0123456789ABCDEF"
 #define AES_BLOCK_LEN       16
-
 // Configuration of the testKeyStoreKeyPair
 #define PRV_KEY_NAME        "PrvKey"
 #define PUB_KEY_NAME        "PubKey"
-#define RSA_KEY_SIZE        1024
-#define DH_KEY_SIZE         256
 
 static const SeosCryptoKey_Spec aes256Spec =
 {
