@@ -100,7 +100,7 @@ testGetKey(SeosKeyStoreCtx* keyStoreCtx)
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStoreApi_getKey failed with err %d", err);
     Debug_ASSERT_PRINTFLN(keySize == sizeof(keyData),
-                          "KeySize after GetKey expected %zu, but is equal %zu", 128, keySize);
+                          "KeySize after GetKey expected %d, but is equal %zu", 128, keySize);
 
     keySize = 0;
     err = SeosKeyStoreApi_getKey(keyStoreCtx, KEY_NAME, keyData, &keySize);
