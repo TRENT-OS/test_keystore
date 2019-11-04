@@ -16,7 +16,15 @@
 // setup disk/partition
 #define GET_PROPERTY_PARTITION_COUNT            SEOS_ARRAY_SIZE(partition_conf.partition)
 #define GET_PROPERTY_DISK_SIZE                  disk_information.disk_size
+
+#if defined(FAT_FS)
 #define GET_PROPERTY_BLOCK_SIZE                 disk_information.block_size_default
+#elif defined(SPIF_FS)
+#define GET_PROPERTY_BLOCK_SIZE                 1
+#else
+#error Filesystem choice is not defined! Choose either FAT_FS or SPIF_FS
+#endif
+
 #define GET_PROPERTY_PARTITION_NAME(x)          GET_PROPERTY_PARTITION_NAME_AT(x)
 #define GET_PROPERTY_PARTITION_SIZE(x)          GET_PROPERTY_PARTITION_SIZE_AT(x)
 

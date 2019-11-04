@@ -28,6 +28,7 @@ DeclareCAmkESComponent(TestApplication
     SOURCES
         components/TestApplication/src/keyStoreIntegrationTests.c
         components/TestApplication/src/keyStoreUnitTests.c
+        components/TestApplication/src/keyStoreMultiInstanceTests.c
         components/TestApplication/src/testRunner.c
         common/KeyStoreInit.c
     C_FLAGS
@@ -40,6 +41,7 @@ DeclareCAmkESComponent(TestApplication
         -DSEOS_PARTITION_MANAGER_BUILD_AS_LIB
         # fs used by the keystore (FAT_FS / SPIF_FS)
         -DFAT_FS
+        #-DSPIF_FS
     LIBS
         seos_libs
         seos_crypto
@@ -69,6 +71,7 @@ DeclareCAmkESComponent(CryptoServer
         -DSEOS_PARTITION_MANAGER_BUILD_AS_LIB
         # fs used by the keystore (FAT_FS / SPIF_FS)
         -DFAT_FS
+        #-DSPIF_FS
     LIBS
         seos_libs
         seos_crypto

@@ -19,13 +19,29 @@
 #include "KeyStoreInit.h"
 #include "keyStoreUnitTests.h"
 #include "keyStoreIntegrationTests.h"
+#include "keyStoreMultiInstanceTests.h"
 
 #include <camkes.h>
 #include <string.h>
 
 /* Defines -------------------------------------------------------------------*/
-#define NVM_CHANNEL_NUMBER      (6)
-#define KEY_STORE_INSTANCE_NAME "KeyStore1"
+#if defined(FAT_FS)
+#define FS_TO_USE SEOS_FS_TYPE_FAT
+#elif defined(SPIF_FS)
+#define FS_TO_USE SEOS_FS_TYPE_SPIFFS
+#else
+    #   error Filesystem choice is not defined! Choose either FAT_FS or SPIF_FS
+#endif
+
+#define NVM_CHANNEL_NUMBER                  6
+
+#define KEY_STORE_INSTANCE_1_NAME           "KeyStore1"
+#define KEY_STORE_INSTANCE_1_PARTITION      0
+
+#define KEY_STORE_INSTANCE_2_NAME           "KeyStore2"
+#define KEY_STORE_INSTANCE_2_PARTITION      1
+
+
 
 /* Private function prototypes -----------------------------------------------------------*/
 static int entropyFunc(void* ctx, unsigned char* buf, size_t len);
@@ -49,6 +65,18 @@ static int entropyFunc(void* ctx, unsigned char* buf, size_t len);
  *
  * @test \b TestKeyStore_scenario_6     Perform TestKeyStore_testCase_09 - 11 for a remote version of the KeyStore,
  *                                      for RSA and DH keypairs
+ * 
+ * @test \b TestKeyStore_scenario_7     Perform TestKeyStore_testCase_12 - 14 for a local source KeyStore and a 
+ *                                      local destination KeyStore
+ * 
+ * @test \b TestKeyStore_scenario_8     Perform TestKeyStore_testCase_12 - 14 for a local source KeyStore and a 
+ *                                      remote destination KeyStore
+ * 
+ * @test \b TestKeyStore_scenario_9     Perform TestKeyStore_testCase_15 - 17 for a local source KeyStore and a 
+ *                                      local destination KeyStore
+ * 
+ * @test \b TestKeyStore_scenario_10    Perform TestKeyStore_testCase_15 - 17 for a local source KeyStore and a 
+ *                                      remote destination KeyStore
  *
  * @}
  */
@@ -66,15 +94,20 @@ int run()
     SeosCryptoCtx* cryptoApiRpc;
     SeosCryptoRpc_Handle rpcHandle = NULL;
 
-    SeosKeyStore localKeyStore;
-    SeosKeyStoreClient keyStoreClient;
-    SeosKeyStoreCtx* keyStoreApiLocal;
+    SeosKeyStore localKeyStore1;
+    SeosKeyStoreCtx* keyStoreApiLocal1;
+    KeyStoreContext keyStoreCtx1;
+
+    SeosKeyStore localKeyStore2;
+    SeosKeyStoreCtx* keyStoreApiLocal2;
+    KeyStoreContext keyStoreCtx2;
+
+    SeosKeyStoreClient keyStoreClient; 
     SeosKeyStoreCtx* keyStoreApiRpc;
     SeosKeyStoreRpc_Handle keyStoreRpcHandle = NULL;
 
-    KeyStoreContext keyStoreCtx;
-
     seos_err_t err = SEOS_ERROR_GENERIC;
+    bool ret = false;
 
     /************************** Init Crypto local version ****************************/
     err = SeosCrypto_init(&localCrypto, &cb, NULL);
@@ -90,34 +123,33 @@ int run()
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosCryptoClient_init failed with error code %d!", err);
 
-    /************************** Init KeyStore local version ****************************/
-    Debug_ASSERT_PRINTFLN(keyStoreContext_ctor(&keyStoreCtx,
-                                                NVM_CHANNEL_NUMBER,
-                                                (void*)chanMuxDataPort) == true,
-                            "keyStoreContext_ctor failed!");
+    /************************** Init 1. local version of the KeyStore ****************************/
+    ret = keyStoreContext_ctor(&keyStoreCtx1,
+                                NVM_CHANNEL_NUMBER,
+                                KEY_STORE_INSTANCE_1_PARTITION,
+                                FS_TO_USE,
+                                chanMuxDataPort);
+    Debug_ASSERT_PRINTFLN(ret == true, "keyStoreContext_ctor failed!");
 
-    /************************** Init FS ****************************/
-#ifdef FAT_FS
-    int8_t ret = InitFatFS(&keyStoreCtx);
-    if(ret < 0)
-    {
-        Debug_LOG_ERROR("%s: InitFatFS failed!", __func__);
-        return 0;
-    }
-#endif
-#ifdef SPIF_FS
-    int8_t ret = InitSpifFS(&keyStoreCtx);
-    if(ret < 0)
-    {
-        Debug_LOG_ERROR("%s: InitSpifFS failed!", __func__);
-        return 0;
-    }
-#endif
-
-    err = SeosKeyStore_init(&localKeyStore,
-                            keyStoreCtx.fileStreamFactory,
+    err = SeosKeyStore_init(&localKeyStore1,
+                            SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(&(keyStoreCtx1.fileStreamFactory)),
                             &localCrypto,
-                            KEY_STORE_INSTANCE_NAME);
+                            KEY_STORE_INSTANCE_1_NAME);
+    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
+                          "SeosKeyStore_init failed with error code %d!", err);
+
+    /************************** Init 2. local version of the KeyStore ****************************/
+    ret = keyStoreContext_ctor(&keyStoreCtx2,
+                                NVM_CHANNEL_NUMBER,
+                                KEY_STORE_INSTANCE_2_PARTITION,
+                                FS_TO_USE,
+                                chanMuxDataPort);
+    Debug_ASSERT_PRINTFLN(ret == true, "keyStoreContext_ctor failed!");
+
+    err = SeosKeyStore_init(&localKeyStore2,
+                            SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(&(keyStoreCtx2.fileStreamFactory)),
+                            &localCrypto,
+                            KEY_STORE_INSTANCE_2_NAME);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStore_init failed with error code %d!", err);
 
@@ -135,12 +167,13 @@ int run()
     /************************* API assignements ***************************/
     cryptoApiLocal      = SeosCrypto_TO_SEOS_CRYPTO_CTX(&localCrypto);
     cryptoApiRpc        = SeosCryptoClient_TO_SEOS_CRYPTO_CTX(&cryptoClient);
-    keyStoreApiLocal    = SeosKeyStore_TO_SEOS_KEY_STORE_CTX(&localKeyStore);
+    keyStoreApiLocal1   = SeosKeyStore_TO_SEOS_KEY_STORE_CTX(&localKeyStore1);
+    keyStoreApiLocal2   = SeosKeyStore_TO_SEOS_KEY_STORE_CTX(&localKeyStore2);
     keyStoreApiRpc      = SeosKeyStoreClient_TO_SEOS_KEY_STORE_CTX(&keyStoreClient);
 
     /******************** Test local and remote versions **********************/
     Debug_LOG_INFO("\n\n\n\n**************************** Starting 'TestKeyStore_scenario_1' ****************************\n");
-    if (!keyStoreUnitTests(keyStoreApiLocal))
+    if (!keyStoreUnitTests(keyStoreApiLocal1))
     {
         Debug_LOG_ERROR("\n\nTestKeyStore_scenario_1 FAILED!\n\n\n\n");
     }
@@ -159,8 +192,8 @@ int run()
         Debug_LOG_INFO("\n\nTestKeyStore_scenario_2 succeeded!\n\n\n\n");
     }
 
-    Debug_LOG_INFO("\n\n\n\n**************************** Starting 'TestKeyStore_scenario_3' ****************************\n");
-    if (!testKeyStoreAES(keyStoreApiLocal, cryptoApiLocal))
+    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStore_scenario_3' ****************************\n");
+    if (!testKeyStoreAES(keyStoreApiLocal1, cryptoApiLocal))
     {
         Debug_LOG_ERROR("\n\nTestKeyStore_scenario_3 FAILED!\n\n\n\n");
     }
@@ -180,7 +213,7 @@ int run()
     }
 
     Debug_LOG_INFO("\n**************************** Starting 'TestKeyStore_scenario_5' ****************************\n");
-    if (!testKeyStoreKeyPair(keyStoreApiLocal, cryptoApiLocal))
+    if (!testKeyStoreKeyPair(keyStoreApiLocal1, cryptoApiLocal))
     {
         Debug_LOG_ERROR("\n\nTestKeyStore_scenario_5 FAILED!\n\n\n\n");
     }
@@ -199,13 +232,56 @@ int run()
         Debug_LOG_INFO("\n\nTestKeyStore_scenario_6 succeeded!\n\n\n\n");
     }
 
-    /***************************** Destruction *******************************/
-    keyStoreContext_dtor(&keyStoreCtx);
+    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStore_scenario_7' ****************************\n");
+    if (!keyStoreCopyKeyTest(keyStoreApiLocal1, keyStoreApiLocal2, cryptoApiLocal))
+    {
+        Debug_LOG_ERROR("\n\nTestKeyStore_scenario_7 FAILED!\n\n\n\n");
+    }
+    else
+    {
+        Debug_LOG_INFO("\n\nTestKeyStore_scenario_7 succeeded!\n\n\n\n");
+    }
 
+    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStore_scenario_8' ****************************\n");
+    if (!keyStoreCopyKeyTest(keyStoreApiLocal2, keyStoreApiRpc, cryptoApiLocal))
+    {
+        Debug_LOG_ERROR("\n\nTestKeyStore_scenario_8 FAILED!\n\n\n\n");
+    }
+    else
+    {
+        Debug_LOG_INFO("\n\nTestKeyStore_scenario_8 succeeded!\n\n\n\n");
+    }
+
+    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStore_scenario_9' ****************************\n");
+    if (!keyStoreMoveKeyTest(keyStoreApiLocal1, keyStoreApiLocal2, cryptoApiLocal))
+    {
+        Debug_LOG_ERROR("\n\nTestKeyStore_scenario_9 FAILED!\n\n\n\n");
+    }
+    else
+    {
+        Debug_LOG_INFO("\n\nTestKeyStore_scenario_9 succeeded!\n\n\n\n");
+    }
+
+    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStore_scenario_10' ****************************\n");
+    if (!keyStoreMoveKeyTest(keyStoreApiLocal2, keyStoreApiRpc, cryptoApiLocal))
+    {
+        Debug_LOG_ERROR("\n\nTestKeyStore_scenario_10 FAILED!\n\n\n\n");
+    }
+    else
+    {
+        Debug_LOG_INFO("\n\nTestKeyStore_scenario_10 succeeded!\n\n\n\n");
+    }
+
+    /***************************** Destruction *******************************/
     SeosCrypto_free(cryptoApiLocal);
     SeosCryptoClient_free(cryptoApiRpc);
+    
+    SeosKeyStore_deInit(keyStoreApiLocal1);
+    keyStoreContext_dtor(&keyStoreCtx1);
 
-    SeosKeyStore_deInit(keyStoreApiLocal);
+    SeosKeyStore_deInit(keyStoreApiLocal2);
+    keyStoreContext_dtor(&keyStoreCtx2);    
+    
     SeosKeyStoreClient_deInit(keyStoreApiRpc);
 
     return 0;

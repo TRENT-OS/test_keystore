@@ -6,7 +6,6 @@
 #include "SeosCryptoApi.h"
 #include "SeosKeyStoreApi.h"
 #include <string.h>
-#include "camkes.h"
 
 /* Defines -------------------------------------------------------------------*/
 // Configuration of the testKeyStoreAES
@@ -119,17 +118,14 @@ bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx, SeosCryptoCtx* cryptoCtx)
     /********************************** TestKeyStore_testCase_07 ************************************/
     err = aesDecrypt(cryptoCtx, readKey, buffEnc, decOutSize, buffDec,
                      &encOutSize);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "aesDecrypt failed with err %d",
-                          err);
-
+    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "aesDecrypt failed with err %d", err);
     Debug_ASSERT_PRINTFLN(strncmp(SAMPLE_STRING, buffDec, AES_BLOCK_LEN) == 0,
                           "Decrypted string doesn't match the original!");
 
     /********************************** TestKeyStore_testCase_08 ************************************/
     err = SeosKeyStoreApi_wipeKeyStore(keyStoreCtx);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
-                          "SeosKeyStoreApi_getKey supposed to fail with SEOS_ERROR_NOT_FOUND, but returned %d",
-                          err);
+                          "SeosKeyStoreApi_wipeKeyStore failed with err %d", err);
 
     len = sizeof(keyData);
     err = SeosKeyStoreApi_getKey(keyStoreCtx, AES_KEY_NAME, &keyData, &len);

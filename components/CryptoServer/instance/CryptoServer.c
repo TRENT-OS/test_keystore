@@ -8,6 +8,19 @@
 #include "KeyStoreInit.h"
 #include <camkes.h>
 
+/* Defines -----------------------------------------------------------*/
+#if defined(FAT_FS)
+#define FS_TO_USE SEOS_FS_TYPE_FAT
+#elif defined(SPIF_FS)
+#define FS_TO_USE SEOS_FS_TYPE_SPIFFS
+#else
+    #   error Filesystem choice is not defined! Choose either FAT_FS or SPIF_FS
+#endif
+
+#define NVM_CHANNEL_NUMBER              6
+#define KEY_STORE_INSTANCE_NAME         "KeyStore1"
+#define KEY_STORE_INSTANCE_PARTITION    0
+
 /* Private function prototypes -----------------------------------------------------------*/
 static int entropyFunc(void* ctx, unsigned char* buf, size_t len);
 
@@ -52,33 +65,20 @@ KeyStore_getRpcHandle(SeosKeyStoreRpc_Handle* instance)
     static SeosKeyStoreRpc the_one;
     static KeyStoreContext keyStoreCtx;
 
-    if (!keyStoreContext_ctor(&keyStoreCtx, 6, (void*)chanMuxDataPort))
+    if (!keyStoreContext_ctor(&keyStoreCtx,
+                                NVM_CHANNEL_NUMBER,
+                                KEY_STORE_INSTANCE_PARTITION,
+                                FS_TO_USE,
+                                chanMuxDataPort))
     {
         Debug_LOG_ERROR("%s: Failed to initialize the test!", __func__);
         return 0;
     }
 
-#ifdef FAT_FS
-    int8_t ret = InitFatFS(&keyStoreCtx);
-    if(ret < 0)
-    {
-        Debug_LOG_ERROR("%s: InitFatFS failed!", __func__);
-        return 0;
-    }
-#endif
-#ifdef SPIF_FS
-    int8_t ret = InitSpifFS(&keyStoreCtx);
-    if(ret < 0)
-    {
-        Debug_LOG_ERROR("%s: InitSpifFS failed!", __func__);
-        return 0;
-    }
-#endif
-
     seos_err_t retval = SeosKeyStore_init(&keyStore,
-                                          keyStoreCtx.fileStreamFactory,
+                                          SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(&(keyStoreCtx.fileStreamFactory)),
                                           &cryptoCore,
-                                          "KEY_STORE");
+                                          KEY_STORE_INSTANCE_NAME);
 
     if (retval != SEOS_SUCCESS)
     {

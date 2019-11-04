@@ -5,7 +5,6 @@
 #include "keyStoreUnitTests.h"
 #include "SeosKeyStoreApi.h"
 #include <string.h>
-#include "camkes.h"
 
 /* Defines -------------------------------------------------------------------*/
 // Various values for the keyStoreUnitTests
