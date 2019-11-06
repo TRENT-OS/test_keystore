@@ -18,8 +18,8 @@
  * @weakgroup KeyStore_AES_test_cases
  * @{
  *
- * @brief               Test scenario for the key store which performs integration tests
- *                      for the interaction between the keystore and the crypto api on the
+ * @brief               Test scenario which performs integration tests for the 
+ *                      interaction between the keystore and the crypto api on the
  *                      example of a simple AES use case
  *
  * @param keyStoreCtx   handle to the keyStore, it can represent a local instance
@@ -57,8 +57,8 @@ bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx,
  * @weakgroup KeyStore_KeyPair_test_cases
  * @{
  *
- * @brief               Test scenario for the key store which performs integration tests
- *                      for the interaction between the keystore and the crypto apion the
+ * @brief               Test scenario which performs integration tests for the 
+ *                      interaction between the keystore and the crypto api on the
  *                      example of an RSA and Diffie-Hellman key-pair generation
  *
  * @param keyStoreCtx   handle to the keyStore, it can represent a local instance

@@ -19,16 +19,16 @@
  * @weakgroup KeyStore_MultiInstance_test_cases
  * @{
  *
- * @brief               Test scenario for the key store which performs tests for the 
- *                      interaction between 2 instances of the keystore by copying a 
+ * @brief               Test scenario which performs tests for the  interaction
+ *                      between 2 instances of the keystore by copying a
  *                      key from the source keystore into the destination keystore
  *
- * @param srcKeyStore   handle to the source keyStore, it can represent a local 
- *                      instance of the key store library, or a handle to the 
+ * @param srcKeyStore   handle to the source keyStore, it can represent a local
+ *                      instance of the key store library, or a handle to the
  *                      context which is created in a separate camkes component
  * 
  * @param dstKeyStore   handle to the destination keyStore, it can represent a local
- *                      instance of the key store library, or a handle to the context 
+ *                      instance of the key store library, or a handle to the context
  *                      which is created in a separate camkes component
  * 
  * @param cryptoCtx     handle to the crypto library, it can represent a local instance
@@ -54,8 +54,8 @@ bool keyStoreCopyKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeySt
  * @weakgroup KeyStore_MultiInstance_test_cases
  * @{
  *
- * @brief               Test scenario for the key store which performs tests for the 
- *                      interaction between 2 instances of the keystore by moving a 
+ * @brief               Test scenario which performs tests for the interaction
+ *                      between 2 instances of the keystore by moving a 
  *                      key from the source keystore into the destination keystore
  *
  * @param srcKeyStore   handle to the source keyStore, it can represent a local 

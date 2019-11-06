@@ -17,9 +17,8 @@
  * @weakgroup KeyStore_UnitTest_test_cases
  * @{
  *
- * @brief               Test scenario for the key store which performs unit tests
- *                      (positive/negative cases) for the most basic operations of
- *                      the keystore
+ * @brief               Test scenario which performs unit tests (positive/negative cases)
+ *                      for the most basic operations of the keystore
  *
  * @param keyStoreCtx   handle to the keyStore, it can represent a local instance
  *                      of the key store library, or a handle to the context which
