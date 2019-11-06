@@ -17,6 +17,9 @@ seos_use_libs(
 set(SEOS_FS_CONFIG_H_FILE_FAT ${CMAKE_CURRENT_LIST_DIR}/components/KeyStoreFAT/config/seos_fs_config.h)
 set(SEOS_PM_CONFIG_H_FILE_FAT ${CMAKE_CURRENT_LIST_DIR}/components/KeyStoreFAT/config/seos_pm_config.h)
 
+set(SEOS_FS_CONFIG_H_FILE_SPIFFS ${CMAKE_CURRENT_LIST_DIR}/components/KeyStoreSPIFFS/config/seos_fs_config.h)
+set(SEOS_PM_CONFIG_H_FILE_SPIFFS ${CMAKE_CURRENT_LIST_DIR}/components/KeyStoreSPIFFS/config/seos_pm_config.h)
+
 set(KEYSTORE_AS_COMPONENT ON CACHE BOOL "string")
 
 project(test_keystore C)
@@ -73,6 +76,62 @@ DeclareCAmkESComponent(KeyStoreFAT
         -DSEOS_FS_BUILD_AS_LIB
         # partition manager
         -DSEOS_PM_CONFIG_H_FILE=${SEOS_PM_CONFIG_H_FILE_FAT}
+        -DSEOS_PARTITION_MANAGER_BUILD_AS_LIB
+    LIBS
+        seos_libs
+        seos_crypto
+        seos_filesystem_fat
+        seos_filesystem_spiffs
+        seos_partition_manager
+        seos_filesystem_core
+        seos_keystore
+)
+
+DeclareCAmkESComponent(TestRunnerKeyStoreSPIFFS
+    INCLUDES
+        common/init
+        common/test
+    SOURCES
+        common/init/KeyStoreInit.c
+        common/test/keyStoreUnitTests.c
+        common/test/keyStoreIntegrationTests.c
+        common/test/keyStoreMultiInstanceTests.c
+        components/TestRunnerKeyStoreSPIFFS/src/TestRunnerKeyStoreSPIFFS.c
+    C_FLAGS
+        -Wall -Werror
+        # filesystem
+        -DSEOS_FS_CONFIG_H_FILE=${SEOS_FS_CONFIG_H_FILE_SPIFFS}
+        -DSEOS_FS_BUILD_AS_LIB
+        # partition manager
+        -DSEOS_PM_CONFIG_H_FILE=${SEOS_PM_CONFIG_H_FILE_SPIFFS}
+        -DSEOS_PARTITION_MANAGER_BUILD_AS_LIB
+    LIBS
+        seos_libs
+        seos_crypto
+        seos_filesystem_fat
+        seos_filesystem_spiffs
+        seos_partition_manager
+        seos_filesystem_core
+        seos_keystore
+)
+
+DeclareCAmkESComponent(KeyStoreSPIFFS
+    INCLUDES
+        common/init
+        common/test
+    SOURCES
+        common/init/KeyStoreInit.c
+        components/KeyStoreSPIFFS/src/KeyStoreSPIFFS.c
+
+        ${SEOS_LIBS_DIR}/seos_crypto/src/SeosCryptoRpc.c
+        ${SEOS_LIBS_DIR}/seos_keystore/src/SeosKeyStoreRpc.c
+    C_FLAGS
+        -Wall -Werror
+        # filesystem
+        -DSEOS_FS_CONFIG_H_FILE=${SEOS_FS_CONFIG_H_FILE_SPIFFS}
+        -DSEOS_FS_BUILD_AS_LIB
+        # partition manager
+        -DSEOS_PM_CONFIG_H_FILE=${SEOS_PM_CONFIG_H_FILE_SPIFFS}
         -DSEOS_PARTITION_MANAGER_BUILD_AS_LIB
     LIBS
         seos_libs

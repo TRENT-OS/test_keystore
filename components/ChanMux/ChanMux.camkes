@@ -9,8 +9,8 @@ component ChanMux {
 
     //-------------------------------------------------
     // interface to MAIN
-    dataport  Buf                 mainDataPort;
-    emits     DataAvailableEvent  dataAvailableMain;
+    dataport  Buf                 dataPort;
+    emits     DataAvailableEvent  dataAvailable;
     provides  ChanMuxInInf        ChanMuxIn;
 
     //-------------------------------------------------

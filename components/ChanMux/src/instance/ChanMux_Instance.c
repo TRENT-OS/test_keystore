@@ -85,7 +85,7 @@ const ChannelDataport_t dataports[] =
         .len = 0
     },
     {
-        .io  = (void**) &mainDataPort,
+        .io  = (void**) &dataPort,
         .len = PAGE_SIZE
     }
 };
@@ -106,7 +106,7 @@ ChanMux_dataAvailable_emit(unsigned int chanNum)
     switch (chanNum)
     {
     case CHANNEL_MAIN_DATA:
-        dataAvailableMain_emit();
+        dataAvailable_emit();
         break;
 
     default:
