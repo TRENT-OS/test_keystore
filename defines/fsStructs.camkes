@@ -1,0 +1,21 @@
+/**
+ * Copyright (C) 2019, Hensoldt Cyber GmbH
+ */
+
+struct disk_info {
+    int disk_size;
+    int block_size_default;
+}
+
+struct chanmux_channel{
+    int channel;
+}
+
+struct partition_config {
+    string partition_name;
+    int partition_size;
+}
+
+struct partition_cat {
+    partition_config partition[];
+}

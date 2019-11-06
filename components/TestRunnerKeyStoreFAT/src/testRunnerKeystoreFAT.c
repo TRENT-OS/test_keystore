@@ -1,10 +1,10 @@
 /**
- * @addtogroup KeyStoreApi_Tests
+ * @addtogroup KeyStore_Tests
  * @{
  *
- * @file testRunner.c
+ * @file testRunnerKeystoreFAT.c
  *
- * @brief top level test for the KeyStoreAPI
+ * @brief Tests for the keystore based on FAT
  *
  * Copyright (C) 2019, Hensoldt Cyber GmbH
  */
@@ -25,14 +25,6 @@
 #include <string.h>
 
 /* Defines -------------------------------------------------------------------*/
-#if defined(FAT_FS)
-#define FS_TO_USE SEOS_FS_TYPE_FAT
-#elif defined(SPIF_FS)
-#define FS_TO_USE SEOS_FS_TYPE_SPIFFS
-#else
-    #   error Filesystem choice is not defined! Choose either FAT_FS or SPIF_FS
-#endif
-
 #define NVM_CHANNEL_NUMBER                  6
 
 #define KEY_STORE_INSTANCE_1_NAME           "KeyStore1"
@@ -47,40 +39,40 @@
 static int entropyFunc(void* ctx, unsigned char* buf, size_t len);
 
 /**
- * @weakgroup KeyStoreApi_test_scenarios
+ * @weakgroup KeyStore_FAT_test_scenarios
  * @{
  *
- * @brief Top level test runner
+ * @brief Test run for the keystore based on top of the FAT filesystem
  *
- * @test \b TestKeyStore_scenario_1     Perform TestKeyStore_testCase_01 - 03 for a local version of the KeyStore
+ * @test \b TestKeyStoreFAT_scenario_1  Perform TestKeyStore_testCase_01 - 03 for a local version of the KeyStore
  *
- * @test \b TestKeyStore_scenario_2     Perform TestKeyStore_testCase_01 - 03 for a remote version of the KeyStore
+ * @test \b TestKeyStoreFAT_scenario_2  Perform TestKeyStore_testCase_01 - 03 for a remote version of the KeyStore
  *
- * @test \b TestKeyStore_scenario_3     Perform TestKeyStore_testCase_04 - 08 for a local version of the KeyStore
+ * @test \b TestKeyStoreFAT_scenario_3  Perform TestKeyStore_testCase_04 - 08 for a local version of the KeyStore
  *
- * @test \b TestKeyStore_scenario_4     Perform TestKeyStore_testCase_04 - 08 for a remote version of the KeyStore
+ * @test \b TestKeyStoreFAT_scenario_4  Perform TestKeyStore_testCase_04 - 08 for a remote version of the KeyStore
  *
- * @test \b TestKeyStore_scenario_5     Perform TestKeyStore_testCase_09 - 11 for a local version of the KeyStore,
+ * @test \b TestKeyStoreFAT_scenario_5  Perform TestKeyStore_testCase_09 - 11 for a local version of the KeyStore,
  *                                      for RSA and DH keypairs
  *
- * @test \b TestKeyStore_scenario_6     Perform TestKeyStore_testCase_09 - 11 for a remote version of the KeyStore,
+ * @test \b TestKeyStoreFAT_scenario_6  Perform TestKeyStore_testCase_09 - 11 for a remote version of the KeyStore,
  *                                      for RSA and DH keypairs
  * 
- * @test \b TestKeyStore_scenario_7     Perform TestKeyStore_testCase_12 - 14 for a local source KeyStore and a 
+ * @test \b TestKeyStoreFAT_scenario_7  Perform TestKeyStore_testCase_12 - 14 for a local source KeyStore and a 
  *                                      local destination KeyStore
  * 
- * @test \b TestKeyStore_scenario_8     Perform TestKeyStore_testCase_12 - 14 for a local source KeyStore and a 
+ * @test \b TestKeyStoreFAT_scenario_8  Perform TestKeyStore_testCase_12 - 14 for a local source KeyStore and a 
  *                                      remote destination KeyStore
  * 
- * @test \b TestKeyStore_scenario_9     Perform TestKeyStore_testCase_15 - 17 for a local source KeyStore and a 
+ * @test \b TestKeyStoreFAT_scenario_9  Perform TestKeyStore_testCase_15 - 17 for a local source KeyStore and a 
  *                                      local destination KeyStore
  * 
- * @test \b TestKeyStore_scenario_10    Perform TestKeyStore_testCase_15 - 17 for a local source KeyStore and a 
+ * @test \b TestKeyStoreFAT_scenario_10 Perform TestKeyStore_testCase_15 - 17 for a local source KeyStore and a 
  *                                      remote destination KeyStore
  *
  * @}
  */
-int run()
+void testRunnerInf_runTests()
 {
     const SeosCrypto_Callbacks cb =
     {
@@ -127,7 +119,7 @@ int run()
     ret = keyStoreContext_ctor(&keyStoreCtx1,
                                 NVM_CHANNEL_NUMBER,
                                 KEY_STORE_INSTANCE_1_PARTITION,
-                                FS_TO_USE,
+                                SEOS_FS_TYPE_FAT,
                                 chanMuxDataPort);
     Debug_ASSERT_PRINTFLN(ret == true, "keyStoreContext_ctor failed!");
 
@@ -142,7 +134,7 @@ int run()
     ret = keyStoreContext_ctor(&keyStoreCtx2,
                                 NVM_CHANNEL_NUMBER,
                                 KEY_STORE_INSTANCE_2_PARTITION,
-                                FS_TO_USE,
+                                SEOS_FS_TYPE_FAT,
                                 chanMuxDataPort);
     Debug_ASSERT_PRINTFLN(ret == true, "keyStoreContext_ctor failed!");
 
@@ -172,104 +164,104 @@ int run()
     keyStoreApiRpc      = SeosKeyStoreClient_TO_SEOS_KEY_STORE_CTX(&keyStoreClient);
 
     /******************** Test local and remote versions **********************/
-    Debug_LOG_INFO("\n\n\n\n**************************** Starting 'TestKeyStore_scenario_1' ****************************\n");
+    Debug_LOG_INFO("\n\n\n\n**************************** Starting 'TestKeyStoreFAT_scenario_1' ****************************\n");
     if (!keyStoreUnitTests(keyStoreApiLocal1))
     {
-        Debug_LOG_ERROR("\n\nTestKeyStore_scenario_1 FAILED!\n\n\n\n");
+        Debug_LOG_ERROR("\n\nTestKeyStoreFAT_scenario_1 FAILED!\n\n\n\n");
     }
     else
     {
-        Debug_LOG_INFO("\n\nTestKeyStore_scenario_1 succeeded!\n\n\n\n");
+        Debug_LOG_INFO("\n\nTestKeyStoreFAT_scenario_1 succeeded!\n\n\n\n");
     }
 
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStore_scenario_2' ****************************\n");
+    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreFAT_scenario_2' ****************************\n");
     if (!keyStoreUnitTests(keyStoreApiRpc))
     {
-        Debug_LOG_ERROR("\n\nTestKeyStore_scenario_2 FAILED!\n\n\n\n");
+        Debug_LOG_ERROR("\n\nTestKeyStoreFAT_scenario_2 FAILED!\n\n\n\n");
     }
     else
     {
-        Debug_LOG_INFO("\n\nTestKeyStore_scenario_2 succeeded!\n\n\n\n");
+        Debug_LOG_INFO("\n\nTestKeyStoreFAT_scenario_2 succeeded!\n\n\n\n");
     }
 
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStore_scenario_3' ****************************\n");
+    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreFAT_scenario_3' ****************************\n");
     if (!testKeyStoreAES(keyStoreApiLocal1, cryptoApiLocal))
     {
-        Debug_LOG_ERROR("\n\nTestKeyStore_scenario_3 FAILED!\n\n\n\n");
+        Debug_LOG_ERROR("\n\nTestKeyStoreFAT_scenario_3 FAILED!\n\n\n\n");
     }
     else
     {
-        Debug_LOG_INFO("\n\nTestKeyStore_scenario_3 succeeded!\n\n\n\n");
+        Debug_LOG_INFO("\n\nTestKeyStoreFAT_scenario_3 succeeded!\n\n\n\n");
     }
 
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStore_scenario_4' ****************************\n");
+    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreFAT_scenario_4' ****************************\n");
     if (!testKeyStoreAES(keyStoreApiRpc, cryptoApiRpc))
     {
-        Debug_LOG_ERROR("\n\nTestKeyStore_scenario_4 FAILED!\n\n\n\n");
+        Debug_LOG_ERROR("\n\nTestKeyStoreFAT_scenario_4 FAILED!\n\n\n\n");
     }
     else
     {
-        Debug_LOG_INFO("\n\nTestKeyStore_scenario_4 succeeded!\n\n\n\n");
+        Debug_LOG_INFO("\n\nTestKeyStoreFAT_scenario_4 succeeded!\n\n\n\n");
     }
 
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStore_scenario_5' ****************************\n");
+    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreFAT_scenario_5' ****************************\n");
     if (!testKeyStoreKeyPair(keyStoreApiLocal1, cryptoApiLocal))
     {
-        Debug_LOG_ERROR("\n\nTestKeyStore_scenario_5 FAILED!\n\n\n\n");
+        Debug_LOG_ERROR("\n\nTestKeyStoreFAT_scenario_5 FAILED!\n\n\n\n");
     }
     else
     {
-        Debug_LOG_INFO("\n\nTestKeyStore_scenario_5 succeeded!\n\n\n\n");
+        Debug_LOG_INFO("\n\nTestKeyStoreFAT_scenario_5 succeeded!\n\n\n\n");
     }
 
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStore_scenario_6' ****************************\n");
+    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreFAT_scenario_6' ****************************\n");
     if (!testKeyStoreKeyPair(keyStoreApiRpc, cryptoApiRpc))
     {
-        Debug_LOG_ERROR("\n\nTestKeyStore_scenario_6 FAILED!\n\n\n\n");
+        Debug_LOG_ERROR("\n\nTestKeyStoreFAT_scenario_6 FAILED!\n\n\n\n");
     }
     else
     {
-        Debug_LOG_INFO("\n\nTestKeyStore_scenario_6 succeeded!\n\n\n\n");
+        Debug_LOG_INFO("\n\nTestKeyStoreFAT_scenario_6 succeeded!\n\n\n\n");
     }
 
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStore_scenario_7' ****************************\n");
+    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreFAT_scenario_7' ****************************\n");
     if (!keyStoreCopyKeyTest(keyStoreApiLocal1, keyStoreApiLocal2, cryptoApiLocal))
     {
-        Debug_LOG_ERROR("\n\nTestKeyStore_scenario_7 FAILED!\n\n\n\n");
+        Debug_LOG_ERROR("\n\nTestKeyStoreFAT_scenario_7 FAILED!\n\n\n\n");
     }
     else
     {
-        Debug_LOG_INFO("\n\nTestKeyStore_scenario_7 succeeded!\n\n\n\n");
+        Debug_LOG_INFO("\n\nTestKeyStoreFAT_scenario_7 succeeded!\n\n\n\n");
     }
 
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStore_scenario_8' ****************************\n");
+    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreFAT_scenario_8' ****************************\n");
     if (!keyStoreCopyKeyTest(keyStoreApiLocal2, keyStoreApiRpc, cryptoApiLocal))
     {
-        Debug_LOG_ERROR("\n\nTestKeyStore_scenario_8 FAILED!\n\n\n\n");
+        Debug_LOG_ERROR("\n\nTestKeyStoreFAT_scenario_8 FAILED!\n\n\n\n");
     }
     else
     {
-        Debug_LOG_INFO("\n\nTestKeyStore_scenario_8 succeeded!\n\n\n\n");
+        Debug_LOG_INFO("\n\nTestKeyStoreFAT_scenario_8 succeeded!\n\n\n\n");
     }
 
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStore_scenario_9' ****************************\n");
+    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreFAT_scenario_9' ****************************\n");
     if (!keyStoreMoveKeyTest(keyStoreApiLocal1, keyStoreApiLocal2, cryptoApiLocal))
     {
-        Debug_LOG_ERROR("\n\nTestKeyStore_scenario_9 FAILED!\n\n\n\n");
+        Debug_LOG_ERROR("\n\nTestKeyStoreFAT_scenario_9 FAILED!\n\n\n\n");
     }
     else
     {
-        Debug_LOG_INFO("\n\nTestKeyStore_scenario_9 succeeded!\n\n\n\n");
+        Debug_LOG_INFO("\n\nTestKeyStoreFAT_scenario_9 succeeded!\n\n\n\n");
     }
 
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStore_scenario_10' ****************************\n");
+    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreFAT_scenario_10' ****************************\n");
     if (!keyStoreMoveKeyTest(keyStoreApiLocal2, keyStoreApiRpc, cryptoApiLocal))
     {
-        Debug_LOG_ERROR("\n\nTestKeyStore_scenario_10 FAILED!\n\n\n\n");
+        Debug_LOG_ERROR("\n\nTestKeyStoreFAT_scenario_10 FAILED!\n\n\n\n");
     }
     else
     {
-        Debug_LOG_INFO("\n\nTestKeyStore_scenario_10 succeeded!\n\n\n\n");
+        Debug_LOG_INFO("\n\nTestKeyStoreFAT_scenario_10 succeeded!\n\n\n\n");
     }
 
     /***************************** Destruction *******************************/
@@ -283,8 +275,6 @@ int run()
     keyStoreContext_dtor(&keyStoreCtx2);    
     
     SeosKeyStoreClient_deInit(keyStoreApiRpc);
-
-    return 0;
 }
 
 /* Private functios -----------------------------------------------------------*/

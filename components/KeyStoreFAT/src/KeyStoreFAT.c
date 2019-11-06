@@ -4,19 +4,11 @@
  */
 #include "LibDebug/Debug.h"
 
-#include "CryptoServer.h"
+#include "KeyStoreFAT.h"
 #include "KeyStoreInit.h"
 #include <camkes.h>
 
 /* Defines -----------------------------------------------------------*/
-#if defined(FAT_FS)
-#define FS_TO_USE SEOS_FS_TYPE_FAT
-#elif defined(SPIF_FS)
-#define FS_TO_USE SEOS_FS_TYPE_SPIFFS
-#else
-    #   error Filesystem choice is not defined! Choose either FAT_FS or SPIF_FS
-#endif
-
 #define NVM_CHANNEL_NUMBER              6
 #define KEY_STORE_INSTANCE_NAME         "KeyStore1"
 #define KEY_STORE_INSTANCE_PARTITION    0
@@ -68,7 +60,7 @@ KeyStore_getRpcHandle(SeosKeyStoreRpc_Handle* instance)
     if (!keyStoreContext_ctor(&keyStoreCtx,
                                 NVM_CHANNEL_NUMBER,
                                 KEY_STORE_INSTANCE_PARTITION,
-                                FS_TO_USE,
+                                SEOS_FS_TYPE_FAT,
                                 chanMuxDataPort))
     {
         Debug_LOG_ERROR("%s: Failed to initialize the test!", __func__);

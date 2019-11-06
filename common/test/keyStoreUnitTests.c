@@ -60,7 +60,8 @@ testImportKey(SeosKeyStoreCtx* keyStoreCtx)
     err = SeosKeyStoreApi_importKey(keyStoreCtx, KEY_NAME, KEY_DATA,
                                     strlen(KEY_DATA));
     Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER,
-                          "SeosKeyStoreApi_importKey failed with err %d", err);
+                          "SeosKeyStoreApi_importKey supposed to fail with SEOS_ERROR_INVALID_PARAMETER, but returned %d",
+                          err);
 
     err = SeosKeyStoreApi_importKey(keyStoreCtx, KEY_NAME, KEY_DATA_TOO_LARGE,
                                     strlen(KEY_DATA_TOO_LARGE));
