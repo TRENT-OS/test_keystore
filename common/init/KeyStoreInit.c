@@ -16,7 +16,7 @@
 #define FAT_FORMAT_OPTION       FS_FAT32
 
 /* Spiffs defines -------------------------------------------------------------------*/
-#define SPIFFS_PARTITION_SIZE   (1024*32)
+#define SPIFFS_PARTITION_SIZE   (1024*64)
 #define SPIFFS_FORMAT_OPTION    FS_SPIF
 #define SPIFFS_LOG_PAGE_SIZE    256
 #define SPIFFS_LOG_BLOCK_SIZE   4096

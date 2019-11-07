@@ -13,25 +13,25 @@
 /* Private variables ---------------------------------------------------------*/
 static SeosCryptoKey_Data keyData;
 
-static const SeosCryptoKey_Spec aes256Spec =
+static const SeosCryptoKey_Spec aes128Spec =
 {
     .type = SeosCryptoKey_SpecType_BITS,
     .key = {
         .type = SeosCryptoKey_Type_AES,
         .attribs.flags = SeosCryptoKey_Flags_EXPORTABLE_RAW,
-        .params.bits = 256
+        .params.bits = 128
     }
 };
 
 /* Public functions -----------------------------------------------------------*/
 bool keyStoreCopyKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeyStore, SeosCryptoCtx* cryptoCtx)
 {
-    SeosCrypto_KeyHandle key                  ;
+    SeosCrypto_KeyHandle key;
     size_t len;
     seos_err_t err = SEOS_ERROR_GENERIC;
 
     /********************************** TestKeyStore_testCase_12 ************************************/
-    err = SeosCryptoApi_keyGenerate(cryptoCtx, &key, &aes256Spec);
+    err = SeosCryptoApi_keyGenerate(cryptoCtx, &key, &aes128Spec);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosCryptoApi_keyGenerate failed with err %d", err);
 
@@ -87,7 +87,7 @@ bool keyStoreMoveKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeySt
     seos_err_t err = SEOS_ERROR_GENERIC;
 
     /********************************** TestKeyStore_testCase_15 ************************************/
-    err = SeosCryptoApi_keyGenerate(cryptoCtx, &key, &aes256Spec);
+    err = SeosCryptoApi_keyGenerate(cryptoCtx, &key, &aes128Spec);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosCryptoApi_keyGenerate failed with err %d", err);
 
