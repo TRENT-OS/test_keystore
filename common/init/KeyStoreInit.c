@@ -29,6 +29,8 @@ static seos_err_t preparePartitionManager(KeyStoreContext* keyStoreCtx);
 static pm_disk_data_t pm_disk_data;
 static bool pmInitalized = false;
 
+static char proxyBuffer[PAGE_SIZE];
+
 /* Public functions -----------------------------------------------------------*/
 bool keyStoreContext_ctor(KeyStoreContext*  keyStoreCtx,
                           uint8_t           channelNum,
@@ -44,7 +46,7 @@ bool keyStoreContext_ctor(KeyStoreContext*  keyStoreCtx,
     }
 
     if (!ProxyNVM_ctor(&(keyStoreCtx->proxyNVM), &(keyStoreCtx->chanMuxClient),
-                       dataport, PAGE_SIZE))
+                       proxyBuffer, PAGE_SIZE))
     {
         Debug_LOG_ERROR("%s: Failed to construct proxyNVM, channel %d!", __func__,
                         channelNum);
