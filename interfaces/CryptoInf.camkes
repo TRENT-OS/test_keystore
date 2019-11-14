@@ -15,8 +15,14 @@ procedure CryptoRpcInf {
 
     seos_err_t      rngGetBytes     (in SeosCryptoRpc_Handle handle, in unsigned int flags, in size_t bufSize);
     seos_err_t      rngReSeed       (in SeosCryptoRpc_Handle handle, in size_t seedLen);
+    seos_err_t      macInit         (in SeosCryptoRpc_Handle handle, inout SeosCrypto_MacHandle pMacHandle, in unsigned int algorithm);
+    seos_err_t      macFree         (in SeosCryptoRpc_Handle handle, in SeosCrypto_MacHandle macHandle);
+    seos_err_t      macStart        (in SeosCryptoRpc_Handle handle, in SeosCrypto_MacHandle macHandle, in size_t secretSize);
+    seos_err_t      macProcess      (in SeosCryptoRpc_Handle handle, in SeosCrypto_MacHandle macHandle, in size_t dataSize);
+    seos_err_t      macFinalize     (in SeosCryptoRpc_Handle handle, in SeosCrypto_MacHandle macHandle, inout size_t macSize);
     seos_err_t      digestInit      (in SeosCryptoRpc_Handle handle, inout SeosCrypto_DigestHandle pDigestHandle, in unsigned int algorithm);
     seos_err_t      digestFree      (in SeosCryptoRpc_Handle handle, in SeosCrypto_DigestHandle digestHandle);
+    seos_err_t      digestClone     (in SeosCryptoRpc_Handle handle, in SeosCrypto_DigestHandle dstDigHandle, in SeosCrypto_DigestHandle srcDigHandle);
     seos_err_t      digestProcess   (in SeosCryptoRpc_Handle handle, in SeosCrypto_DigestHandle digestHandle, in size_t inLen);
     seos_err_t      digestFinalize  (in SeosCryptoRpc_Handle handle, in SeosCrypto_DigestHandle digestHandle, inout size_t digestSize);
     seos_err_t      keyGenerate     (in SeosCryptoRpc_Handle handle, inout SeosCrypto_KeyHandle pKeyHandle);
