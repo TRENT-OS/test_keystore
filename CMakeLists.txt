@@ -29,6 +29,8 @@ DeclareCAmkESComponent(TopLevelTestRunner
         components/TopLevelTestRunner/src/topLevelTestRunner.c
     C_FLAGS
         -Wall -Werror
+    LIBS
+        seos_core_api
 )
 
 DeclareCAmkESComponent(TestRunnerKeyStoreFAT
@@ -50,6 +52,7 @@ DeclareCAmkESComponent(TestRunnerKeyStoreFAT
         -DSEOS_PM_CONFIG_H_FILE=${SEOS_PM_CONFIG_H_FILE_FAT}
         -DSEOS_PARTITION_MANAGER_BUILD_AS_LIB
     LIBS
+        seos_core_api
         seos_libs
         seos_crypto
         seos_filesystem_fat
@@ -78,6 +81,7 @@ DeclareCAmkESComponent(KeyStoreFAT
         -DSEOS_PM_CONFIG_H_FILE=${SEOS_PM_CONFIG_H_FILE_FAT}
         -DSEOS_PARTITION_MANAGER_BUILD_AS_LIB
     LIBS
+        seos_core_api
         seos_libs
         seos_crypto
         seos_filesystem_fat
@@ -106,6 +110,7 @@ DeclareCAmkESComponent(TestRunnerKeyStoreSPIFFS
         -DSEOS_PM_CONFIG_H_FILE=${SEOS_PM_CONFIG_H_FILE_SPIFFS}
         -DSEOS_PARTITION_MANAGER_BUILD_AS_LIB
     LIBS
+        seos_core_api
         seos_libs
         seos_crypto
         seos_filesystem_fat
@@ -134,6 +139,7 @@ DeclareCAmkESComponent(KeyStoreSPIFFS
         -DSEOS_PM_CONFIG_H_FILE=${SEOS_PM_CONFIG_H_FILE_SPIFFS}
         -DSEOS_PARTITION_MANAGER_BUILD_AS_LIB
     LIBS
+        seos_core_api
         seos_libs
         seos_crypto
         seos_filesystem_fat
@@ -157,6 +163,7 @@ DeclareCAmkESComponent(ChanMux
     C_FLAGS
         -Wall -Werror
     LIBS
+        seos_core_api
         seos_libs
 )
 
