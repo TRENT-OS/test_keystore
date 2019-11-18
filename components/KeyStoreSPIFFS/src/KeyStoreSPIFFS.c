@@ -3,9 +3,10 @@
  *
  */
 #include "LibDebug/Debug.h"
-
 #include "KeyStoreSPIFFS.h"
 #include "KeyStoreInit.h"
+#include "SeosCrypto.h"
+
 #include <camkes.h>
 
 /* Defines -----------------------------------------------------------*/
@@ -69,7 +70,7 @@ KeyStore_getRpcHandle(SeosKeyStoreRpc_Handle* instance)
 
     seos_err_t retval = SeosKeyStore_init(&keyStore,
                                           SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(&(keyStoreCtx.fileStreamFactory)),
-                                          &cryptoCore,
+                                          SeosCrypto_TO_SEOS_CRYPTO_CTX(&cryptoCore),
                                           KEY_STORE_INSTANCE_NAME);
 
     if (retval != SEOS_SUCCESS)

@@ -125,7 +125,7 @@ void testRunnerInf_runTests()
 
     err = SeosKeyStore_init(&localKeyStore1,
                             SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(&(keyStoreCtx1.fileStreamFactory)),
-                            &localCrypto,
+                            SeosCrypto_TO_SEOS_CRYPTO_CTX(&localCrypto),
                             KEY_STORE_INSTANCE_1_NAME);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStore_init failed with error code %d!", err);
@@ -140,7 +140,7 @@ void testRunnerInf_runTests()
 
     err = SeosKeyStore_init(&localKeyStore2,
                             SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(&(keyStoreCtx2.fileStreamFactory)),
-                            &localCrypto,
+                            SeosCrypto_TO_SEOS_CRYPTO_CTX(&localCrypto),
                             KEY_STORE_INSTANCE_2_NAME);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStore_init failed with error code %d!", err);
