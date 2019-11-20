@@ -32,7 +32,7 @@ procedure CryptoRpcInf {
     seos_err_t      keyGetParams    (in SeosCryptoRpc_Handle handle, in SeosCrypto_KeyHandle keyHandle, inout size_t paramSize);
     seos_err_t      keyLoadParams   (in SeosCryptoRpc_Handle handle, in SeosCryptoKey_Param name, inout size_t paramSize);
     seos_err_t      keyFree         (in SeosCryptoRpc_Handle handle, in SeosCrypto_KeyHandle keyHandle);
-    seos_err_t      signatureInit   (in SeosCryptoRpc_Handle handle, inout SeosCrypto_SignatureHandle pSigHandle, in unsigned int algorithm, in SeosCrypto_KeyHandle prvHandle, in SeosCrypto_KeyHandle pubHandle);
+    seos_err_t      signatureInit   (in SeosCryptoRpc_Handle handle, inout SeosCrypto_SignatureHandle pSigHandle, in unsigned int algorithm, in unsigned int digest, in SeosCrypto_KeyHandle prvHandle, in SeosCrypto_KeyHandle pubHandle);
     seos_err_t      signatureVerify (in SeosCryptoRpc_Handle handle, in SeosCrypto_SignatureHandle sigHandle, in size_t hashSize, in size_t signatureSize);
     seos_err_t      signatureSign   (in SeosCryptoRpc_Handle handle, in SeosCrypto_SignatureHandle sigHandle, in size_t hashSize, inout size_t signatureSize);
     seos_err_t      signatureFree   (in SeosCryptoRpc_Handle handle, in SeosCrypto_SignatureHandle sigHandle);
