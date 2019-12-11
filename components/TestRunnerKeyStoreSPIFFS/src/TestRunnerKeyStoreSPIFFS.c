@@ -13,8 +13,8 @@
 
 #include "SeosKeyStore.h"
 #include "SeosKeyStoreClient.h"
-#include "SeosCrypto.h"
-#include "SeosCryptoClient.h"
+#include "SeosCryptoLib.h"
+#include "SeosCryptoRpcClient.h"
 
 #include "KeyStoreInit.h"
 #include "keyStoreUnitTests.h"
@@ -57,34 +57,34 @@ static int entropyFunc(void* ctx, unsigned char* buf, size_t len);
  *
  * @test \b TestKeyStoreSPIFFS_scenario_6   Perform TestKeyStore_testCase_09 - 11 for a remote version of the KeyStore,
  *                                          for RSA and DH keypairs
- * 
- * @test \b TestKeyStoreSPIFFS_scenario_7   Perform TestKeyStore_testCase_12 - 14 for a local source KeyStore and a 
+ *
+ * @test \b TestKeyStoreSPIFFS_scenario_7   Perform TestKeyStore_testCase_12 - 14 for a local source KeyStore and a
  *                                          local destination KeyStore
- * 
- * @test \b TestKeyStoreSPIFFS_scenario_8   Perform TestKeyStore_testCase_12 - 14 for a local source KeyStore and a 
+ *
+ * @test \b TestKeyStoreSPIFFS_scenario_8   Perform TestKeyStore_testCase_12 - 14 for a local source KeyStore and a
  *                                          remote destination KeyStore
- * 
- * @test \b TestKeyStoreSPIFFS_scenario_9   Perform TestKeyStore_testCase_15 - 17 for a local source KeyStore and a 
+ *
+ * @test \b TestKeyStoreSPIFFS_scenario_9   Perform TestKeyStore_testCase_15 - 17 for a local source KeyStore and a
  *                                          local destination KeyStore
- * 
- * @test \b TestKeyStoreSPIFFS_scenario_10  Perform TestKeyStore_testCase_15 - 17 for a local source KeyStore and a 
+ *
+ * @test \b TestKeyStoreSPIFFS_scenario_10  Perform TestKeyStore_testCase_15 - 17 for a local source KeyStore and a
  *                                          remote destination KeyStore
  *
  * @}
  */
 void testRunnerInf_runTests()
 {
-    const SeosCrypto_Callbacks cb =
+    const SeosCryptoApi_Callbacks cb =
     {
         .malloc     = malloc,
         .free       = free,
         .entropy    = entropyFunc
     };
-    SeosCrypto localCrypto;
-    SeosCryptoClient cryptoClient;
-    SeosCryptoCtx* cryptoApiLocal;
-    SeosCryptoCtx* cryptoApiRpc;
-    SeosCryptoRpc_Handle rpcHandle = NULL;
+    SeosCryptoLib localCrypto;
+    SeosCryptoRpcClient cryptoClient;
+    SeosCryptoApi_Context* cryptoApiLocal;
+    SeosCryptoApi_Context* cryptoApiRpc;
+    SeosCryptoApi_RpcServer rpcHandle = NULL;
 
     SeosKeyStore localKeyStore1;
     SeosKeyStoreCtx* keyStoreApiLocal1;
@@ -94,7 +94,7 @@ void testRunnerInf_runTests()
     SeosKeyStoreCtx* keyStoreApiLocal2;
     KeyStoreContext keyStoreCtx2;
 
-    SeosKeyStoreClient keyStoreClient; 
+    SeosKeyStoreClient keyStoreClient;
     SeosKeyStoreCtx* keyStoreApiRpc;
     SeosKeyStoreRpc_Handle keyStoreRpcHandle = NULL;
 
@@ -102,18 +102,18 @@ void testRunnerInf_runTests()
     bool ret = false;
 
     /************************** Init Crypto local version ****************************/
-    err = SeosCrypto_init(&localCrypto, &cb, NULL);
+    err = SeosCryptoLib_init(&localCrypto, &cb, NULL);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
-                          "SeosCrypto_init failed with error code %d!", err);
+                          "SeosCryptoLib_init failed with error code %d!", err);
 
     /************************** Init Crypto remote version ****************************/
     err = Crypto_getRpcHandle(&rpcHandle);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "Crypto_getRpcHandle failed with error code %d!", err);
 
-    err = SeosCryptoClient_init(&cryptoClient, rpcHandle, cryptoClientDataport);
+    err = SeosCryptoRpcClient_init(&cryptoClient, rpcHandle, cryptoClientDataport);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
-                          "SeosCryptoClient_init failed with error code %d!", err);
+                          "SeosCryptoRpcClient_init failed with error code %d!", err);
 
     /************************** Init 1. local version of the KeyStore ****************************/
     ret = keyStoreContext_ctor(&keyStoreCtx1,
@@ -125,7 +125,7 @@ void testRunnerInf_runTests()
 
     err = SeosKeyStore_init(&localKeyStore1,
                             SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(&(keyStoreCtx1.fileStreamFactory)),
-                            SeosCrypto_TO_SEOS_CRYPTO_CTX(&localCrypto),
+                            SeosCryptoLib_TO_SEOS_CRYPTO_CTX(&localCrypto),
                             KEY_STORE_INSTANCE_1_NAME);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStore_init failed with error code %d!", err);
@@ -140,7 +140,7 @@ void testRunnerInf_runTests()
 
     err = SeosKeyStore_init(&localKeyStore2,
                             SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(&(keyStoreCtx2.fileStreamFactory)),
-                            SeosCrypto_TO_SEOS_CRYPTO_CTX(&localCrypto),
+                            SeosCryptoLib_TO_SEOS_CRYPTO_CTX(&localCrypto),
                             KEY_STORE_INSTANCE_2_NAME);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStore_init failed with error code %d!", err);
@@ -157,8 +157,8 @@ void testRunnerInf_runTests()
                           "SeosKeyStoreClient_init failed with error code %d!", err);
 
     /************************* API assignements ***************************/
-    cryptoApiLocal      = SeosCrypto_TO_SEOS_CRYPTO_CTX(&localCrypto);
-    cryptoApiRpc        = SeosCryptoClient_TO_SEOS_CRYPTO_CTX(&cryptoClient);
+    cryptoApiLocal      = SeosCryptoLib_TO_SEOS_CRYPTO_CTX(&localCrypto);
+    cryptoApiRpc        = SeosCryptoRpcClient_TO_SEOS_CRYPTO_CTX(&cryptoClient);
     keyStoreApiLocal1   = SeosKeyStore_TO_SEOS_KEY_STORE_CTX(&localKeyStore1);
     keyStoreApiLocal2   = SeosKeyStore_TO_SEOS_KEY_STORE_CTX(&localKeyStore2);
     keyStoreApiRpc      = SeosKeyStoreClient_TO_SEOS_KEY_STORE_CTX(&keyStoreClient);
@@ -265,15 +265,15 @@ void testRunnerInf_runTests()
     }
 
     /***************************** Destruction *******************************/
-    SeosCrypto_free(cryptoApiLocal);
-    SeosCryptoClient_free(cryptoApiRpc);
-    
+    SeosCryptoLib_free(cryptoApiLocal);
+    SeosCryptoRpcClient_free(cryptoApiRpc);
+
     SeosKeyStore_deInit(keyStoreApiLocal1);
     keyStoreContext_dtor(&keyStoreCtx1);
 
     SeosKeyStore_deInit(keyStoreApiLocal2);
-    keyStoreContext_dtor(&keyStoreCtx2);    
-    
+    keyStoreContext_dtor(&keyStoreCtx2);
+
     SeosKeyStoreClient_deInit(keyStoreApiRpc);
 }
 

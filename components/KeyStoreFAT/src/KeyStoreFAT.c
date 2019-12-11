@@ -6,7 +6,7 @@
 
 #include "KeyStoreFAT.h"
 #include "KeyStoreInit.h"
-#include "SeosCrypto.h"
+#include "SeosCryptoLib.h"
 #include <camkes.h>
 
 /* Defines -----------------------------------------------------------*/
@@ -18,23 +18,23 @@
 static int entropyFunc(void* ctx, unsigned char* buf, size_t len);
 
 /* Private variables -----------------------------------------------------------*/
-static SeosCrypto    cryptoCore;
+static SeosCryptoLib    cryptoCore;
 
 /* Public functions -----------------------------------------------------------*/
 seos_err_t
-Crypto_getRpcHandle(SeosCryptoRpc_Handle* instance)
+Crypto_getRpcHandle(SeosCryptoApi_RpcServer* instance)
 {
-    static SeosCryptoRpc the_one;
-    const SeosCrypto_Callbacks cb = {
+    static SeosCryptoRpcServer the_one;
+    const SeosCryptoApi_Callbacks cb = {
         .malloc     = malloc,
         .free       = free,
         .entropy    = entropyFunc
-    };   
+    };
 
-    seos_err_t retval = SeosCrypto_init(&cryptoCore, &cb, NULL);
+    seos_err_t retval = SeosCryptoLib_init(&cryptoCore, &cb, NULL);
     if (SEOS_SUCCESS == retval)
     {
-        retval = SeosCryptoRpc_init(&the_one, &cryptoCore, cryptoServerDataport);
+        retval = SeosCryptoRpcServer_init(&the_one, &cryptoCore, cryptoServerDataport);
         *instance = &the_one;
 
         if (SEOS_SUCCESS == retval)
@@ -46,7 +46,7 @@ Crypto_getRpcHandle(SeosCryptoRpc_Handle* instance)
 }
 
 void
-Crypto_closeRpcHandle(SeosCryptoRpc_Handle instance)
+Crypto_closeRpcHandle(SeosCryptoApi_RpcServer instance)
 {
     /// TODO
 }
@@ -70,7 +70,7 @@ KeyStore_getRpcHandle(SeosKeyStoreRpc_Handle* instance)
 
     seos_err_t retval = SeosKeyStore_init(&keyStore,
                                           SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(&(keyStoreCtx.fileStreamFactory)),
-                                          SeosCrypto_TO_SEOS_CRYPTO_CTX(&cryptoCore),
+                                          SeosCryptoLib_TO_SEOS_CRYPTO_CTX(&cryptoCore),
                                           KEY_STORE_INSTANCE_NAME);
 
     if (retval != SEOS_SUCCESS)

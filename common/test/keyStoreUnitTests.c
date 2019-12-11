@@ -4,6 +4,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "keyStoreUnitTests.h"
 #include "SeosKeyStoreApi.h"
+#include "LibDebug/Debug.h"
 #include <string.h>
 
 /* Defines -------------------------------------------------------------------*/

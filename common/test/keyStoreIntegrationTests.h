@@ -14,25 +14,27 @@
 #include "SeosKeyStoreCtx.h"
 #include "SeosCryptoCtx.h"
 
+#include <stdbool.h>
+
 /**
  * @weakgroup KeyStore_AES_test_cases
  * @{
  *
- * @brief               Test scenario which performs integration tests for the 
+ * @brief               Test scenario which performs integration tests for the
  *                      interaction between the keystore and the crypto api on the
  *                      example of a simple AES use case
  *
  * @param keyStoreCtx   handle to the keyStore, it can represent a local instance
  *                      of the key store library, or a handle to the context which
  *                      is created in a separate camkes component
- * 
+ *
  * @param cryptoCtx     handle to the crypto library, it can represent a local instance
  *                      of the library, or a handle to the context which is created in a
  *                      separate camkes component
  *
  * @return              true => test scenario passed
  *                      false => test scenario failed
- * 
+ *
  *
  * @test \b TestKeyStore_testCase_04    Generate a key from the crypto api (InitKey + GenerateKey) and
  *                                      encrypt an example string with the generated key
@@ -52,27 +54,27 @@
  *
  */
 bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx,
-                     SeosCryptoCtx* cryptoCtx);
+                     SeosCryptoApi_Context* cryptoCtx);
 /**
  * @weakgroup KeyStore_KeyPair_test_cases
  * @{
  *
- * @brief               Test scenario which performs integration tests for the 
+ * @brief               Test scenario which performs integration tests for the
  *                      interaction between the keystore and the crypto api on the
  *                      example of an RSA and Diffie-Hellman key-pair generation
  *
  * @param keyStoreCtx   handle to the keyStore, it can represent a local instance
  *                      of the key store library, or a handle to the context which
  *                      is created in a separate camkes component
- * 
+ *
  * @param cryptoCtx     handle to the crypto library, it can represent a local instance
  *                      of the library, or a handle to the context which is created in a
  *                      separate camkes component
  *
  * @return                          true => test scenario passed
  *                                  false => test scenario failed
- * 
- * 
+ *
+ *
  *
  * @test \b TestKeyStore_testCase_09    Generate a key-pair from the crypto api (InitKey + GenerateKeyPair)
  *
@@ -85,7 +87,7 @@ bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx,
  *
  */
 bool testKeyStoreKeyPair(SeosKeyStoreCtx* keyStoreCtx,
-                         SeosCryptoCtx* cryptoCtx);
+                         SeosCryptoApi_Context* cryptoCtx);
 
 ///@}
 

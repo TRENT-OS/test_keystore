@@ -70,7 +70,7 @@ DeclareCAmkESComponent(KeyStoreFAT
         common/init/KeyStoreInit.c
         components/KeyStoreFAT/src/KeyStoreFAT.c
 
-        ${SEOS_LIBS_DIR}/seos_crypto/src/SeosCryptoRpc.c
+        ${SEOS_LIBS_DIR}/seos_crypto/src/SeosCryptoRpcServer.c
         ${SEOS_LIBS_DIR}/seos_keystore/src/SeosKeyStoreRpc.c
     C_FLAGS
         -Wall -Werror
@@ -128,7 +128,7 @@ DeclareCAmkESComponent(KeyStoreSPIFFS
         common/init/KeyStoreInit.c
         components/KeyStoreSPIFFS/src/KeyStoreSPIFFS.c
 
-        ${SEOS_LIBS_DIR}/seos_crypto/src/SeosCryptoRpc.c
+        ${SEOS_LIBS_DIR}/seos_crypto/src/SeosCryptoRpcServer.c
         ${SEOS_LIBS_DIR}/seos_keystore/src/SeosKeyStoreRpc.c
     C_FLAGS
         -Wall -Werror

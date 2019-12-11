@@ -13,6 +13,8 @@
 
 #include "SeosKeyStoreCtx.h"
 
+#include <stdbool.h>
+
 /**
  * @weakgroup KeyStore_UnitTest_test_cases
  * @{
@@ -27,7 +29,7 @@
  * @return              true => test scenario passed
  *                      false => test scenario failed
  *
- * 
+ *
  * @test \b TestKeyStore_testCase_01    \n <b> 1) Positive cases: </b>
  *                                      \n          Import a key with dummy key data into the keystore
  *                                      \n <b> 2) Negative cases (check for proper error codes): </b>
@@ -40,8 +42,8 @@
  *                                      \n          Try to import a key with data = NULL
  *
  * @test \b TestKeyStore_testCase_02    \n <b> 1) Positive cases: </b>
- *                                      \n          Retreive an existing key from the keystore and verify 
- *                                                  that the retrieved data corresponds to the dummy data 
+ *                                      \n          Retreive an existing key from the keystore and verify
+ *                                                  that the retrieved data corresponds to the dummy data
  *                                                  imported in the keystore
  *                                      \n <b> 2) Negative cases (check for proper error codes): </b>
  *                                      \n          Try to retreive a key while setting the expected keysize to 0
