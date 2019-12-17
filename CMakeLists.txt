@@ -5,7 +5,8 @@ seos_set_config_file(config.h)
 seos_use_libs(
     SEOS_LIBS
     SEOS_LIBS_LOGGER
-    SEOS_CRYPTO
+    SEOS_CRYPTO_WITH_RPC_SERVER
+    SEOS_CRYPTO_WITH_RPC_CLIENT
     SEOS_CRYPTO_IMPL_MBEDTLS
     SEOS_PARTITION_MANAGER
     SEOS_FILESYSTEM_CORE
@@ -54,7 +55,7 @@ DeclareCAmkESComponent(TestRunnerKeyStoreFAT
     LIBS
         seos_core_api
         seos_libs
-        seos_crypto
+        seos_crypto_with_rpc_client
         seos_filesystem_fat
         seos_filesystem_spiffs
         seos_partition_manager
@@ -70,7 +71,6 @@ DeclareCAmkESComponent(KeyStoreFAT
         common/init/KeyStoreInit.c
         components/KeyStoreFAT/src/KeyStoreFAT.c
 
-        ${SEOS_LIBS_DIR}/seos_crypto/src/SeosCryptoRpcServer.c
         ${SEOS_LIBS_DIR}/seos_keystore/src/SeosKeyStoreRpc.c
     C_FLAGS
         -Wall -Werror
@@ -83,7 +83,7 @@ DeclareCAmkESComponent(KeyStoreFAT
     LIBS
         seos_core_api
         seos_libs
-        seos_crypto
+        seos_crypto_with_rpc_server
         seos_filesystem_fat
         seos_filesystem_spiffs
         seos_partition_manager
@@ -112,7 +112,7 @@ DeclareCAmkESComponent(TestRunnerKeyStoreSPIFFS
     LIBS
         seos_core_api
         seos_libs
-        seos_crypto
+        seos_crypto_with_rpc_client
         seos_filesystem_fat
         seos_filesystem_spiffs
         seos_partition_manager
@@ -128,7 +128,6 @@ DeclareCAmkESComponent(KeyStoreSPIFFS
         common/init/KeyStoreInit.c
         components/KeyStoreSPIFFS/src/KeyStoreSPIFFS.c
 
-        ${SEOS_LIBS_DIR}/seos_crypto/src/SeosCryptoRpcServer.c
         ${SEOS_LIBS_DIR}/seos_keystore/src/SeosKeyStoreRpc.c
     C_FLAGS
         -Wall -Werror
@@ -141,7 +140,7 @@ DeclareCAmkESComponent(KeyStoreSPIFFS
     LIBS
         seos_core_api
         seos_libs
-        seos_crypto
+        seos_crypto_with_rpc_server
         seos_filesystem_fat
         seos_filesystem_spiffs
         seos_partition_manager

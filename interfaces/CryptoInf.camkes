@@ -1,47 +1,45 @@
-/**
- * Copyright (C) 2019, Hensoldt Cyber GmbH
- */
 procedure CryptoInf {
     include "SeosError.h";
-    include "SeosCryptoRpcServer.h";
+    include "SeosCryptoApi.h";
 
-    seos_err_t      getRpcHandle    (inout SeosCryptoApi_RpcServer handle);
-    void            closeRpcHandle  (in SeosCryptoApi_RpcServer handle);
+    seos_err_t      openSession     (out SeosCryptoApi_Ptr api);
+    seos_err_t      closeSession    (in SeosCryptoApi_Ptr api);
 };
 
 procedure CryptoRpcInf {
     include "SeosError.h";
+    include "SeosCryptoApi.h";
     include "SeosCryptoRpcServer.h";
 
-    seos_err_t      Rng_getBytes     (in SeosCryptoApi_RpcServer handle, in unsigned int flags, in size_t bufSize);
-    seos_err_t      Rng_reseed       (in SeosCryptoApi_RpcServer handle, in size_t seedLen);
-    seos_err_t      Mac_init         (in SeosCryptoApi_RpcServer handle, inout SeosCryptoLib_Mac_Ptr pMacHandle, in unsigned int algorithm);
-    seos_err_t      Mac_free         (in SeosCryptoApi_RpcServer handle, in SeosCryptoLib_Mac_Ptr macHandle);
-    seos_err_t      Mac_start        (in SeosCryptoApi_RpcServer handle, in SeosCryptoLib_Mac_Ptr macHandle, in size_t secretSize);
-    seos_err_t      Mac_process      (in SeosCryptoApi_RpcServer handle, in SeosCryptoLib_Mac_Ptr macHandle, in size_t dataSize);
-    seos_err_t      Mac_finalize     (in SeosCryptoApi_RpcServer handle, in SeosCryptoLib_Mac_Ptr macHandle, inout size_t macSize);
-    seos_err_t      Digest_init      (in SeosCryptoApi_RpcServer handle, inout SeosCryptoLib_Digest_Ptr pDigestHandle, in unsigned int algorithm);
-    seos_err_t      Digest_free      (in SeosCryptoApi_RpcServer handle, in SeosCryptoLib_Digest_Ptr digestHandle);
-    seos_err_t      Digest_clone     (in SeosCryptoApi_RpcServer handle, in SeosCryptoLib_Digest_Ptr dstDigHandle, in SeosCryptoLib_Digest_CPtr srcDigHandle);
-    seos_err_t      Digest_process   (in SeosCryptoApi_RpcServer handle, in SeosCryptoLib_Digest_Ptr digestHandle, in size_t inLen);
-    seos_err_t      Digest_finalize  (in SeosCryptoApi_RpcServer handle, in SeosCryptoLib_Digest_Ptr digestHandle, inout size_t digestSize);
-    seos_err_t      Key_generate     (in SeosCryptoApi_RpcServer handle, inout SeosCryptoLib_Key_Ptr pKeyHandle);
-    seos_err_t      Key_makePublic   (in SeosCryptoApi_RpcServer handle, inout SeosCryptoLib_Key_Ptr pPubKeyHandle, in SeosCryptoLib_Key_CPtr prvKeyHandle);
-    seos_err_t      Key_import       (in SeosCryptoApi_RpcServer handle, inout SeosCryptoLib_Key_Ptr pKeyHandle, in SeosCryptoLib_Key_CPtr wrapHandle);
-    seos_err_t      Key_export       (in SeosCryptoApi_RpcServer handle, in SeosCryptoLib_Key_CPtr keyHandle, in SeosCryptoLib_Key_CPtr wrapHandle);
-    seos_err_t      Key_getParams    (in SeosCryptoApi_RpcServer handle, in SeosCryptoLib_Key_CPtr keyHandle, inout size_t paramSize);
-    seos_err_t      Key_loadParams   (in SeosCryptoApi_RpcServer handle, in SeosCryptoApi_Key_Param name, inout size_t paramSize);
-    seos_err_t      Key_free         (in SeosCryptoApi_RpcServer handle, in SeosCryptoLib_Key_Ptr keyHandle);
-    seos_err_t      Signature_init   (in SeosCryptoApi_RpcServer handle, inout SeosCryptoLib_Signature_Ptr pSigHandle, in unsigned int algorithm, in unsigned int digest, in SeosCryptoLib_Key_CPtr prvHandle, in SeosCryptoLib_Key_CPtr pubHandle);
-    seos_err_t      Signature_verify (in SeosCryptoApi_RpcServer handle, in SeosCryptoLib_Signature_Ptr sigHandle, in size_t hashSize, in size_t signatureSize);
-    seos_err_t      Signature_sign   (in SeosCryptoApi_RpcServer handle, in SeosCryptoLib_Signature_Ptr sigHandle, in size_t hashSize, inout size_t signatureSize);
-    seos_err_t      Signature_free   (in SeosCryptoApi_RpcServer handle, in SeosCryptoLib_Signature_Ptr sigHandle);
-    seos_err_t      Agreement_init   (in SeosCryptoApi_RpcServer handle, inout SeosCryptoLib_Agreement_Ptr pAgrHandle, in unsigned int algorithm, in SeosCryptoLib_Key_CPtr prvHandle);
-    seos_err_t      Agreement_agree  (in SeosCryptoApi_RpcServer handle, in SeosCryptoLib_Agreement_Ptr agrHandle, in SeosCryptoLib_Key_CPtr pubHandle, inout size_t sharedSize);
-    seos_err_t      Agreement_free   (in SeosCryptoApi_RpcServer handle, in SeosCryptoLib_Agreement_Ptr agrHandle);
-    seos_err_t      Cipher_init      (in SeosCryptoApi_RpcServer handle, inout SeosCryptoLib_Cipher_Ptr pCipherHandle, in unsigned int algorithm, in SeosCryptoLib_Key_CPtr keyHandle, in size_t ivLen);
-    seos_err_t      Cipher_free      (in SeosCryptoApi_RpcServer handle, in SeosCryptoLib_Cipher_Ptr cipherHandle);
-    seos_err_t      Cipher_process   (in SeosCryptoApi_RpcServer handle, in SeosCryptoLib_Cipher_Ptr cipherHandle, in size_t inLen, inout size_t outSize);
-    seos_err_t      Cipher_start     (in SeosCryptoApi_RpcServer handle, in SeosCryptoLib_Cipher_Ptr cipherHandle, in size_t len);
-    seos_err_t      Cipher_finalize  (in SeosCryptoApi_RpcServer handle, in SeosCryptoLib_Cipher_Ptr cipherHandle, inout size_t len);
+    seos_err_t      Rng_getBytes     (in SeosCryptoApi_Ptr api, in unsigned int flags, in size_t bufSize);
+    seos_err_t      Rng_reseed       (in SeosCryptoApi_Ptr api, in size_t seedLen);
+    seos_err_t      Mac_init         (in SeosCryptoApi_Ptr api, inout SeosCryptoLib_Mac_Ptr pMacHandle, in unsigned int algorithm);
+    seos_err_t      Mac_free         (in SeosCryptoApi_Ptr api, in SeosCryptoLib_Mac_Ptr macHandle);
+    seos_err_t      Mac_start        (in SeosCryptoApi_Ptr api, in SeosCryptoLib_Mac_Ptr macHandle, in size_t secretSize);
+    seos_err_t      Mac_process      (in SeosCryptoApi_Ptr api, in SeosCryptoLib_Mac_Ptr macHandle, in size_t dataSize);
+    seos_err_t      Mac_finalize     (in SeosCryptoApi_Ptr api, in SeosCryptoLib_Mac_Ptr macHandle, inout size_t macSize);
+    seos_err_t      Digest_init      (in SeosCryptoApi_Ptr api, inout SeosCryptoLib_Digest_Ptr pDigestHandle, in unsigned int algorithm);
+    seos_err_t      Digest_free      (in SeosCryptoApi_Ptr api, in SeosCryptoLib_Digest_Ptr digestHandle);
+    seos_err_t      Digest_clone     (in SeosCryptoApi_Ptr api, in SeosCryptoLib_Digest_Ptr dstDigHandle, in SeosCryptoLib_Digest_CPtr srcDigHandle);
+    seos_err_t      Digest_process   (in SeosCryptoApi_Ptr api, in SeosCryptoLib_Digest_Ptr digestHandle, in size_t inLen);
+    seos_err_t      Digest_finalize  (in SeosCryptoApi_Ptr api, in SeosCryptoLib_Digest_Ptr digestHandle, inout size_t digestSize);
+    seos_err_t      Key_generate     (in SeosCryptoApi_Ptr api, inout SeosCryptoLib_Key_Ptr pKeyHandle);
+    seos_err_t      Key_makePublic   (in SeosCryptoApi_Ptr api, inout SeosCryptoLib_Key_Ptr pPubKeyHandle, in SeosCryptoLib_Key_CPtr prvKeyHandle);
+    seos_err_t      Key_import       (in SeosCryptoApi_Ptr api, inout SeosCryptoLib_Key_Ptr pKeyHandle, in SeosCryptoLib_Key_CPtr wrapHandle);
+    seos_err_t      Key_export       (in SeosCryptoApi_Ptr api, in SeosCryptoLib_Key_CPtr keyHandle, in SeosCryptoLib_Key_CPtr wrapHandle);
+    seos_err_t      Key_getParams    (in SeosCryptoApi_Ptr api, in SeosCryptoLib_Key_CPtr keyHandle, inout size_t paramSize);
+    seos_err_t      Key_loadParams   (in SeosCryptoApi_Ptr api, in SeosCryptoApi_Key_Param name, inout size_t paramSize);
+    seos_err_t      Key_free         (in SeosCryptoApi_Ptr api, in SeosCryptoLib_Key_Ptr keyHandle);
+    seos_err_t      Signature_init   (in SeosCryptoApi_Ptr api, inout SeosCryptoLib_Signature_Ptr pSigHandle, in unsigned int algorithm, in unsigned int digest, in SeosCryptoLib_Key_CPtr prvHandle, in SeosCryptoLib_Key_CPtr pubHandle);
+    seos_err_t      Signature_verify (in SeosCryptoApi_Ptr api, in SeosCryptoLib_Signature_Ptr sigHandle, in size_t hashSize, in size_t signatureSize);
+    seos_err_t      Signature_sign   (in SeosCryptoApi_Ptr api, in SeosCryptoLib_Signature_Ptr sigHandle, in size_t hashSize, inout size_t signatureSize);
+    seos_err_t      Signature_free   (in SeosCryptoApi_Ptr api, in SeosCryptoLib_Signature_Ptr sigHandle);
+    seos_err_t      Agreement_init   (in SeosCryptoApi_Ptr api, inout SeosCryptoLib_Agreement_Ptr pAgrHandle, in unsigned int algorithm, in SeosCryptoLib_Key_CPtr prvHandle);
+    seos_err_t      Agreement_agree  (in SeosCryptoApi_Ptr api, in SeosCryptoLib_Agreement_Ptr agrHandle, in SeosCryptoLib_Key_CPtr pubHandle, inout size_t sharedSize);
+    seos_err_t      Agreement_free   (in SeosCryptoApi_Ptr api, in SeosCryptoLib_Agreement_Ptr agrHandle);
+    seos_err_t      Cipher_init      (in SeosCryptoApi_Ptr api, inout SeosCryptoLib_Cipher_Ptr pCipherHandle, in unsigned int algorithm, in SeosCryptoLib_Key_CPtr keyHandle, in size_t ivLen);
+    seos_err_t      Cipher_free      (in SeosCryptoApi_Ptr api, in SeosCryptoLib_Cipher_Ptr cipherHandle);
+    seos_err_t      Cipher_process   (in SeosCryptoApi_Ptr api, in SeosCryptoLib_Cipher_Ptr cipherHandle, in size_t inLen, inout size_t outSize);
+    seos_err_t      Cipher_start     (in SeosCryptoApi_Ptr api, in SeosCryptoLib_Cipher_Ptr cipherHandle, in size_t len);
+    seos_err_t      Cipher_finalize  (in SeosCryptoApi_Ptr api, in SeosCryptoLib_Cipher_Ptr cipherHandle, inout size_t len);
 };

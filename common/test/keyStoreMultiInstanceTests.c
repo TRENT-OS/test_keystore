@@ -25,7 +25,7 @@ static const SeosCryptoApi_Key_Spec aes128Spec =
 };
 
 /* Public functions -----------------------------------------------------------*/
-bool keyStoreCopyKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeyStore, SeosCryptoApi_Context* cryptoCtx)
+bool keyStoreCopyKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeyStore, SeosCryptoApi* cryptoCtx)
 {
     SeosCryptoApi_Key key;
     size_t len;
@@ -81,7 +81,7 @@ bool keyStoreCopyKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeySt
     return true;
 }
 
-bool keyStoreMoveKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeyStore, SeosCryptoApi_Context* cryptoCtx)
+bool keyStoreMoveKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeyStore, SeosCryptoApi* cryptoCtx)
 {
     SeosCryptoApi_Key key;
     size_t len;

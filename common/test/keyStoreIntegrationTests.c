@@ -50,11 +50,11 @@ static SeosCryptoApi_Key_Data keyData;
 
 /* Private functions prototypes ----------------------------------------------*/
 static bool
-importExportKeyPairTest(SeosKeyStoreCtx*            keyStoreCtx,
-                        SeosCryptoApi_Context*      cryptoCtx,
-                        const SeosCryptoApi_Key_Spec*   spec);
+importExportKeyPairTest(SeosKeyStoreCtx* keyStoreCtx,
+                        SeosCryptoApi* cryptoCtx,
+                        const SeosCryptoApi_Key_Spec* spec);
 static seos_err_t
-aesEncrypt(SeosCryptoApi_Context* cryptoCtx,
+aesEncrypt(SeosCryptoApi* cryptoCtx,
            SeosCryptoApi_Key* keyHandle,
            const char* data,
            size_t inDataSize,
@@ -62,7 +62,7 @@ aesEncrypt(SeosCryptoApi_Context* cryptoCtx,
            size_t* outDataSize);
 
 static seos_err_t
-aesDecrypt(SeosCryptoApi_Context* cryptoCtx,
+aesDecrypt(SeosCryptoApi* cryptoCtx,
            SeosCryptoApi_Key* keyHandle,
            const void* data,
            size_t inDataSize,
@@ -71,7 +71,7 @@ aesDecrypt(SeosCryptoApi_Context* cryptoCtx,
 
 /* Public functions -----------------------------------------------------------*/
 bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx,
-                     SeosCryptoApi_Context* cryptoCtx)
+                     SeosCryptoApi* cryptoCtx)
 {
     SeosCryptoApi_Key writeKey;
     SeosCryptoApi_Key readKey;
@@ -140,7 +140,7 @@ bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx,
 }
 
 bool testKeyStoreKeyPair(SeosKeyStoreCtx* keyStoreCtx,
-                         SeosCryptoApi_Context* cryptoCtx)
+                         SeosCryptoApi* cryptoCtx)
 {
     bool result = false;
 
@@ -163,9 +163,9 @@ bool testKeyStoreKeyPair(SeosKeyStoreCtx* keyStoreCtx,
 
 /* Private functions ---------------------------------------------------------*/
 static bool
-importExportKeyPairTest(SeosKeyStoreCtx*            keyStoreCtx,
-                        SeosCryptoApi_Context*              cryptoCtx,
-                        const SeosCryptoApi_Key_Spec*   spec)
+importExportKeyPairTest(SeosKeyStoreCtx* keyStoreCtx,
+                        SeosCryptoApi* cryptoCtx,
+                        const SeosCryptoApi_Key_Spec* spec)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Key prvKeyHandle;
@@ -231,7 +231,7 @@ importExportKeyPairTest(SeosKeyStoreCtx*            keyStoreCtx,
 }
 
 static seos_err_t
-aesEncrypt(SeosCryptoApi_Context* cryptoCtx, SeosCryptoApi_Key* keyHandle,
+aesEncrypt(SeosCryptoApi* cryptoCtx, SeosCryptoApi_Key* keyHandle,
            const char* data, size_t inDataSize, void* outBuf, size_t* outDataSize)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -273,7 +273,7 @@ aesEncrypt(SeosCryptoApi_Context* cryptoCtx, SeosCryptoApi_Key* keyHandle,
 }
 
 static seos_err_t
-aesDecrypt(SeosCryptoApi_Context* cryptoCtx, SeosCryptoApi_Key* keyHandle,
+aesDecrypt(SeosCryptoApi* cryptoCtx, SeosCryptoApi_Key* keyHandle,
            const void* data, size_t inDataSize, void* outBuf, size_t* outDataSize)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;

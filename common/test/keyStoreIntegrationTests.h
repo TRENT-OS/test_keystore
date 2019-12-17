@@ -12,7 +12,7 @@
 #pragma once
 
 #include "SeosKeyStoreCtx.h"
-#include "SeosCryptoCtx.h"
+#include "SeosCryptoApi.h"
 
 #include <stdbool.h>
 
@@ -54,7 +54,7 @@
  *
  */
 bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx,
-                     SeosCryptoApi_Context* cryptoCtx);
+                     SeosCryptoApi* cryptoCtx);
 /**
  * @weakgroup KeyStore_KeyPair_test_cases
  * @{
@@ -87,7 +87,7 @@ bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx,
  *
  */
 bool testKeyStoreKeyPair(SeosKeyStoreCtx* keyStoreCtx,
-                         SeosCryptoApi_Context* cryptoCtx);
+                         SeosCryptoApi* cryptoCtx);
 
 ///@}
 

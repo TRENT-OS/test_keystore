@@ -13,7 +13,7 @@
 #pragma once
 
 #include "SeosKeyStoreCtx.h"
-#include "SeosCryptoCtx.h"
+#include "SeosCryptoApi.h"
 
 #include <stdbool.h>
 
@@ -51,7 +51,7 @@
  * @}
  *
  */
-bool keyStoreCopyKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeyStore, SeosCryptoApi_Context* cryptoCtx);
+bool keyStoreCopyKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeyStore, SeosCryptoApi* cryptoCtx);
 /**
  * @weakgroup KeyStore_MultiInstance_test_cases
  * @{
@@ -89,7 +89,7 @@ bool keyStoreCopyKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeySt
  * @}
  *
  */
-bool keyStoreMoveKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeyStore, SeosCryptoApi_Context* cryptoCtx);
+bool keyStoreMoveKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeyStore, SeosCryptoApi* cryptoCtx);
 
 ///@}
 
