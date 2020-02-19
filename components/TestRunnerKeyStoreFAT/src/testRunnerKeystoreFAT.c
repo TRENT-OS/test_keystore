@@ -35,8 +35,165 @@
 
 
 
-/* Private function prototypes -----------------------------------------------------------*/
-static int entropyFunc(void* ctx, unsigned char* buf, size_t len);
+//------------------------------------------------------------------------------
+static int
+my_entropy_func(
+    void*           ctx, // unused
+    unsigned char*  buf,
+    size_t          len)
+{
+    // This would be the platform specific function to obtain entropy
+    memset(buf, 0, len);
+    return 0;
+}
+
+
+//------------------------------------------------------------------------------
+static void* my_malloc(size_t len)
+{
+    return malloc(len);
+}
+
+
+//------------------------------------------------------------------------------
+static void my_free(void* p)
+{
+    free(p);
+}
+
+
+static const SeosCryptoApi_Config cfgLocal =
+{
+    .mode = SeosCryptoApi_Mode_LIBRARY,
+    .mem = {
+        .malloc = my_malloc,
+        .free = my_free,
+    },
+    .impl.lib.rng = {
+        .entropy = my_entropy_func,
+        .context = NULL
+    }
+};
+
+
+//------------------------------------------------------------------------------
+static void
+log_test(
+    unsigned int  id,
+    unsigned int  bTest)
+{
+    Debug_LOG_INFO(" Starting 'TestKeyStoreFAT_scenario_%u' ", id);
+    if (!bTest)
+    {
+        Debug_LOG_ERROR("TestKeyStoreFAT_scenario_%u FAILED!", id);
+    }
+    else
+    {
+        Debug_LOG_INFO("TestKeyStoreFAT_scenario_%u succeeded!", id);
+    }
+}
+
+//------------------------------------------------------------------------------
+static void
+local_test()
+{
+    seos_err_t err;
+    bool ret;
+
+    SeosCryptoApi cryptoApiLocal;
+
+    SeosKeyStore      localKeyStore1;
+    KeyStoreContext   keyStoreCtx1;
+
+    SeosKeyStore      localKeyStore2;
+    KeyStoreContext   keyStoreCtx2;
+
+    SeosKeyStoreClient keyStoreClient;
+    SeosKeyStoreCtx* keyStoreApiRpc;
+    SeosKeyStoreRpc_Handle keyStoreRpcHandle = NULL;
+
+
+
+
+    SeosKeyStoreCtx* keyStoreApiLocal1   = SeosKeyStore_TO_SEOS_KEY_STORE_CTX(&localKeyStore1);
+    SeosKeyStoreCtx* keyStoreApiLocal2   = SeosKeyStore_TO_SEOS_KEY_STORE_CTX(&localKeyStore2);
+
+    /******************** Test local and remote versions **********************/
+    log_test(1, keyStoreUnitTests(keyStoreApiLocal1) );
+    log_test(3, testKeyStoreAES(keyStoreApiLocal1, &cryptoApiLocal) );
+    log_test(5, testKeyStoreKeyPair(keyStoreApiLocal1, &cryptoApiLocal) );
+    {
+        Debug_LOG_ERROR("TestKeyStoreFAT_scenario_5 FAILED!");
+    }
+    else
+    {
+        Debug_LOG_INFO("TestKeyStoreFAT_scenario_5 succeeded!");
+    }
+
+    Debug_LOG_INFO(" Starting 'TestKeyStoreFAT_scenario_6' ");
+    if (!testKeyStoreKeyPair(keyStoreApiRpc, &cryptoApiRpc))
+    {
+        Debug_LOG_ERROR("TestKeyStoreFAT_scenario_6 FAILED!");
+    }
+    else
+    {
+        Debug_LOG_INFO("TestKeyStoreFAT_scenario_6 succeeded!");
+    }
+
+    Debug_LOG_INFO(" Starting 'TestKeyStoreFAT_scenario_7' ");
+    if (!keyStoreCopyKeyTest(keyStoreApiLocal1, keyStoreApiLocal2, &cryptoApiLocal))
+    {
+        Debug_LOG_ERROR("TestKeyStoreFAT_scenario_7 FAILED!");
+    }
+    else
+    {
+        Debug_LOG_INFO("TestKeyStoreFAT_scenario_7 succeeded!");
+    }
+
+    Debug_LOG_INFO(" Starting 'TestKeyStoreFAT_scenario_8' ");
+    if (!keyStoreCopyKeyTest(keyStoreApiLocal2, keyStoreApiRpc, &cryptoApiLocal))
+    {
+        Debug_LOG_ERROR("TestKeyStoreFAT_scenario_8 FAILED!");
+    }
+    else
+    {
+        Debug_LOG_INFO("TestKeyStoreFAT_scenario_8 succeeded!");
+    }
+
+    Debug_LOG_INFO(" Starting 'TestKeyStoreFAT_scenario_9' ");
+    if (!keyStoreMoveKeyTest(keyStoreApiLocal1, keyStoreApiLocal2, &cryptoApiLocal))
+    {
+        Debug_LOG_ERROR("TestKeyStoreFAT_scenario_9 FAILED!");
+    }
+    else
+    {
+        Debug_LOG_INFO("TestKeyStoreFAT_scenario_9 succeeded!");
+    }
+
+    Debug_LOG_INFO(" Starting 'TestKeyStoreFAT_scenario_10' ");
+    if (!keyStoreMoveKeyTest(keyStoreApiLocal2, keyStoreApiRpc, &cryptoApiLocal))
+    {
+        Debug_LOG_ERROR("TestKeyStoreFAT_scenario_10 FAILED!");
+    }
+    else
+    {
+        Debug_LOG_INFO("TestKeyStoreFAT_scenario_10 succeeded!");
+    }
+
+    /* Destruction ***/
+    SeosCryptoApi_free(&cryptoApiLocal);
+    SeosCryptoApi_free(&cryptoApiRpc);
+    Crypto_closeSession(cfgRemote.impl.client.api);
+
+    SeosKeyStore_deInit(keyStoreApiLocal1);
+    keyStoreContext_dtor(&keyStoreCtx1);
+
+    SeosKeyStore_deInit(keyStoreApiLocal2);
+    keyStoreContext_dtor(&keyStoreCtx2);
+
+    SeosKeyStoreClient_deInit(keyStoreApiRpc);
+}
+
 
 /**
  * @weakgroup KeyStore_FAT_test_scenarios
@@ -86,6 +243,7 @@ void testRunnerInf_runTests()
             .context = NULL
         }
     };
+
     SeosCryptoApi_Config cfgRemote =
     {
         .mode = SeosCryptoApi_Mode_RPC_CLIENT,
@@ -185,107 +343,107 @@ void testRunnerInf_runTests()
     keyStoreApiRpc      = SeosKeyStoreClient_TO_SEOS_KEY_STORE_CTX(&keyStoreClient);
 
     /******************** Test local and remote versions **********************/
-    Debug_LOG_INFO("\n\n\n\n**************************** Starting 'TestKeyStoreFAT_scenario_1' ****************************\n");
+    Debug_LOG_INFO(" Starting 'TestKeyStoreFAT_scenario_1' ");
     if (!keyStoreUnitTests(keyStoreApiLocal1))
     {
-        Debug_LOG_ERROR("\n\nTestKeyStoreFAT_scenario_1 FAILED!\n\n\n\n");
+        Debug_LOG_ERROR("TestKeyStoreFAT_scenario_1 FAILED!");
     }
     else
     {
-        Debug_LOG_INFO("\n\nTestKeyStoreFAT_scenario_1 succeeded!\n\n\n\n");
+        Debug_LOG_INFO("TestKeyStoreFAT_scenario_1 succeeded!");
     }
 
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreFAT_scenario_2' ****************************\n");
+    Debug_LOG_INFO(" Starting 'TestKeyStoreFAT_scenario_2' ");
     if (!keyStoreUnitTests(keyStoreApiRpc))
     {
-        Debug_LOG_ERROR("\n\nTestKeyStoreFAT_scenario_2 FAILED!\n\n\n\n");
+        Debug_LOG_ERROR("TestKeyStoreFAT_scenario_2 FAILED!");
     }
     else
     {
-        Debug_LOG_INFO("\n\nTestKeyStoreFAT_scenario_2 succeeded!\n\n\n\n");
+        Debug_LOG_INFO("TestKeyStoreFAT_scenario_2 succeeded!");
     }
 
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreFAT_scenario_3' ****************************\n");
+    Debug_LOG_INFO(" Starting 'TestKeyStoreFAT_scenario_3' ");
     if (!testKeyStoreAES(keyStoreApiLocal1, hCryptoLocal))
     {
-        Debug_LOG_ERROR("\n\nTestKeyStoreFAT_scenario_3 FAILED!\n\n\n\n");
+        Debug_LOG_ERROR("TestKeyStoreFAT_scenario_3 FAILED!");
     }
     else
     {
-        Debug_LOG_INFO("\n\nTestKeyStoreFAT_scenario_3 succeeded!\n\n\n\n");
+        Debug_LOG_INFO("TestKeyStoreFAT_scenario_3 succeeded!");
     }
 
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreFAT_scenario_4' ****************************\n");
+    Debug_LOG_INFO(" Starting 'TestKeyStoreFAT_scenario_4' ");
     if (!testKeyStoreAES(keyStoreApiRpc, hCryptoRemote))
     {
-        Debug_LOG_ERROR("\n\nTestKeyStoreFAT_scenario_4 FAILED!\n\n\n\n");
+        Debug_LOG_ERROR("TestKeyStoreFAT_scenario_4 FAILED!");
     }
     else
     {
-        Debug_LOG_INFO("\n\nTestKeyStoreFAT_scenario_4 succeeded!\n\n\n\n");
+        Debug_LOG_INFO("TestKeyStoreFAT_scenario_4 succeeded!");
     }
 
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreFAT_scenario_5' ****************************\n");
+    Debug_LOG_INFO(" Starting 'TestKeyStoreFAT_scenario_5' ");
     if (!testKeyStoreKeyPair(keyStoreApiLocal1, hCryptoLocal))
     {
-        Debug_LOG_ERROR("\n\nTestKeyStoreFAT_scenario_5 FAILED!\n\n\n\n");
+        Debug_LOG_ERROR("TestKeyStoreFAT_scenario_5 FAILED!");
     }
     else
     {
-        Debug_LOG_INFO("\n\nTestKeyStoreFAT_scenario_5 succeeded!\n\n\n\n");
+        Debug_LOG_INFO("TestKeyStoreFAT_scenario_5 succeeded!");
     }
 
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreFAT_scenario_6' ****************************\n");
+    Debug_LOG_INFO(" Starting 'TestKeyStoreFAT_scenario_6' ");
     if (!testKeyStoreKeyPair(keyStoreApiRpc, hCryptoRemote))
     {
-        Debug_LOG_ERROR("\n\nTestKeyStoreFAT_scenario_6 FAILED!\n\n\n\n");
+        Debug_LOG_ERROR("TestKeyStoreFAT_scenario_6 FAILED!");
     }
     else
     {
-        Debug_LOG_INFO("\n\nTestKeyStoreFAT_scenario_6 succeeded!\n\n\n\n");
+        Debug_LOG_INFO("TestKeyStoreFAT_scenario_6 succeeded!");
     }
 
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreFAT_scenario_7' ****************************\n");
+    Debug_LOG_INFO(" Starting 'TestKeyStoreFAT_scenario_7' ");
     if (!keyStoreCopyKeyTest(keyStoreApiLocal1, keyStoreApiLocal2, hCryptoLocal))
     {
-        Debug_LOG_ERROR("\n\nTestKeyStoreFAT_scenario_7 FAILED!\n\n\n\n");
+        Debug_LOG_ERROR("TestKeyStoreFAT_scenario_7 FAILED!");
     }
     else
     {
-        Debug_LOG_INFO("\n\nTestKeyStoreFAT_scenario_7 succeeded!\n\n\n\n");
+        Debug_LOG_INFO("TestKeyStoreFAT_scenario_7 succeeded!");
     }
 
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreFAT_scenario_8' ****************************\n");
+    Debug_LOG_INFO(" Starting 'TestKeyStoreFAT_scenario_8' ");
     if (!keyStoreCopyKeyTest(keyStoreApiLocal2, keyStoreApiRpc, hCryptoLocal))
     {
-        Debug_LOG_ERROR("\n\nTestKeyStoreFAT_scenario_8 FAILED!\n\n\n\n");
+        Debug_LOG_ERROR("TestKeyStoreFAT_scenario_8 FAILED!");
     }
     else
     {
-        Debug_LOG_INFO("\n\nTestKeyStoreFAT_scenario_8 succeeded!\n\n\n\n");
+        Debug_LOG_INFO("TestKeyStoreFAT_scenario_8 succeeded!");
     }
 
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreFAT_scenario_9' ****************************\n");
+    Debug_LOG_INFO(" Starting 'TestKeyStoreFAT_scenario_9' ");
     if (!keyStoreMoveKeyTest(keyStoreApiLocal1, keyStoreApiLocal2, hCryptoLocal))
     {
-        Debug_LOG_ERROR("\n\nTestKeyStoreFAT_scenario_9 FAILED!\n\n\n\n");
+        Debug_LOG_ERROR("TestKeyStoreFAT_scenario_9 FAILED!");
     }
     else
     {
-        Debug_LOG_INFO("\n\nTestKeyStoreFAT_scenario_9 succeeded!\n\n\n\n");
+        Debug_LOG_INFO("TestKeyStoreFAT_scenario_9 succeeded!");
     }
 
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreFAT_scenario_10' ****************************\n");
+    Debug_LOG_INFO(" Starting 'TestKeyStoreFAT_scenario_10' ");
     if (!keyStoreMoveKeyTest(keyStoreApiLocal2, keyStoreApiRpc, hCryptoLocal))
     {
-        Debug_LOG_ERROR("\n\nTestKeyStoreFAT_scenario_10 FAILED!\n\n\n\n");
+        Debug_LOG_ERROR("TestKeyStoreFAT_scenario_10 FAILED!");
     }
     else
     {
-        Debug_LOG_INFO("\n\nTestKeyStoreFAT_scenario_10 succeeded!\n\n\n\n");
+        Debug_LOG_INFO("TestKeyStoreFAT_scenario_10 succeeded!");
     }
 
-    /***************************** Destruction *******************************/
+    /* Destruction ***/
     SeosCryptoApi_free(hCryptoLocal);
     SeosCryptoApi_free(hCryptoRemote);
     CryptoRpcServer_closeSession();
@@ -299,14 +457,5 @@ void testRunnerInf_runTests()
     SeosKeyStoreClient_deInit(keyStoreApiRpc);
 }
 
-/* Private functios -----------------------------------------------------------*/
-static int entropyFunc(void*           ctx,
-                unsigned char*  buf,
-                size_t          len)
-{
-    // This would be the platform specific function to obtain entropy
-    memset(buf, 0, len);
-    return 0;
-}
 
 ///@}
