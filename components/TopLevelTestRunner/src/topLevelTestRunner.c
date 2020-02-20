@@ -24,7 +24,7 @@
 int run()
 {
     testRunnerKeyStoreFatInf_runTests();
-    testRunnerKeyStoreSpiffsInf_runTests();
+    //testRunnerKeyStoreSpiffsInf_runTests();
 
     return 0;
 }

@@ -80,7 +80,7 @@ KeyStore_getRpcHandle(SeosKeyStoreRpc_Handle* instance)
     if (!keyStoreContext_ctor(&keyStoreCtx,
                                 NVM_CHANNEL_NUMBER,
                                 KEY_STORE_INSTANCE_PARTITION,
-                                SEOS_FS_TYPE_SPIFFS,
+                                FS_TYPE_SPIFFS,
                                 chanMuxDataPort))
     {
         Debug_LOG_ERROR("%s: Failed to initialize the test!", __func__);

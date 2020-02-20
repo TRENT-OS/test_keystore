@@ -130,7 +130,7 @@ void testRunnerInf_runTests()
     ret = keyStoreContext_ctor(&keyStoreCtx1,
                                 NVM_CHANNEL_NUMBER,
                                 KEY_STORE_INSTANCE_1_PARTITION,
-                                SEOS_FS_TYPE_FAT,
+                                FS_TYPE_FAT32,
                                 chanMuxDataPort);
     Debug_ASSERT_PRINTFLN(ret == true, "keyStoreContext_ctor failed!");
 
@@ -145,7 +145,7 @@ void testRunnerInf_runTests()
     ret = keyStoreContext_ctor(&keyStoreCtx2,
                                 NVM_CHANNEL_NUMBER,
                                 KEY_STORE_INSTANCE_2_PARTITION,
-                                SEOS_FS_TYPE_FAT,
+                                FS_TYPE_FAT32,
                                 chanMuxDataPort);
     Debug_ASSERT_PRINTFLN(ret == true, "keyStoreContext_ctor failed!");
 

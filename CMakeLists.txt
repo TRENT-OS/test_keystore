@@ -15,12 +15,6 @@ seos_use_libs(
     SEOS_KEYSTORE
 )
 
-set(SEOS_FS_CONFIG_H_FILE_FAT ${CMAKE_CURRENT_LIST_DIR}/components/KeyStoreFAT/config/seos_fs_config.h)
-set(SEOS_PM_CONFIG_H_FILE_FAT ${CMAKE_CURRENT_LIST_DIR}/components/KeyStoreFAT/config/seos_pm_config.h)
-
-set(SEOS_FS_CONFIG_H_FILE_SPIFFS ${CMAKE_CURRENT_LIST_DIR}/components/KeyStoreSPIFFS/config/seos_fs_config.h)
-set(SEOS_PM_CONFIG_H_FILE_SPIFFS ${CMAKE_CURRENT_LIST_DIR}/components/KeyStoreSPIFFS/config/seos_pm_config.h)
-
 set(KEYSTORE_AS_COMPONENT ON CACHE BOOL "string")
 
 project(test_keystore C)
@@ -47,10 +41,8 @@ DeclareCAmkESComponent(TestRunnerKeyStoreFAT
     C_FLAGS
         -Wall -Werror
         # filesystem
-        -DSEOS_FS_CONFIG_H_FILE=${SEOS_FS_CONFIG_H_FILE_FAT}
         -DSEOS_FS_BUILD_AS_LIB
         # partition manager
-        -DSEOS_PM_CONFIG_H_FILE=${SEOS_PM_CONFIG_H_FILE_FAT}
         -DSEOS_PARTITION_MANAGER_BUILD_AS_LIB
     LIBS
         seos_core_api
@@ -75,10 +67,8 @@ DeclareCAmkESComponent(KeyStoreFAT
     C_FLAGS
         -Wall -Werror
         # filesystem
-        -DSEOS_FS_CONFIG_H_FILE=${SEOS_FS_CONFIG_H_FILE_FAT}
         -DSEOS_FS_BUILD_AS_LIB
         # partition manager
-        -DSEOS_PM_CONFIG_H_FILE=${SEOS_PM_CONFIG_H_FILE_FAT}
         -DSEOS_PARTITION_MANAGER_BUILD_AS_LIB
     LIBS
         seos_core_api
@@ -104,10 +94,8 @@ DeclareCAmkESComponent(TestRunnerKeyStoreSPIFFS
     C_FLAGS
         -Wall -Werror
         # filesystem
-        -DSEOS_FS_CONFIG_H_FILE=${SEOS_FS_CONFIG_H_FILE_SPIFFS}
         -DSEOS_FS_BUILD_AS_LIB
         # partition manager
-        -DSEOS_PM_CONFIG_H_FILE=${SEOS_PM_CONFIG_H_FILE_SPIFFS}
         -DSEOS_PARTITION_MANAGER_BUILD_AS_LIB
     LIBS
         seos_core_api
@@ -132,10 +120,8 @@ DeclareCAmkESComponent(KeyStoreSPIFFS
     C_FLAGS
         -Wall -Werror
         # filesystem
-        -DSEOS_FS_CONFIG_H_FILE=${SEOS_FS_CONFIG_H_FILE_SPIFFS}
         -DSEOS_FS_BUILD_AS_LIB
         # partition manager
-        -DSEOS_PM_CONFIG_H_FILE=${SEOS_PM_CONFIG_H_FILE_SPIFFS}
         -DSEOS_PARTITION_MANAGER_BUILD_AS_LIB
     LIBS
         seos_core_api
