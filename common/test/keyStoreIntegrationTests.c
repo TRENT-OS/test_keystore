@@ -51,19 +51,19 @@ static SeosCryptoApi_Key_Data keyData;
 /* Private functions prototypes ----------------------------------------------*/
 static bool
 importExportKeyPairTest(SeosKeyStoreCtx* keyStoreCtx,
-                        SeosCryptoApi* cryptoCtx,
+                        SeosCryptoApiH hCrypto,
                         const SeosCryptoApi_Key_Spec* spec);
 static seos_err_t
-aesEncrypt(SeosCryptoApi* cryptoCtx,
-           SeosCryptoApi_Key* keyHandle,
+aesEncrypt(SeosCryptoApiH hCrypto,
+           SeosCryptoApi_KeyH hKey,
            const char* data,
            size_t inDataSize,
            void* outBuf,
            size_t* outDataSize);
 
 static seos_err_t
-aesDecrypt(SeosCryptoApi* cryptoCtx,
-           SeosCryptoApi_Key* keyHandle,
+aesDecrypt(SeosCryptoApiH hCrypto,
+           SeosCryptoApi_KeyH hKey,
            const void* data,
            size_t inDataSize,
            void* outBuf,
@@ -71,10 +71,10 @@ aesDecrypt(SeosCryptoApi* cryptoCtx,
 
 /* Public functions -----------------------------------------------------------*/
 bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx,
-                     SeosCryptoApi* cryptoCtx)
+                     SeosCryptoApiH hCrypto)
 {
-    SeosCryptoApi_Key writeKey;
-    SeosCryptoApi_Key readKey;
+    SeosCryptoApi_KeyH hWriteKey;
+    SeosCryptoApi_KeyH hReadKey;
     size_t len;
     size_t decOutSize = 0;
     size_t encOutSize = 0;
@@ -83,17 +83,17 @@ bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx,
     char buffDec[AES_BLOCK_LEN] = {0};
 
     /********************************** TestKeyStore_testCase_04 ************************************/
-    err = SeosCryptoApi_Key_generate(cryptoCtx, &writeKey, &aes256Spec);
+    err = SeosCryptoApi_Key_generate(&hWriteKey, hCrypto, &aes256Spec);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosCryptoApi_Key_generate failed with err %d", err);
 
-    err = aesEncrypt(cryptoCtx, &writeKey, SAMPLE_STRING, strlen(SAMPLE_STRING),
+    err = aesEncrypt(hCrypto, hWriteKey, SAMPLE_STRING, strlen(SAMPLE_STRING),
                      buffEnc, &decOutSize);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "aesEncrypt failed with err %d",
                           err);
 
     /********************************** TestKeyStore_testCase_05 ************************************/
-    err = SeosCryptoApi_Key_export(&writeKey, &keyData);
+    err = SeosCryptoApi_Key_export(hWriteKey, &keyData);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosCryptoApi_Key_export failed with err %d", err);
 
@@ -102,7 +102,7 @@ bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx,
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStoreApi_importKey failed with err %d", err);
 
-    err = SeosCryptoApi_Key_free(&writeKey);
+    err = SeosCryptoApi_Key_free(hWriteKey);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosCryptoApi_Key_free failed with err %d", err);
 
@@ -113,12 +113,12 @@ bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx,
                           "SeosKeyStoreApi_getKey failed with err %d", err);
     Debug_ASSERT(len == sizeof(keyData));
 
-    err = SeosCryptoApi_Key_import(cryptoCtx, &readKey, &keyData);
+    err = SeosCryptoApi_Key_import(&hReadKey, hCrypto, &keyData);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosCryptoApi_Key_import failed with err %d", err);
 
     /********************************** TestKeyStore_testCase_07 ************************************/
-    err = aesDecrypt(cryptoCtx, &readKey, buffEnc, decOutSize, buffDec,
+    err = aesDecrypt(hCrypto, hReadKey, buffEnc, decOutSize, buffDec,
                      &encOutSize);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "aesDecrypt failed with err %d",
                           err);
@@ -140,20 +140,20 @@ bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx,
 }
 
 bool testKeyStoreKeyPair(SeosKeyStoreCtx* keyStoreCtx,
-                         SeosCryptoApi* cryptoCtx)
+                         SeosCryptoApiH hCrypto)
 {
     bool result = false;
 
     /********************************** TestKeyStore_testCase_09 - 11 for RSA keys ************************************/
     result = importExportKeyPairTest(keyStoreCtx,
-                                     cryptoCtx,
+                                     hCrypto,
                                      &rsa128Spec);
     Debug_ASSERT_PRINTFLN(true == result,
                           "importExportKeyPairTest failed for RSA keys");
 
     /********************************** TestKeyStore_testCase_09 - 11 for DH keys ************************************/
     result = importExportKeyPairTest(keyStoreCtx,
-                                     cryptoCtx,
+                                     hCrypto,
                                      &dh64Spec);
     Debug_ASSERT_PRINTFLN(true == result,
                           "importExportKeyPairTest failed for DH keys");
@@ -164,25 +164,25 @@ bool testKeyStoreKeyPair(SeosKeyStoreCtx* keyStoreCtx,
 /* Private functions ---------------------------------------------------------*/
 static bool
 importExportKeyPairTest(SeosKeyStoreCtx* keyStoreCtx,
-                        SeosCryptoApi* cryptoCtx,
+                        SeosCryptoApiH hCrypto,
                         const SeosCryptoApi_Key_Spec* spec)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCryptoApi_Key prvKeyHandle;
-    SeosCryptoApi_Key pubKeyHandle;
+    SeosCryptoApi_KeyH hPrvKey;
+    SeosCryptoApi_KeyH hPubKey;
     size_t len = 0;
 
     /********************************** TestKeyStore_testCase_09 ************************************/
-    err = SeosCryptoApi_Key_generate(cryptoCtx, &prvKeyHandle, spec);
+    err = SeosCryptoApi_Key_generate(&hPrvKey, hCrypto, spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err,
                           "SeosCryptoApi_Key_generate failed with err %d", err);
-    err = SeosCryptoApi_Key_makePublic(&pubKeyHandle, &prvKeyHandle,
+    err = SeosCryptoApi_Key_makePublic(&hPubKey, hCrypto, hPrvKey,
                                        &spec->key.attribs);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err,
                           "SeosCryptoApi_Key_makePublic failed with err %d", err);
 
     /********************************** TestKeyStore_testCase_10 ************************************/
-    err = SeosCryptoApi_Key_export(&prvKeyHandle, &keyData);
+    err = SeosCryptoApi_Key_export(hPrvKey, &keyData);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosCryptoApi_Key_export failed with err %d", err);
 
@@ -191,7 +191,7 @@ importExportKeyPairTest(SeosKeyStoreCtx* keyStoreCtx,
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStoreApi_importKey failed with err %d", err);
 
-    err = SeosCryptoApi_Key_export(&pubKeyHandle, &keyData);
+    err = SeosCryptoApi_Key_export(hPubKey, &keyData);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosCryptoApi_Key_export failed with err %d", err);
 
@@ -219,11 +219,11 @@ importExportKeyPairTest(SeosKeyStoreCtx* keyStoreCtx,
                           "SeosKeyStoreApi_getKey supposed to fail with SEOS_ERROR_NOT_FOUND, but returned %d",
                           err);
 
-    err = SeosCryptoApi_Key_free(&prvKeyHandle);
+    err = SeosCryptoApi_Key_free(hPrvKey);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosCryptoApi_Key_free failed with err %d", err);
 
-    err = SeosCryptoApi_Key_free(&pubKeyHandle);
+    err = SeosCryptoApi_Key_free(hPubKey);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosCryptoApi_Key_free failed with err %d", err);
 
@@ -231,18 +231,16 @@ importExportKeyPairTest(SeosKeyStoreCtx* keyStoreCtx,
 }
 
 static seos_err_t
-aesEncrypt(SeosCryptoApi* cryptoCtx, SeosCryptoApi_Key* keyHandle,
+aesEncrypt(SeosCryptoApiH hCrypto, SeosCryptoApi_KeyH hKey,
            const char* data, size_t inDataSize, void* outBuf, size_t* outDataSize)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCryptoApi_Cipher handle;
+    SeosCryptoApi_CipherH hCipher;
 
     *outDataSize = AES_BLOCK_LEN;
 
-    err = SeosCryptoApi_Cipher_init(cryptoCtx,
-                                    &handle,
+    err = SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                     SeosCryptoApi_Cipher_ALG_AES_ECB_ENC,
-                                    keyHandle,
                                     NULL, 0);
     if (err != SEOS_SUCCESS)
     {
@@ -251,7 +249,7 @@ aesEncrypt(SeosCryptoApi* cryptoCtx, SeosCryptoApi_Key* keyHandle,
         return err;
     }
 
-    err = SeosCryptoApi_Cipher_process(&handle,
+    err = SeosCryptoApi_Cipher_process(hCipher,
                                        data,
                                        inDataSize,
                                        outBuf,
@@ -262,7 +260,7 @@ aesEncrypt(SeosCryptoApi* cryptoCtx, SeosCryptoApi_Key* keyHandle,
                         __func__, err);
     }
 
-    err = SeosCryptoApi_Cipher_free(&handle);
+    err = SeosCryptoApi_Cipher_free(hCipher);
     if (err != SEOS_SUCCESS)
     {
         Debug_LOG_ERROR("%s: SeosCryptoApi_Cipher_free failed with error code %d",
@@ -273,18 +271,16 @@ aesEncrypt(SeosCryptoApi* cryptoCtx, SeosCryptoApi_Key* keyHandle,
 }
 
 static seos_err_t
-aesDecrypt(SeosCryptoApi* cryptoCtx, SeosCryptoApi_Key* keyHandle,
+aesDecrypt(SeosCryptoApiH hCrypto, SeosCryptoApi_KeyH hKey,
            const void* data, size_t inDataSize, void* outBuf, size_t* outDataSize)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCryptoApi_Cipher handle;
+    SeosCryptoApi_CipherH hCipher;
 
     *outDataSize = AES_BLOCK_LEN;
 
-    err = SeosCryptoApi_Cipher_init(cryptoCtx,
-                                    &handle,
+    err = SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                     SeosCryptoApi_Cipher_ALG_AES_ECB_DEC,
-                                    keyHandle,
                                     NULL, 0);
     if (err != SEOS_SUCCESS)
     {
@@ -293,7 +289,7 @@ aesDecrypt(SeosCryptoApi* cryptoCtx, SeosCryptoApi_Key* keyHandle,
         return err;
     }
 
-    err = SeosCryptoApi_Cipher_process(&handle,
+    err = SeosCryptoApi_Cipher_process(hCipher,
                                        data,
                                        inDataSize,
                                        outBuf,
@@ -304,7 +300,7 @@ aesDecrypt(SeosCryptoApi* cryptoCtx, SeosCryptoApi_Key* keyHandle,
                         __func__, err);
     }
 
-    err = SeosCryptoApi_Cipher_free(&handle);
+    err = SeosCryptoApi_Cipher_free(hCipher);
     if (err != SEOS_SUCCESS)
     {
         Debug_LOG_ERROR("%s: SeosCryptoApi_Cipher_free failed with error code %d",

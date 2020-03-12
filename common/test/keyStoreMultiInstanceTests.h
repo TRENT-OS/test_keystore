@@ -33,7 +33,7 @@
  *                      instance of the key store library, or a handle to the context
  *                      which is created in a separate camkes component
  *
- * @param cryptoCtx     handle to the crypto library, it can represent a local instance
+ * @param hCrypto       handle to the crypto library, it can represent a local instance
  *                      of the library, or a handle to the context which is created in a
  *                      separate camkes component
  *
@@ -51,7 +51,7 @@
  * @}
  *
  */
-bool keyStoreCopyKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeyStore, SeosCryptoApi* cryptoCtx);
+bool keyStoreCopyKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeyStore, SeosCryptoApiH hCrypto);
 /**
  * @weakgroup KeyStore_MultiInstance_test_cases
  * @{
@@ -68,7 +68,7 @@ bool keyStoreCopyKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeySt
  *                      instance of the key store library, or a handle to the context
  *                      which is created in a separate camkes component
  *
- * @param cryptoCtx     handle to the crypto library, it can represent a local instance
+ * @param hCrypto       handle to the crypto library, it can represent a local instance
  *                      of the library, or a handle to the context which is created in a
  *                      separate camkes component
  *
@@ -89,7 +89,7 @@ bool keyStoreCopyKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeySt
  * @}
  *
  */
-bool keyStoreMoveKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeyStore, SeosCryptoApi* cryptoCtx);
+bool keyStoreMoveKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeyStore, SeosCryptoApiH hCrypto);
 
 ///@}
 

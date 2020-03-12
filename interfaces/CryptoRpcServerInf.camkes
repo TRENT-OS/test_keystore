@@ -1,0 +1,15 @@
+/**
+ * Copyright (C) 2019, Hensoldt Cyber GmbH
+ */
+
+procedure CryptoRpcServerInf {
+    include "SeosError.h";
+
+    seos_err_t
+    openSession(
+    );
+
+    seos_err_t
+    closeSession(
+    );
+};

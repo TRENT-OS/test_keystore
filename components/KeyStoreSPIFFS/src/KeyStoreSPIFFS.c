@@ -15,16 +15,27 @@
 #define KEY_STORE_INSTANCE_NAME         "KeyStore1"
 #define KEY_STORE_INSTANCE_PARTITION    0
 
-/* Private function prototypes -----------------------------------------------------------*/
+/* Private function prototypes ------------------------------------------------*/
 static int entropyFunc(void* ctx, unsigned char* buf, size_t len);
 
 /* Public variables -----------------------------------------------------------*/
-static SeosCryptoApi* cryptoInst;
+static SeosCryptoApiH hCrypto;
 
 /* Public functions -----------------------------------------------------------*/
+
+SeosCryptoApiH
+SeosCryptoRpc_Server_getSeosCryptoApi(
+    void)
+{
+    // We have only a single instance
+    return hCrypto;
+}
+
+// Public Functions -----------------------------------------------------------
+
 seos_err_t
-Crypto_openSession(
-    SeosCryptoApi_Ptr* api)
+CryptoRpcServer_openSession(
+    void)
 {
     seos_err_t err;
     SeosCryptoApi_Config cfg =
@@ -36,36 +47,28 @@ Crypto_openSession(
         },
         .impl.lib.rng = {
             .entropy = entropyFunc,
-            .context = NULL
         },
         .server.dataPort = cryptoServerDataport
     };
 
-    if ((cryptoInst = malloc(sizeof(SeosCryptoApi))) == NULL)
+    if ((err = SeosCryptoApi_init(&hCrypto, &cfg)) != SEOS_SUCCESS)
     {
-        return SEOS_ERROR_INSUFFICIENT_SPACE;
+        Debug_LOG_ERROR("SeosCryptoApi_init failed with %d", err);
     }
-
-    err = SeosCryptoApi_init(cryptoInst, &cfg);
-    Debug_LOG_TRACE("SeosCryptoApi_init failed with %d", err);
-
-    *api = cryptoInst;
 
     return err;
 }
 
 seos_err_t
-Crypto_closeSession(
-    SeosCryptoApi_Ptr api)
+CryptoRpcServer_closeSession(
+    void)
 {
     seos_err_t err;
 
-    if ((err = SeosCryptoApi_free(api)) != SEOS_SUCCESS)
+    if ((err = SeosCryptoApi_free(hCrypto)) != SEOS_SUCCESS)
     {
-        Debug_LOG_TRACE("SeosCryptoApi_free failed with %d", err);
+        Debug_LOG_ERROR("SeosCryptoApi_free failed with %d", err);
     }
-
-    free(api);
 
     return err;
 }
@@ -89,7 +92,7 @@ KeyStore_getRpcHandle(SeosKeyStoreRpc_Handle* instance)
 
     seos_err_t retval = SeosKeyStore_init(&keyStore,
                                           SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(&(keyStoreCtx.fileStreamFactory)),
-                                          cryptoInst,
+                                          hCrypto,
                                           KEY_STORE_INSTANCE_NAME);
 
     if (retval != SEOS_SUCCESS)

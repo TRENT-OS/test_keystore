@@ -28,7 +28,7 @@
  *                      of the key store library, or a handle to the context which
  *                      is created in a separate camkes component
  *
- * @param cryptoCtx     handle to the crypto library, it can represent a local instance
+ * @param hCrypto       handle to the crypto library, it can represent a local instance
  *                      of the library, or a handle to the context which is created in a
  *                      separate camkes component
  *
@@ -54,7 +54,7 @@
  *
  */
 bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx,
-                     SeosCryptoApi* cryptoCtx);
+                     SeosCryptoApiH hCrypto);
 /**
  * @weakgroup KeyStore_KeyPair_test_cases
  * @{
@@ -67,7 +67,7 @@ bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx,
  *                      of the key store library, or a handle to the context which
  *                      is created in a separate camkes component
  *
- * @param cryptoCtx     handle to the crypto library, it can represent a local instance
+ * @param hCrypto       handle to the crypto library, it can represent a local instance
  *                      of the library, or a handle to the context which is created in a
  *                      separate camkes component
  *
@@ -87,7 +87,7 @@ bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx,
  *
  */
 bool testKeyStoreKeyPair(SeosKeyStoreCtx* keyStoreCtx,
-                         SeosCryptoApi* cryptoCtx);
+                         SeosCryptoApiH hCrypto);
 
 ///@}
 

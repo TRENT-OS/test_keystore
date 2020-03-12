@@ -9,10 +9,10 @@
 #include "SeosKeyStoreRpc.h"
 
 seos_err_t
-Crypto_openSession(SeosCryptoApi_Ptr* api);
+CryptoRpcServer_openSession(void);
 
 seos_err_t
-Crypto_closeSession(SeosCryptoApi_Ptr api);
+CryptoRpcServer_closeSession(void);
 
 seos_err_t
 KeyStore_getRpcHandle(SeosKeyStoreRpc_Handle* instance);

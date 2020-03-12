@@ -25,18 +25,18 @@ static const SeosCryptoApi_Key_Spec aes128Spec =
 };
 
 /* Public functions -----------------------------------------------------------*/
-bool keyStoreCopyKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeyStore, SeosCryptoApi* cryptoCtx)
+bool keyStoreCopyKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeyStore, SeosCryptoApiH hCrypto)
 {
-    SeosCryptoApi_Key key;
+    SeosCryptoApi_KeyH hKey;
     size_t len;
     seos_err_t err = SEOS_ERROR_GENERIC;
 
     /********************************** TestKeyStore_testCase_12 ************************************/
-    err = SeosCryptoApi_Key_generate(cryptoCtx, &key, &aes128Spec);
+    err = SeosCryptoApi_Key_generate(&hKey, hCrypto, &aes128Spec);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosCryptoApi_Key_generate failed with err %d", err);
 
-    err = SeosCryptoApi_Key_export(&key, &keyData);
+    err = SeosCryptoApi_Key_export(hKey, &keyData);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosCryptoApi_Key_export failed with err %d", err);
 
@@ -45,7 +45,7 @@ bool keyStoreCopyKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeySt
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStoreApi_importKey failed with err %d", err);
 
-    err = SeosCryptoApi_Key_free(&key);
+    err = SeosCryptoApi_Key_free(hKey);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosCryptoApi_Key_free failed with err %d", err);
 
@@ -65,7 +65,7 @@ bool keyStoreCopyKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeySt
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStoreApi_getKey failed with err %d", err);
 
-    err = SeosCryptoApi_Key_import(cryptoCtx, &key, &keyData);
+    err = SeosCryptoApi_Key_import(&hKey, hCrypto, &keyData);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosCryptoApi_Key_import failed with err %d", err);
 
@@ -81,18 +81,18 @@ bool keyStoreCopyKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeySt
     return true;
 }
 
-bool keyStoreMoveKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeyStore, SeosCryptoApi* cryptoCtx)
+bool keyStoreMoveKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeyStore, SeosCryptoApiH hCrypto)
 {
-    SeosCryptoApi_Key key;
+    SeosCryptoApi_KeyH hKey;
     size_t len;
     seos_err_t err = SEOS_ERROR_GENERIC;
 
     /********************************** TestKeyStore_testCase_15 ************************************/
-    err = SeosCryptoApi_Key_generate(cryptoCtx, &key, &aes128Spec);
+    err = SeosCryptoApi_Key_generate(&hKey, hCrypto, &aes128Spec);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosCryptoApi_Key_generate failed with err %d", err);
 
-    err = SeosCryptoApi_Key_export(&key, &keyData);
+    err = SeosCryptoApi_Key_export(hKey, &keyData);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosCryptoApi_Key_export failed with err %d", err);
 
@@ -101,7 +101,7 @@ bool keyStoreMoveKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeySt
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStoreApi_importKey failed with err %d", err);
 
-    err = SeosCryptoApi_Key_free(&key);
+    err = SeosCryptoApi_Key_free(hKey);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosCryptoApi_Key_free failed with err %d", err);
 
@@ -126,7 +126,7 @@ bool keyStoreMoveKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeySt
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStoreApi_getKey failed with err %d", err);
 
-    err = SeosCryptoApi_Key_import(cryptoCtx, &key, &keyData);
+    err = SeosCryptoApi_Key_import(&hKey, hCrypto, &keyData);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosCryptoApi_Key_import failed with err %d", err);
 
