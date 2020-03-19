@@ -76,8 +76,6 @@ bool keyStoreContext_dtor(KeyStoreContext* keyStoreCtx)
 
 static seos_err_t InitFS(KeyStoreContext* keyStoreCtx, uint8_t partitionID, uint8_t fsType)
 {
-    seos_fs_result_t fs_stat;
-    seos_pm_result_t pm_stat;
     pm_partition_data_t pm_partition_data;
     seos_err_t ret;
 
@@ -89,13 +87,13 @@ static seos_err_t InitFS(KeyStoreContext* keyStoreCtx, uint8_t partitionID, uint
     }
 
     // Create partitions
-    pm_stat = partition_manager_get_info_partition(partitionID, &pm_partition_data);
-    Debug_ASSERT_PRINTFLN(pm_stat == SEOS_PM_SUCCESS,
-                            "partition_manager_get_info_partition failed with err %d", pm_stat);
+    ret = partition_manager_get_info_partition(partitionID, &pm_partition_data);
+    Debug_ASSERT_PRINTFLN(ret == SEOS_SUCCESS,
+                            "partition_manager_get_info_partition failed with err %d", ret);
 
-    fs_stat = partition_init(pm_partition_data.partition_id, 0);
-    Debug_ASSERT_PRINTFLN(fs_stat == SEOS_FS_SUCCESS,
-                            "partition_io_layer_partition_register failed with err %d", fs_stat);
+    ret = partition_init(pm_partition_data.partition_id, 0);
+    Debug_ASSERT_PRINTFLN(ret == SEOS_SUCCESS,
+                            "partition_io_layer_partition_register failed with err %d", ret);
 
     keyStoreCtx->partition = partition_open(partitionID);
     if(keyStoreCtx->partition == NULL)
@@ -107,37 +105,37 @@ static seos_err_t InitFS(KeyStoreContext* keyStoreCtx, uint8_t partitionID, uint
     // ... and write the filesystem header in each partition
     if(fsType <= FS_TYPE_FAT32)
     {
-        fs_stat = partition_fs_create(
-                    keyStoreCtx->partition,
-                    fsType,
-                    pm_partition_data.partition_size,
-                    0,  // default value: size of sector:   512
-                    0,  // default value: size of cluster:  512
-                    0,  // default value: reserved sectors count: FAT12/FAT16 = 1; FAT32 = 3
-                    0,  // default value: count file/dir entries: FAT12/FAT16 = 16; FAT32 = 0
-                    0,  // default value: count header sectors: 512
-                    FS_PARTITION_OVERWRITE_CREATE);
-        Debug_ASSERT_PRINTFLN(fs_stat == SEOS_FS_SUCCESS,
-                                "Fail to write FAT filesystem! err %d", fs_stat);
+        ret = partition_fs_create(
+                keyStoreCtx->partition,
+                fsType,
+                pm_partition_data.partition_size,
+                0,  // default value: size of sector:   512
+                0,  // default value: size of cluster:  512
+                0,  // default value: reserved sectors count: FAT12/FAT16 = 1; FAT32 = 3
+                0,  // default value: count file/dir entries: FAT12/FAT16 = 16; FAT32 = 0
+                0,  // default value: count header sectors: 512
+                FS_PARTITION_OVERWRITE_CREATE);
+        Debug_ASSERT_PRINTFLN(ret == SEOS_SUCCESS,
+                                "Fail to write FAT filesystem! err %d", ret);
     }
     else
     {
-        fs_stat = partition_fs_create(
-                    keyStoreCtx->partition,
-                    fsType,
-                    SPIFFS_PARTITION_SIZE,  /*pm_partition_data.partition_size*/
-                    SPIFFS_LOG_PAGE_SIZE,   /* sector_size, if 0 the default value is used */
-                    SPIFFS_LOG_BLOCK_SIZE,  /* cluster_size, if 0 the default value is used */
-                    0,                      /* offset_sectors_count, if 0 the default value is used */
-                    0,                      /* file_dir_entry_count, if 0 the default value is used */
-                    0,                      /* fs_header_sector_count, if 0 the default value is used */
-                    FS_PARTITION_OVERWRITE_CREATE);
-        Debug_ASSERT_PRINTFLN(fs_stat == SEOS_FS_SUCCESS,
-                                "Fail to write SPIFFS filesystem! err %d", fs_stat);
+        ret = partition_fs_create(
+                keyStoreCtx->partition,
+                fsType,
+                SPIFFS_PARTITION_SIZE,  /*pm_partition_data.partition_size*/
+                SPIFFS_LOG_PAGE_SIZE,   /* sector_size, if 0 the default value is used */
+                SPIFFS_LOG_BLOCK_SIZE,  /* cluster_size, if 0 the default value is used */
+                0,                      /* offset_sectors_count, if 0 the default value is used */
+                0,                      /* file_dir_entry_count, if 0 the default value is used */
+                0,                      /* fs_header_sector_count, if 0 the default value is used */
+                FS_PARTITION_OVERWRITE_CREATE);
+        Debug_ASSERT_PRINTFLN(ret == SEOS_SUCCESS,
+                                "Fail to write SPIFFS filesystem! err %d", ret);
     }
 
-    fs_stat = partition_fs_mount(keyStoreCtx->partition);
-    Debug_ASSERT_PRINTFLN(fs_stat == SEOS_FS_SUCCESS,
+    ret = partition_fs_mount(keyStoreCtx->partition);
+    Debug_ASSERT_PRINTFLN(ret == SEOS_SUCCESS,
                             "Fail to mount filesystem: %d!", partitionID);
 
     if(fsType <= FS_TYPE_FAT32)
@@ -160,19 +158,19 @@ static seos_err_t InitFS(KeyStoreContext* keyStoreCtx, uint8_t partitionID, uint
 
 static seos_err_t preparePartitionManager(KeyStoreContext* keyStoreCtx)
 {
-    seos_pm_result_t pm_stat;
+    seos_err_t ret;
 
-    pm_stat = partition_manager_init(&(keyStoreCtx->aesNvm));
-    if(pm_stat != SEOS_PM_SUCCESS)
+    ret = partition_manager_init(&(keyStoreCtx->aesNvm));
+    if(ret != SEOS_SUCCESS)
     {
-        Debug_LOG_ERROR("api_pm_partition_manager_init failed with error code %d\n", pm_stat);
+        Debug_LOG_ERROR("api_pm_partition_manager_init failed with error code %d\n", ret);
         return SEOS_ERROR_ABORTED;
     }
 
-    pm_stat = partition_manager_get_info_disk(&pm_disk_data);
-    if(pm_stat != SEOS_PM_SUCCESS)
+    ret = partition_manager_get_info_disk(&pm_disk_data);
+    if(ret != SEOS_SUCCESS)
     {
-        Debug_LOG_ERROR("partition_manager_get_info_disk failed with error code %d\n", pm_stat);
+        Debug_LOG_ERROR("partition_manager_get_info_disk failed with error code %d\n", ret);
         return SEOS_ERROR_ABORTED;
     }
 
