@@ -2,6 +2,7 @@
  * Copyright (C) 2019, Hensoldt Cyber GmbH
  */
 /* Includes ------------------------------------------------------------------*/
+#include "config.h"
 #include "EncryptedPartitionFileStream.h"
 
 /* FAT defines ---------------------------------------------------------------*/
@@ -68,10 +69,19 @@ init_NVM_driver(
         return SEOS_ERROR_GENERIC;
     }
 
+    static const SeosCryptoApi_Key_Data masterKeyData =
+    {
+        .type = SeosCryptoApi_Key_TYPE_AES,
+        .data.aes.len = sizeof(KEYSTORE_KEY_AES)-1,
+        .data.aes.bytes = KEYSTORE_KEY_AES
+    };
+
     // initialise the an AES-NVM layer on top of the Proxy-NVM driver
     if (!AesNvm_ctor(
             &(partition_manager_and_nvm.aesNvm),
-            ProxyNVM_TO_NVM(&(partition_manager_and_nvm.proxyNVM))))
+            ProxyNVM_TO_NVM(&(partition_manager_and_nvm.proxyNVM)),
+            KEYSTORE_IV,
+            &masterKeyData))
     {
         Debug_LOG_ERROR("AesNvm_ctor() failed");
         return SEOS_ERROR_GENERIC;

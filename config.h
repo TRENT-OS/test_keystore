@@ -106,3 +106,10 @@ static const Partition_cat_t partition_conf = {
 //#define GET_PROPERTY_BLOCK_SIZE                 1   // SpifFS
 #define GET_PROPERTY_PARTITION_NAME(x)          GET_PROPERTY_PARTITION_NAME_AT(x)
 #define GET_PROPERTY_PARTITION_SIZE(x)          GET_PROPERTY_PARTITION_SIZE_AT(x)
+
+
+//-----------------------------------------------------------------------------
+// Keystore
+//-----------------------------------------------------------------------------
+#define KEYSTORE_IV         "15e1f594c54670bf"
+#define KEYSTORE_KEY_AES    "f131830db44c54742fc3f3265f0f1a0c"

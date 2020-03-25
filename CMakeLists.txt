@@ -19,6 +19,11 @@ set(KEYSTORE_AS_COMPONENT ON CACHE BOOL "string")
 
 set(SEOS_LIBS_KEYSTORE "${SEOS_LIBS_DIR}/seos_keystore")
 
+project(system_config C)
+add_library(${PROJECT_NAME} INTERFACE)
+target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_LIST_DIR})
+
+
 project(test_keystore C)
 
 DeclareCAmkESComponent(TopLevelTestRunner
@@ -47,6 +52,7 @@ DeclareCAmkESComponent(TestRunnerKeyStoreFAT
         # partition manager
         -DSEOS_PARTITION_MANAGER_BUILD_AS_LIB
     LIBS
+        system_config
         seos_core_api
         seos_libs
         seos_crypto_with_rpc_client
@@ -72,6 +78,7 @@ DeclareCAmkESComponent(KeyStoreFAT
         # partition manager
         -DSEOS_PARTITION_MANAGER_BUILD_AS_LIB
     LIBS
+        system_config
         seos_core_api
         seos_libs
         seos_crypto_with_rpc_server
@@ -99,6 +106,7 @@ DeclareCAmkESComponent(TestRunnerKeyStoreSPIFFS
         # partition manager
         -DSEOS_PARTITION_MANAGER_BUILD_AS_LIB
     LIBS
+        system_config
         seos_core_api
         seos_libs
         seos_crypto_with_rpc_client
@@ -124,6 +132,7 @@ DeclareCAmkESComponent(KeyStoreSPIFFS
         # partition manager
         -DSEOS_PARTITION_MANAGER_BUILD_AS_LIB
     LIBS
+        system_config
         seos_core_api
         seos_libs
         seos_crypto_with_rpc_server
