@@ -17,6 +17,8 @@ seos_use_libs(
 
 set(KEYSTORE_AS_COMPONENT ON CACHE BOOL "string")
 
+set(SEOS_LIBS_KEYSTORE "${SEOS_LIBS_DIR}/seos_keystore")
+
 project(test_keystore C)
 
 DeclareCAmkESComponent(TopLevelTestRunner
@@ -63,7 +65,7 @@ DeclareCAmkESComponent(KeyStoreFAT
         common/init/KeyStoreInit.c
         components/KeyStoreFAT/src/KeyStoreFAT.c
 
-        ${SEOS_LIBS_DIR}/seos_keystore/src/SeosKeyStoreRpc.c
+        ${SEOS_LIBS_KEYSTORE}/src/SeosKeyStoreRpc.c
     C_FLAGS
         -Wall -Werror
         # filesystem
@@ -116,7 +118,7 @@ DeclareCAmkESComponent(KeyStoreSPIFFS
         common/init/KeyStoreInit.c
         components/KeyStoreSPIFFS/src/KeyStoreSPIFFS.c
 
-        ${SEOS_LIBS_DIR}/seos_keystore/src/SeosKeyStoreRpc.c
+        ${SEOS_LIBS_KEYSTORE}/src/SeosKeyStoreRpc.c
     C_FLAGS
         -Wall -Werror
         # filesystem
