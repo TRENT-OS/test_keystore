@@ -81,20 +81,26 @@ KeyStore_getRpcHandle(SeosKeyStoreRpc_Handle* instance)
     static SeosKeyStoreRpc the_one;
     static KeyStoreContext keyStoreCtx;
 
-    if (!keyStoreContext_ctor(&keyStoreCtx,
-                                NVM_CHANNEL_NUMBER,
-                                KEY_STORE_INSTANCE_PARTITION,
-                                FS_TYPE_FAT32,
-                                chanMuxDataPort))
+    seos_err_t retval;
+
+
+    if (!keyStoreContext_ctor(
+            &keyStoreCtx,
+            NVM_CHANNEL_NUMBER,
+            KEY_STORE_INSTANCE_PARTITION,
+            FS_TYPE_FAT32,
+            chanMuxDataPort))
     {
         Debug_LOG_ERROR("%s: Failed to initialize the test!", __func__);
         return 0;
     }
 
-    seos_err_t retval = SeosKeyStore_init(&keyStore,
-                                          SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(&(keyStoreCtx.fileStreamFactory)),
-                                          hCrypto,
-                                          KEY_STORE_INSTANCE_NAME);
+    retval = SeosKeyStore_init(
+                &keyStore,
+                SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(
+                    &(keyStoreCtx.fileStreamFactory)),
+                hCrypto,
+                KEY_STORE_INSTANCE_NAME);
 
     if (retval != SEOS_SUCCESS)
     {
@@ -104,8 +110,10 @@ KeyStore_getRpcHandle(SeosKeyStoreRpc_Handle* instance)
     }
 
 
-    retval = SeosKeyStoreRpc_init(&the_one, &(keyStore.parent),
-                                  keyStoreServerDataport);
+    retval = SeosKeyStoreRpc_init(
+                &the_one,
+                &(keyStore.parent),
+                keyStoreServerDataport);
     if (retval != SEOS_SUCCESS)
     {
         Debug_LOG_ERROR("%s: SeosKeyStoreRpc_init failed with error code %d!", __func__,

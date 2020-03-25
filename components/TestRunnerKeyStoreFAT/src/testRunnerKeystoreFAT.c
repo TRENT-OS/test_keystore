@@ -127,32 +127,36 @@ void testRunnerInf_runTests()
                           "SeosCryptoApi_init failed with error code %d!", err);
 
     /************************** Init 1. local version of the KeyStore ****************************/
-    ret = keyStoreContext_ctor(&keyStoreCtx1,
-                                NVM_CHANNEL_NUMBER,
-                                KEY_STORE_INSTANCE_1_PARTITION,
-                                FS_TYPE_FAT32,
-                                chanMuxDataPort);
+    ret = keyStoreContext_ctor(
+            &keyStoreCtx1,
+            NVM_CHANNEL_NUMBER,
+            KEY_STORE_INSTANCE_1_PARTITION,
+            FS_TYPE_FAT32,
+            chanMuxDataPort);
     Debug_ASSERT_PRINTFLN(ret == true, "keyStoreContext_ctor failed!");
 
-    err = SeosKeyStore_init(&localKeyStore1,
-                            SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(&(keyStoreCtx1.fileStreamFactory)),
-                            hCryptoLocal,
-                            KEY_STORE_INSTANCE_1_NAME);
+    err = SeosKeyStore_init(
+            &localKeyStore1,
+            SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(&(keyStoreCtx1.fileStreamFactory)),
+            hCryptoLocal,
+            KEY_STORE_INSTANCE_1_NAME);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStore_init failed with error code %d!", err);
 
     /************************** Init 2. local version of the KeyStore ****************************/
-    ret = keyStoreContext_ctor(&keyStoreCtx2,
-                                NVM_CHANNEL_NUMBER,
-                                KEY_STORE_INSTANCE_2_PARTITION,
-                                FS_TYPE_FAT32,
-                                chanMuxDataPort);
+    ret = keyStoreContext_ctor(
+            &keyStoreCtx2,
+            NVM_CHANNEL_NUMBER,
+            KEY_STORE_INSTANCE_2_PARTITION,
+            FS_TYPE_FAT32,
+            chanMuxDataPort);
     Debug_ASSERT_PRINTFLN(ret == true, "keyStoreContext_ctor failed!");
 
-    err = SeosKeyStore_init(&localKeyStore2,
-                            SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(&(keyStoreCtx2.fileStreamFactory)),
-                            hCryptoLocal,
-                            KEY_STORE_INSTANCE_2_NAME);
+    err = SeosKeyStore_init(
+            &localKeyStore2,
+            SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(&(keyStoreCtx2.fileStreamFactory)),
+            hCryptoLocal,
+            KEY_STORE_INSTANCE_2_NAME);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStore_init failed with error code %d!", err);
 
@@ -161,9 +165,10 @@ void testRunnerInf_runTests()
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "KeyStore_getRpcHandle failed with error code %d!", err);
 
-    err = SeosKeyStoreClient_init(&keyStoreClient,
-                                  keyStoreRpcHandle,
-                                  keyStoreClientDataport);
+    err = SeosKeyStoreClient_init(
+            &keyStoreClient,
+            keyStoreRpcHandle,
+            keyStoreClientDataport);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStoreClient_init failed with error code %d!", err);
 

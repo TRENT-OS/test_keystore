@@ -64,7 +64,6 @@ DeclareCAmkESComponent(KeyStoreFAT
     SOURCES
         common/init/KeyStoreInit.c
         components/KeyStoreFAT/src/KeyStoreFAT.c
-
         ${SEOS_LIBS_KEYSTORE}/src/SeosKeyStoreRpc.c
     C_FLAGS
         -Wall -Werror
@@ -117,7 +116,6 @@ DeclareCAmkESComponent(KeyStoreSPIFFS
     SOURCES
         common/init/KeyStoreInit.c
         components/KeyStoreSPIFFS/src/KeyStoreSPIFFS.c
-
         ${SEOS_LIBS_KEYSTORE}/src/SeosKeyStoreRpc.c
     C_FLAGS
         -Wall -Werror

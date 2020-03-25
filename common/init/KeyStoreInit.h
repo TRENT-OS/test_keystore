@@ -14,19 +14,23 @@
 
 typedef struct KeyStoreContext
 {
-    ProxyNVM proxyNVM;
-    ChanMuxClient chanMuxClient;
-    AesNvm aesNvm;
-    hPartition_t partition;
-    SeosFileStreamFactory fileStreamFactory;
+    ProxyNVM               proxyNVM;
+    ChanMuxClient          chanMuxClient;
+    AesNvm                 aesNvm;
+    hPartition_t           partition;
+    SeosFileStreamFactory  fileStreamFactory;
 } KeyStoreContext;
 
 
-bool keyStoreContext_ctor(KeyStoreContext*  keyStoreCtx,
-                          uint8_t           channelNum,
-                          uint8_t           partitionID,
-                          uint8_t           fsType,
-                          void*             dataport);
+bool
+keyStoreContext_ctor(
+    KeyStoreContext*  keyStoreCtx,
+    uint8_t           channelNum,
+    uint8_t           partitionID,
+    uint8_t           fsType,
+    void*             dataport);
 
 
-bool keyStoreContext_dtor(KeyStoreContext* keyStoreCtx);
+bool
+keyStoreContext_dtor(
+    KeyStoreContext* keyStoreCtx);
