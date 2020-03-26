@@ -5,6 +5,7 @@ seos_set_config_file(config.h)
 seos_use_libs(
     SEOS_LIBS
     SEOS_LIBS_LOGGER
+    SEOS_CHANMUX
     SEOS_CRYPTO_WITH_RPC_SERVER
     SEOS_CRYPTO_WITH_RPC_CLIENT
     SEOS_CRYPTO_IMPL_MBEDTLS
@@ -55,6 +56,8 @@ DeclareCAmkESComponent(TestRunnerKeyStoreFAT
         system_config
         seos_core_api
         seos_libs
+        chanmux_client
+        proxy_nvm
         seos_crypto_with_rpc_client
         seos_filesystem_fat
         seos_filesystem_spiffs
@@ -81,6 +84,8 @@ DeclareCAmkESComponent(KeyStoreFAT
         system_config
         seos_core_api
         seos_libs
+        chanmux_client
+        proxy_nvm
         seos_crypto_with_rpc_server
         seos_filesystem_fat
         seos_filesystem_spiffs
@@ -109,6 +114,8 @@ DeclareCAmkESComponent(TestRunnerKeyStoreSPIFFS
         system_config
         seos_core_api
         seos_libs
+        chanmux_client
+        proxy_nvm
         seos_crypto_with_rpc_client
         seos_filesystem_fat
         seos_filesystem_spiffs
@@ -135,6 +142,8 @@ DeclareCAmkESComponent(KeyStoreSPIFFS
         system_config
         seos_core_api
         seos_libs
+        chanmux_client
+        proxy_nvm
         seos_crypto_with_rpc_server
         seos_filesystem_fat
         seos_filesystem_spiffs
@@ -159,6 +168,7 @@ DeclareCAmkESComponent(ChanMux
     LIBS
         seos_core_api
         seos_libs
+        chanmux_server
 )
 
 DeclareCAmkESRootserver(KeyStoreTestTopLevel.camkes)
