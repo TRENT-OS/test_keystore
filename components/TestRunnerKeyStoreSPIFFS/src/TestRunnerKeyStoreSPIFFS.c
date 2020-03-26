@@ -16,7 +16,7 @@
 
 #include "SeosCryptoApi.h"
 
-#include "KeyStoreInit.h"
+#include "EncryptedPartitionFileStream.h"
 #include "keyStoreUnitTests.h"
 #include "keyStoreIntegrationTests.h"
 #include "keyStoreMultiInstanceTests.h"
@@ -100,11 +100,11 @@ void testRunnerInf_runTests()
 
     SeosKeyStore localKeyStore1;
     SeosKeyStoreCtx* keyStoreApiLocal1;
-    KeyStoreContext keyStoreCtx1;
+    EncryptedPartitionFileStream encryptedPartitionFileStream1;
 
     SeosKeyStore localKeyStore2;
     SeosKeyStoreCtx* keyStoreApiLocal2;
-    KeyStoreContext keyStoreCtx2;
+    EncryptedPartitionFileStream encryptedPartitionFileStream2;
 
     SeosKeyStoreClient keyStoreClient;
     SeosKeyStoreCtx* keyStoreApiRpc;
@@ -127,36 +127,42 @@ void testRunnerInf_runTests()
                           "SeosCryptoApi_init failed with error code %d!", err);
 
     /************************** Init 1. local version of the KeyStore ****************************/
-    ret = keyStoreContext_ctor(
-            &keyStoreCtx1,
+    Debug_LOG_INFO("create EncryptedPartitionFileStream for channel %d, partition ID %d",
+                   NVM_CHANNEL_NUMBER, KEY_STORE_INSTANCE_1_PARTITION);
+
+    ret = EncryptedPartitionFileStream_ctor(
+            &encryptedPartitionFileStream1,
             NVM_CHANNEL_NUMBER,
             KEY_STORE_INSTANCE_1_PARTITION,
             FS_TYPE_SPIFFS,
             chanMuxDataPort);
     Debug_ASSERT_PRINTFLN(ret == true, "keyStoreContext_ctor failed!");
 
-    err = SeosKeyStore_init(
-            &localKeyStore1,
-            SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(&(keyStoreCtx1.fileStreamFactory)),
-            hCryptoLocal,
-            KEY_STORE_INSTANCE_1_NAME);
+    err = SeosKeyStore_init(&localKeyStore1,
+                            SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(
+                                &(encryptedPartitionFileStream1.fileStreamFactory)),
+                            hCryptoLocal,
+                            KEY_STORE_INSTANCE_1_NAME);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStore_init failed with error code %d!", err);
 
     /************************** Init 2. local version of the KeyStore ****************************/
-    ret = keyStoreContext_ctor(
-            &keyStoreCtx2,
+    Debug_LOG_INFO("create EncryptedPartitionFileStream for channel %d, partition ID %d",
+                   NVM_CHANNEL_NUMBER, KEY_STORE_INSTANCE_2_PARTITION);
+
+    ret = EncryptedPartitionFileStream_ctor(
+            &encryptedPartitionFileStream2,
             NVM_CHANNEL_NUMBER,
             KEY_STORE_INSTANCE_2_PARTITION,
             FS_TYPE_SPIFFS,
             chanMuxDataPort);
     Debug_ASSERT_PRINTFLN(ret == true, "keyStoreContext_ctor failed!");
 
-    err = SeosKeyStore_init(
-            &localKeyStore2,
-            SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(&(keyStoreCtx2.fileStreamFactory)),
-            hCryptoLocal,
-            KEY_STORE_INSTANCE_2_NAME);
+    err = SeosKeyStore_init(&localKeyStore2,
+                            SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(
+                                &(encryptedPartitionFileStream2.fileStreamFactory)),
+                            hCryptoLocal,
+                            KEY_STORE_INSTANCE_2_NAME);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStore_init failed with error code %d!", err);
 
@@ -284,10 +290,10 @@ void testRunnerInf_runTests()
     CryptoRpcServer_closeSession();
 
     SeosKeyStore_deInit(keyStoreApiLocal1);
-    keyStoreContext_dtor(&keyStoreCtx1);
+    EncryptedPartitionFileStream_dtor(&encryptedPartitionFileStream1);
 
     SeosKeyStore_deInit(keyStoreApiLocal2);
-    keyStoreContext_dtor(&keyStoreCtx2);
+    EncryptedPartitionFileStream_dtor(&encryptedPartitionFileStream2);
 
     SeosKeyStoreClient_deInit(keyStoreApiRpc);
 }

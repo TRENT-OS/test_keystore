@@ -35,7 +35,7 @@ DeclareCAmkESComponent(TestRunnerKeyStoreFAT
         common/init
         common/test
     SOURCES
-        common/init/KeyStoreInit.c
+        common/init/EncryptedPartitionFileStream.c
         common/test/keyStoreUnitTests.c
         common/test/keyStoreIntegrationTests.c
         common/test/keyStoreMultiInstanceTests.c
@@ -62,7 +62,7 @@ DeclareCAmkESComponent(KeyStoreFAT
         common/init
         common/test
     SOURCES
-        common/init/KeyStoreInit.c
+        common/init/EncryptedPartitionFileStream.c
         components/KeyStoreFAT/src/KeyStoreFAT.c
         ${SEOS_LIBS_KEYSTORE}/src/SeosKeyStoreRpc.c
     C_FLAGS
@@ -87,7 +87,7 @@ DeclareCAmkESComponent(TestRunnerKeyStoreSPIFFS
         common/init
         common/test
     SOURCES
-        common/init/KeyStoreInit.c
+        common/init/EncryptedPartitionFileStream.c
         common/test/keyStoreUnitTests.c
         common/test/keyStoreIntegrationTests.c
         common/test/keyStoreMultiInstanceTests.c
@@ -114,7 +114,7 @@ DeclareCAmkESComponent(KeyStoreSPIFFS
         common/init
         common/test
     SOURCES
-        common/init/KeyStoreInit.c
+        common/init/EncryptedPartitionFileStream.c
         components/KeyStoreSPIFFS/src/KeyStoreSPIFFS.c
         ${SEOS_LIBS_KEYSTORE}/src/SeosKeyStoreRpc.c
     C_FLAGS

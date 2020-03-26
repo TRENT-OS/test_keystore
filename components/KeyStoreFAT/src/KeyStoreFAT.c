@@ -5,7 +5,7 @@
 #include "LibDebug/Debug.h"
 
 #include "KeyStoreFAT.h"
-#include "KeyStoreInit.h"
+#include "EncryptedPartitionFileStream.h"
 
 #include "SeosCryptoApi.h"
 
@@ -79,13 +79,16 @@ KeyStore_getRpcHandle(SeosKeyStoreRpc_Handle* instance)
 {
     static SeosKeyStore keyStore;
     static SeosKeyStoreRpc the_one;
-    static KeyStoreContext keyStoreCtx;
+    static EncryptedPartitionFileStream encryptedPartitionFileStream;
 
     seos_err_t retval;
 
 
-    if (!keyStoreContext_ctor(
-            &keyStoreCtx,
+    Debug_LOG_INFO("create EncryptedPartitionFileStream for channel %d, partition ID %d",
+                   NVM_CHANNEL_NUMBER, KEY_STORE_INSTANCE_PARTITION);
+
+    if (!EncryptedPartitionFileStream_ctor(
+            &encryptedPartitionFileStream,
             NVM_CHANNEL_NUMBER,
             KEY_STORE_INSTANCE_PARTITION,
             FS_TYPE_FAT32,
@@ -98,7 +101,7 @@ KeyStore_getRpcHandle(SeosKeyStoreRpc_Handle* instance)
     retval = SeosKeyStore_init(
                 &keyStore,
                 SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(
-                    &(keyStoreCtx.fileStreamFactory)),
+                    &(encryptedPartitionFileStream.fileStreamFactory)),
                 hCrypto,
                 KEY_STORE_INSTANCE_NAME);
 
