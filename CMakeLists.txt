@@ -166,6 +166,7 @@ DeclareCAmkESComponent(ChanMux
     C_FLAGS
         -Wall -Werror
     LIBS
+        system_config
         seos_core_api
         seos_libs
         chanmux_server
