@@ -162,7 +162,7 @@ DeclareCAmkESComponent(UartDrv
 
 DeclareCAmkESComponent(ChanMux
     SOURCES
-        components/ChanMux/src/instance/ChanMux_Instance.c
+        components/ChanMux/src/ChanMux.c
     C_FLAGS
         -Wall -Werror
     LIBS
