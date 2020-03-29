@@ -127,11 +127,12 @@ void testRunnerInf_runTests()
             chanMuxDataPort);
     Debug_ASSERT_PRINTFLN(ret == true, "keyStoreContext_ctor failed!");
 
-    err = SeosKeyStore_init(&localKeyStore1,
-                            SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(
-                                &(encryptedPartitionFileStream1.fileStreamFactory)),
-                            hCryptoLocal,
-                            KEY_STORE_SPIFFS_INSTANCE_1_NAME);
+    err = SeosKeyStore_init(
+            &localKeyStore1,
+            SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(
+                &(encryptedPartitionFileStream1.fileStreamFactory)),
+            hCryptoLocal,
+            KEY_STORE_SPIFFS_INSTANCE_1_NAME);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStore_init failed with error code %d!", err);
 
@@ -147,11 +148,12 @@ void testRunnerInf_runTests()
             chanMuxDataPort);
     Debug_ASSERT_PRINTFLN(ret == true, "keyStoreContext_ctor failed!");
 
-    err = SeosKeyStore_init(&localKeyStore2,
-                            SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(
-                                &(encryptedPartitionFileStream2.fileStreamFactory)),
-                            hCryptoLocal,
-                            KEY_STORE_SPIFFS_INSTANCE_2_NAME);
+    err = SeosKeyStore_init(
+            &localKeyStore2,
+            SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(
+                &(encryptedPartitionFileStream2.fileStreamFactory)),
+            hCryptoLocal,
+            KEY_STORE_SPIFFS_INSTANCE_2_NAME);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStore_init failed with error code %d!", err);
 
