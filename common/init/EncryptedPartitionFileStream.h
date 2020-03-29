@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "LibMem/Nvm.h"
 #include "SeosFileStream.h"
 #include "SeosFileStreamFactory.h"
 
@@ -21,10 +22,9 @@ typedef struct
 bool
 EncryptedPartitionFileStream_ctor(
     EncryptedPartitionFileStream*  self,
-    uint8_t                        channelNum,
+    Nvm*                           nvm,
     uint8_t                        partitionID,
-    uint8_t                        fsType,
-    void*                          dataport);
+    uint8_t                        fsType);
 
 
 bool

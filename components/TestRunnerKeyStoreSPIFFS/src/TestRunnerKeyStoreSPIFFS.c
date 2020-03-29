@@ -17,6 +17,8 @@
 #include "OS_Crypto.h"
 
 #include "EncryptedPartitionFileStream.h"
+#include "ChanMuxNvmDriver.h"
+
 #include "keyStoreUnitTests.h"
 #include "keyStoreIntegrationTests.h"
 #include "keyStoreMultiInstanceTests.h"
@@ -87,6 +89,8 @@ void testRunnerInf_runTests()
     OS_Crypto_Handle_t hCryptoLocal;
     OS_Crypto_Handle_t hCryptoRemote;
 
+    ChanMuxNvmDriver chanMuxNvm;
+
     SeosKeyStore localKeyStore1;
     SeosKeyStoreCtx* keyStoreApiLocal1;
     EncryptedPartitionFileStream encryptedPartitionFileStream1;
@@ -101,6 +105,18 @@ void testRunnerInf_runTests()
 
     seos_err_t err = SEOS_ERROR_GENERIC;
     bool ret = false;
+
+    /************************** Init NVM driver *******************************/
+    if (!ChanMuxNvmDriver_ctor(
+            &chanMuxNvm,
+            NVM_CHANNEL_NUMBER,
+            chanMuxDataPort))
+    {
+        Debug_ASSERT_PRINTFLN(
+            false,
+            "ChanMuxNvmDriver_ctor() on Proxy channel %d failed",
+            NVM_CHANNEL_NUMBER);
+    }
 
     /************************** Init Crypto local version ****************************/
     err = OS_Crypto_init(&hCryptoLocal, &cfgLocal);
@@ -121,10 +137,9 @@ void testRunnerInf_runTests()
 
     ret = EncryptedPartitionFileStream_ctor(
             &encryptedPartitionFileStream1,
-            NVM_CHANNEL_NUMBER,
+            ChanMuxNvmDriver_get_nvm(&chanMuxNvm),
             KEY_STORE_SPIFFS_INSTANCE_1_PARTITION,
-            FS_TYPE_SPIFFS,
-            chanMuxDataPort);
+            FS_TYPE_SPIFFS);
     Debug_ASSERT_PRINTFLN(ret == true, "keyStoreContext_ctor failed!");
 
     err = SeosKeyStore_init(
@@ -142,10 +157,9 @@ void testRunnerInf_runTests()
 
     ret = EncryptedPartitionFileStream_ctor(
             &encryptedPartitionFileStream2,
-            NVM_CHANNEL_NUMBER,
+            ChanMuxNvmDriver_get_nvm(&chanMuxNvm),
             KEY_STORE_SPIFFS_INSTANCE_2_PARTITION,
-            FS_TYPE_SPIFFS,
-            chanMuxDataPort);
+            FS_TYPE_SPIFFS);
     Debug_ASSERT_PRINTFLN(ret == true, "keyStoreContext_ctor failed!");
 
     err = SeosKeyStore_init(

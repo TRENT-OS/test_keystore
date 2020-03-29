@@ -8,7 +8,7 @@
 
 #include "EncryptedPartitionFileStream.h"
 
-#include "ChanMuxNvmDriver.h"
+#include "LibMem/Nvm.h"
 #include "AesNvm.h"
 #include "seos_fs.h"
 #include "seos_pm.h"
@@ -24,29 +24,16 @@
 
 /* Private variables ---------------------------------------------------------*/
 
-
-// there can be only one partition manager that connects to an NVM driver. Thus
-// the encrypted partition is also a singleton. If multiple instances of
-// EncryptedPartitionFileStream are created, they have to share the same
-// nvm_driver.
-
+// we explicitly store a reference to the Nvm in the context, because the
+// partition manger does not support multiple instance. As a consequence, we
+// can't support different instances of Nvm in different instances of the
+// EncryptedPartitionFileStream and have to fail instance creation then.
 typedef struct {
-    void*             dataport;
-    uint8_t           channelNum;
-    ChanMuxNvmDriver  chanMuxNvm;
-} nvm_driver_t;
-
-
-// we don't need to explicitly store a reference to nvm_driver in the context,
-// because it is wrapped in the initialized aesNvm anyway. In the end we access
-// everything though the aesNvm only.
-typedef struct {
-    bool           isInitalized;
-    AesNvm         aesNvm;
+    bool               isInitalized;
+    Nvm*               nvm;
+    AesNvm             aesNvm;
 } ctx_t;
 
-
-static nvm_driver_t m_nvm_driver;
 
 static ctx_t m_ctx = {
                 .isInitalized = false,
@@ -56,70 +43,9 @@ static ctx_t m_ctx = {
 
 //------------------------------------------------------------------------------
 static seos_err_t
-nvm_driver_init(
-    nvm_driver_t*  nvm_driver,
-    bool           doInit,
-    uint8_t        channelNum,
-    void*          dataport)
-{
-    if (doInit)
-    {
-        Debug_LOG_INFO("re-using NVM driver");
-
-        // since we only have one partition manager and NVM stack, there is
-        // only  one dataport to ChanMUX. We can't have a different dataport
-        // here.
-        if (dataport != nvm_driver->dataport)
-        {
-            Debug_LOG_ERROR("dataport does not match");
-            return SEOS_ERROR_GENERIC;
-        }
-
-        // since we only have one partition manager and NVM stack, we can't
-        // have a different channel here.
-        if (channelNum != nvm_driver->channelNum)
-        {
-            Debug_LOG_ERROR("channel number set to %d, can use different number %d",
-                            nvm_driver->channelNum, channelNum);
-            return SEOS_ERROR_GENERIC;
-        }
-
-        return SEOS_SUCCESS;
-    }
-
-    Debug_LOG_INFO("create NVM driver");
-
-    if (!ChanMuxNvmDriver_ctor(
-            &(nvm_driver->chanMuxNvm),
-            channelNum,
-            dataport))
-    {
-        Debug_LOG_ERROR("ChanMuxNvm_ctor() on Proxy channel %d failed",
-                        channelNum);
-        return SEOS_ERROR_GENERIC;
-    }
-
-    nvm_driver->channelNum   = channelNum;
-    nvm_driver->dataport     = dataport;
-
-    return SEOS_SUCCESS;
-}
-
-
-//------------------------------------------------------------------------------
-static Nvm*
-nvm_driver_get_nvm(
-    nvm_driver_t*  nvm_driver)
-{
-    return ChanMuxNvmDriver_get_nvm( &(nvm_driver->chanMuxNvm) );
-}
-
-
-//------------------------------------------------------------------------------
-static seos_err_t
 encrypted_partition_init(
-    ctx_t*         ctx,
-    nvm_driver_t*  nvm_driver)
+    ctx_t*  ctx,
+    Nvm*    nvm)
 {
     seos_err_t ret;
 
@@ -132,6 +58,13 @@ encrypted_partition_init(
     if (ctx->isInitalized)
     {
         Debug_LOG_INFO("re-using AES encrypted NVM and partition manager");
+
+        if (ctx->nvm != nvm)
+        {
+            Debug_LOG_ERROR("different nvm instances are not supported");
+            return SEOS_ERROR_GENERIC;
+        }
+
         return SEOS_SUCCESS;
     }
 
@@ -146,9 +79,10 @@ encrypted_partition_init(
 
     // initialise the an AES-NVM layer on top of the Proxy-NVM driver. This
     // should actually be part of the keystore already.
+
     if (!AesNvm_ctor(
             &(ctx->aesNvm),
-            nvm_driver_get_nvm(nvm_driver),
+            nvm,
             KEYSTORE_IV,
             &masterKeyData))
     {
@@ -165,7 +99,9 @@ encrypted_partition_init(
         return ret;
     }
 
+    ctx->nvm          = nvm;
     ctx->isInitalized = true;
+
     return SEOS_SUCCESS;
 }
 
@@ -310,10 +246,9 @@ format_partition(
 bool
 EncryptedPartitionFileStream_ctor(
     EncryptedPartitionFileStream*  self,
-    uint8_t                        channelNum,
+    Nvm*                           nvm,
     uint8_t                        partitionID,
-    uint8_t                        fsType,
-    void*                          dataport)
+    uint8_t                        fsType)
 {
     seos_err_t ret;
 
@@ -322,24 +257,11 @@ EncryptedPartitionFileStream_ctor(
     // initilizes the driver stack, all other instances reuse it. However, this
     // only works is the same parameters are passed, otherwise init will fail.
 
-    // setup the NVM driver (or re-use the instacne that has already been
-    // set up)
-    ret = nvm_driver_init(
-            &m_nvm_driver,
-            m_ctx.isInitalized,
-            channelNum,
-            dataport);
-    if (ret != SEOS_SUCCESS)
-    {
-        Debug_LOG_ERROR("do_init_nvm_driver() for SPIFFS failed, code %d", ret);
-        return ret;
-    }
-
     // setup the encrspted partition (or re-use what has already been set up)
-    ret = encrypted_partition_init(&m_ctx, &m_nvm_driver);
+    ret = encrypted_partition_init(&m_ctx, nvm);
     if (ret != SEOS_SUCCESS)
     {
-        Debug_LOG_ERROR("driver_stack_init() failed for channelNum %d, code %d",
+        Debug_LOG_ERROR("encrypted_partition_init() failed for partition ID %d, code %d",
                         partitionID, ret);
         return false;
     }

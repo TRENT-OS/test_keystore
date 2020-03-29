@@ -7,6 +7,8 @@
 #include "KeyStoreSPIFFS.h"
 
 #include "EncryptedPartitionFileStream.h"
+#include "ChanMuxNvmDriver.h"
+
 #include "SeosKeyStore.h"
 
 #include "OS_Crypto.h"
@@ -76,6 +78,7 @@ KeyStore_getRpcHandle(SeosKeyStoreRpc_Handle* instance)
 {
     static SeosKeyStore keyStore;
     static SeosKeyStoreRpc the_one;
+    static ChanMuxNvmDriver chanMuxNvm;
     static EncryptedPartitionFileStream encryptedPartitionFileStream;
 
     seos_err_t retval;
@@ -84,12 +87,21 @@ KeyStore_getRpcHandle(SeosKeyStoreRpc_Handle* instance)
     Debug_LOG_INFO("create EncryptedPartitionFileStream for channel %d, partition ID %d",
                    NVM_CHANNEL_NUMBER, KEY_STORE_SPIFFS_INSTANCE_1_PARTITION);
 
+    if (!ChanMuxNvmDriver_ctor(
+            &chanMuxNvm,
+            NVM_CHANNEL_NUMBER,
+            chanMuxDataPort))
+    {
+        Debug_LOG_ERROR("ChanMuxNvmDriver_ctor() on Proxy channel %d failed",
+                        NVM_CHANNEL_NUMBER);
+        return SEOS_ERROR_GENERIC;
+    }
+
     if (!EncryptedPartitionFileStream_ctor(
             &encryptedPartitionFileStream,
-            NVM_CHANNEL_NUMBER,
+            ChanMuxNvmDriver_get_nvm(&chanMuxNvm),
             KEY_STORE_SPIFFS_INSTANCE_1_PARTITION,
-            FS_TYPE_SPIFFS,
-            chanMuxDataPort))
+            FS_TYPE_SPIFFS))
     {
         Debug_LOG_ERROR("%s: Failed to initialize the test!", __func__);
         return SEOS_ERROR_GENERIC;
