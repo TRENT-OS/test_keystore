@@ -17,12 +17,10 @@
 
 typedef struct
 {
-    // we expose a file stream interface
-    SeosFileStreamFactory  fileStreamFactory;
     struct {
+        SeosFileStreamFactory  seosFileStreamFactory;
         hPartition_t           hPartition;
     } internal;
-
 } EncryptedPartitionFileStream;
 
 
@@ -37,4 +35,9 @@ EncryptedPartitionFileStream_ctor(
 
 bool
 EncryptedPartitionFileStream_dtor(
+    EncryptedPartitionFileStream*  self);
+
+
+FileStreamFactory*
+EncryptedPartitionFileStream_get_FileStreamFactory(
     EncryptedPartitionFileStream*  self);

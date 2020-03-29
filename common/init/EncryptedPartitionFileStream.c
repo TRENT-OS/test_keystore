@@ -347,7 +347,7 @@ EncryptedPartitionFileStream_ctor(
     }
 
     if (!SeosFileStreamFactory_ctor(
-            &(self->fileStreamFactory),
+            &(self->internal.seosFileStreamFactory),
             self->internal.hPartition))
     {
        Debug_LOG_ERROR("SeosFileStreamFactory_ctor() failed");
@@ -366,8 +366,7 @@ EncryptedPartitionFileStream_dtor(
 {
     // destroy file stream
     FileStreamFactory_dtor(
-        SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(
-            &(self->fileStreamFactory) ) );
+        EncryptedPartitionFileStream_get_FileStreamFactory(self) );
 
     // disconnect partition
     partition_fs_unmount(self->internal.hPartition);
@@ -388,3 +387,14 @@ EncryptedPartitionFileStream_dtor(
 
     return true;
 }
+
+
+//------------------------------------------------------------------------------
+FileStreamFactory*
+EncryptedPartitionFileStream_get_FileStreamFactory(
+    EncryptedPartitionFileStream*  self)
+{
+    return SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(
+            &(self->internal.seosFileStreamFactory) );
+}
+

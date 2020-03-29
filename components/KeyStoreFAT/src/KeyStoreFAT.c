@@ -95,8 +95,8 @@ KeyStore_getRpcHandle(SeosKeyStoreRpc_Handle* instance)
 
     retval = SeosKeyStore_init(
                 &keyStore,
-                SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(
-                    &(encryptedPartitionFileStream.fileStreamFactory)),
+                EncryptedPartitionFileStream_get_FileStreamFactory(
+                    &encryptedPartitionFileStream ),
                 hCrypto,
                 KEY_STORE_FAT_INSTANCE_1_NAME);
 

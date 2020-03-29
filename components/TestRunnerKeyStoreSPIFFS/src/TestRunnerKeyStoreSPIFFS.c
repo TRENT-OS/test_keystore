@@ -129,8 +129,8 @@ void testRunnerInf_runTests()
 
     err = SeosKeyStore_init(
             &localKeyStore1,
-            SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(
-                &(encryptedPartitionFileStream1.fileStreamFactory)),
+            EncryptedPartitionFileStream_get_FileStreamFactory(
+                &encryptedPartitionFileStream1 ),
             hCryptoLocal,
             KEY_STORE_SPIFFS_INSTANCE_1_NAME);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
@@ -150,8 +150,8 @@ void testRunnerInf_runTests()
 
     err = SeosKeyStore_init(
             &localKeyStore2,
-            SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(
-                &(encryptedPartitionFileStream2.fileStreamFactory)),
+            EncryptedPartitionFileStream_get_FileStreamFactory(
+                &encryptedPartitionFileStream2 ),
             hCryptoLocal,
             KEY_STORE_SPIFFS_INSTANCE_2_NAME);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
