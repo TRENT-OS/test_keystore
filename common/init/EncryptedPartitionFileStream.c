@@ -8,11 +8,14 @@
 
 #include "EncryptedPartitionFileStream.h"
 
+#include "OS_Crypto.h"
 #include "LibMem/Nvm.h"
 #include "AesNvm.h"
 #include "seos_fs.h"
 #include "seos_pm.h"
 
+#include <stdlib.h>
+#include <string.h>
 
 
 /* FAT defines ---------------------------------------------------------------*/
@@ -26,12 +29,13 @@
 
 // we explicitly store a reference to the Nvm in the context, because the
 // partition manger does not support multiple instance. As a consequence, we
-// can't support different instances of Nvm in different instances of the
-// EncryptedPartitionFileStream and have to fail instance creation then.
+// can't support different instances of Nvm and Crypto in different instances
+// of the EncryptedPartitionFileStream. We fail instance creation then.
 typedef struct {
-    bool               isInitalized;
-    Nvm*               nvm;
-    AesNvm             aesNvm;
+    bool                isInitalized;
+    Nvm*                nvm;
+    OS_Crypto_Handle_t  hCrypto;
+    AesNvm              aesNvm;
 } ctx_t;
 
 
@@ -42,10 +46,23 @@ static ctx_t m_ctx = {
 /* Private functions ---------------------------------------------------------*/
 
 //------------------------------------------------------------------------------
+static int
+entropy(
+    void*          ctx,
+    unsigned char* buf,
+    size_t         len)
+{
+    // This would be the platform specific function to obtain entropy
+    memset(buf, 0, len);
+    return 0;
+}
+
+
+//------------------------------------------------------------------------------
 static seos_err_t
 encrypted_partition_init(
-    ctx_t*  ctx,
-    Nvm*    nvm)
+    ctx_t*          ctx,
+    Nvm*            nvm)
 {
     seos_err_t ret;
 
@@ -70,6 +87,27 @@ encrypted_partition_init(
 
     Debug_LOG_INFO("create AES encrypted NVM and partition manager");
 
+    // we create our own crypto instance for convenience reasons. Actually, the
+    // caller should pass us one and the whole keystore subsystem should use
+    // the same instance everywhere
+    static OS_Crypto_Config_t cfgLib =
+    {
+        .mode = OS_Crypto_MODE_LIBRARY,
+        .mem = {
+            .malloc = malloc,
+            .free = free,
+        },
+        .impl.lib.rng.entropy = entropy,
+    };
+
+    ret = OS_Crypto_init(&(ctx->hCrypto), &cfgLib);
+    if (ret != SEOS_SUCCESS)
+    {
+        Debug_LOG_ERROR("OS_Crypto_init failed, code %d", ret);
+        return ret;
+    }
+
+
     static const OS_CryptoKey_Data_t masterKeyData =
     {
         .type = OS_CryptoKey_TYPE_AES,
@@ -83,6 +121,7 @@ encrypted_partition_init(
     if (!AesNvm_ctor(
             &(ctx->aesNvm),
             nvm,
+            ctx->hCrypto,
             KEYSTORE_IV,
             &masterKeyData))
     {
