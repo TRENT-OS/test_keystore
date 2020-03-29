@@ -260,6 +260,7 @@ format_partition(
         return SEOS_ERROR_GENERIC;
     }
 
+    // Initialize the partition with RW access
     ret = partition_init(partitionID, 0);
     if (ret != SEOS_SUCCESS)
     {
