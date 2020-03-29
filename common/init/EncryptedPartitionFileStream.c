@@ -2,7 +2,7 @@
  * Copyright (C) 2019, Hensoldt Cyber GmbH
  */
 /* Includes ------------------------------------------------------------------*/
-#include "config.h"
+#include "system_config.h"
 #include "EncryptedPartitionFileStream.h"
 
 /* FAT defines ---------------------------------------------------------------*/
