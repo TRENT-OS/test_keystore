@@ -5,7 +5,9 @@
 #include "LibDebug/Debug.h"
 
 #include "KeyStoreFAT.h"
+
 #include "EncryptedPartitionFileStream.h"
+#include "SeosKeyStore.h"
 
 #include "OS_Crypto.h"
 

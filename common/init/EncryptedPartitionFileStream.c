@@ -1,10 +1,19 @@
 /**
  * Copyright (C) 2019, Hensoldt Cyber GmbH
  */
+
+
 /* Includes ------------------------------------------------------------------*/
 #include "system_config.h"
-#include "ChanMuxNvmDriver.h"
+
 #include "EncryptedPartitionFileStream.h"
+
+#include "ChanMuxNvmDriver.h"
+#include "AesNvm.h"
+#include "seos_fs.h"
+#include "seos_pm.h"
+
+
 
 /* FAT defines ---------------------------------------------------------------*/
 

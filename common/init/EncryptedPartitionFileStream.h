@@ -5,12 +5,6 @@
 
 #pragma once
 
-#include "ProxyNVM.h"
-#include "AesNvm.h"
-#include "SeosKeyStore.h"
-
-#include "seos_fs.h"
-#include "seos_pm.h"
 #include "SeosFileStream.h"
 #include "SeosFileStreamFactory.h"
 

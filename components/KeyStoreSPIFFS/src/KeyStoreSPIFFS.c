@@ -3,8 +3,11 @@
  *
  */
 #include "LibDebug/Debug.h"
+
 #include "KeyStoreSPIFFS.h"
+
 #include "EncryptedPartitionFileStream.h"
+#include "SeosKeyStore.h"
 
 #include "OS_Crypto.h"
 
