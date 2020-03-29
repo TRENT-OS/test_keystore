@@ -121,13 +121,9 @@ KeyStore_getRpcHandle(SeosKeyStoreRpc_Handle* instance)
     }
 
     *instance = &the_one;
+    Debug_LOG_TRACE("%s: created rpc object %p", __func__, *instance);
 
-    if (SEOS_SUCCESS == retval)
-    {
-        Debug_LOG_TRACE("%s: created rpc object %p", __func__, *instance);
-    }
-
-    return retval;
+    return SEOS_SUCCESS;
 }
 
 void
