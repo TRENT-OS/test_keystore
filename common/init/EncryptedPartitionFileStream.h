@@ -2,6 +2,9 @@
  * Copyright (C) 2019, Hensoldt Cyber GmbH
  *
  */
+
+#pragma once
+
 #include "ProxyNVM.h"
 #include "AesNvm.h"
 #include "SeosKeyStore.h"
