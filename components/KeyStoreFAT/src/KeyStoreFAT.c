@@ -92,7 +92,7 @@ KeyStore_getRpcHandle(SeosKeyStoreRpc_Handle* instance)
             chanMuxDataPort))
     {
         Debug_LOG_ERROR("%s: Failed to initialize the test!", __func__);
-        return 0;
+        return SEOS_ERROR_GENERIC;
     }
 
     retval = SeosKeyStore_init(
