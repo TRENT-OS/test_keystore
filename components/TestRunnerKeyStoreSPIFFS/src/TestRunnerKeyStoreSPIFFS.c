@@ -14,7 +14,7 @@
 #include "SeosKeyStore.h"
 #include "SeosKeyStoreClient.h"
 
-#include "SeosCryptoApi.h"
+#include "OS_Crypto.h"
 
 #include "EncryptedPartitionFileStream.h"
 #include "keyStoreUnitTests.h"
@@ -63,9 +63,9 @@ static int entropyFunc(void* ctx, unsigned char* buf, size_t len);
  */
 void testRunnerInf_runTests()
 {
-    SeosCryptoApi_Config cfgLocal =
+    OS_Crypto_Config_t cfgLocal =
     {
-        .mode = SeosCryptoApi_Mode_LIBRARY,
+        .mode = OS_Crypto_MODE_LIBRARY,
         .mem = {
             .malloc = malloc,
             .free = free,
@@ -75,17 +75,17 @@ void testRunnerInf_runTests()
             .context = NULL
         }
     };
-    SeosCryptoApi_Config cfgRemote =
+    OS_Crypto_Config_t cfgRemote =
     {
-        .mode = SeosCryptoApi_Mode_RPC_CLIENT,
+        .mode = OS_Crypto_MODE_RPC_CLIENT,
         .mem = {
             .malloc = malloc,
             .free = free,
         },
         .impl.client.dataPort = cryptoClientDataport
     };
-    SeosCryptoApiH hCryptoLocal;
-    SeosCryptoApiH hCryptoRemote;
+    OS_Crypto_Handle_t hCryptoLocal;
+    OS_Crypto_Handle_t hCryptoRemote;
 
     SeosKeyStore localKeyStore1;
     SeosKeyStoreCtx* keyStoreApiLocal1;
@@ -103,17 +103,17 @@ void testRunnerInf_runTests()
     bool ret = false;
 
     /************************** Init Crypto local version ****************************/
-    err = SeosCryptoApi_init(&hCryptoLocal, &cfgLocal);
+    err = OS_Crypto_init(&hCryptoLocal, &cfgLocal);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
-                          "SeosCryptoApi_init failed with error code %d!", err);
+                          "OS_Crypto_init failed with error code %d!", err);
 
     /************************** Init Crypto remote version ****************************/
     err = CryptoRpcServer_openSession();
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "CryptoRpcServer_openSession failed with error code %d!", err);
-    err = SeosCryptoApi_init(&hCryptoRemote, &cfgRemote);
+    err = OS_Crypto_init(&hCryptoRemote, &cfgRemote);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
-                          "SeosCryptoApi_init failed with error code %d!", err);
+                          "OS_Crypto_init failed with error code %d!", err);
 
     /************************** Init 1. local version of the KeyStore ****************************/
     Debug_LOG_INFO("create EncryptedPartitionFileStream for channel %d, partition ID %d",
@@ -274,8 +274,8 @@ void testRunnerInf_runTests()
     }
 
     /***************************** Destruction *******************************/
-    SeosCryptoApi_free(hCryptoLocal);
-    SeosCryptoApi_free(hCryptoRemote);
+    OS_Crypto_free(hCryptoLocal);
+    OS_Crypto_free(hCryptoRemote);
     CryptoRpcServer_closeSession();
 
     SeosKeyStore_deInit(keyStoreApiLocal1);

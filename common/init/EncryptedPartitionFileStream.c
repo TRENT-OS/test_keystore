@@ -69,9 +69,9 @@ init_NVM_driver(
         return SEOS_ERROR_GENERIC;
     }
 
-    static const SeosCryptoApi_Key_Data masterKeyData =
+    static const OS_CryptoKey_Data_t masterKeyData =
     {
-        .type = SeosCryptoApi_Key_TYPE_AES,
+        .type = OS_CryptoKey_TYPE_AES,
         .data.aes.len = sizeof(KEYSTORE_KEY_AES)-1,
         .data.aes.bytes = KEYSTORE_KEY_AES
     };
