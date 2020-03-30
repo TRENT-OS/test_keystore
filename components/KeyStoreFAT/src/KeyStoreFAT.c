@@ -112,7 +112,6 @@ KeyStore_getRpcHandle(SeosKeyStoreRpc_Handle* instance)
         return retval;
     }
 
-
     retval = SeosKeyStoreRpc_init(
                 &the_one,
                 &(keyStore.parent),

@@ -4,7 +4,7 @@
  *
  * @file topLevelTestRunner.c
  *
- * @brief   Entry point of the Test_KeyStore system 
+ * @brief   Entry point of the Test_KeyStore system
  *          that contains the top level test runner
  *
  * Copyright (C) 2019, Hensoldt Cyber GmbH
