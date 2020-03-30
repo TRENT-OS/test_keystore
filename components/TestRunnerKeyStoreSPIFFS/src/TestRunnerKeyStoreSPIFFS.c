@@ -24,17 +24,6 @@
 #include <camkes.h>
 #include <string.h>
 
-/* Defines -------------------------------------------------------------------*/
-#define NVM_CHANNEL_NUMBER                  6
-
-#define KEY_STORE_INSTANCE_1_NAME           "KeyStore1"
-#define KEY_STORE_INSTANCE_1_PARTITION      0
-
-#define KEY_STORE_INSTANCE_2_NAME           "KeyStore2"
-#define KEY_STORE_INSTANCE_2_PARTITION      1
-
-
-
 /* Private function prototypes -----------------------------------------------------------*/
 static int entropyFunc(void* ctx, unsigned char* buf, size_t len);
 
@@ -128,12 +117,12 @@ void testRunnerInf_runTests()
 
     /************************** Init 1. local version of the KeyStore ****************************/
     Debug_LOG_INFO("create EncryptedPartitionFileStream for channel %d, partition ID %d",
-                   NVM_CHANNEL_NUMBER, KEY_STORE_INSTANCE_1_PARTITION);
+                   NVM_CHANNEL_NUMBER, KEY_STORE_SPIFFS_INSTANCE_1_PARTITION);
 
     ret = EncryptedPartitionFileStream_ctor(
             &encryptedPartitionFileStream1,
             NVM_CHANNEL_NUMBER,
-            KEY_STORE_INSTANCE_1_PARTITION,
+            KEY_STORE_SPIFFS_INSTANCE_1_PARTITION,
             FS_TYPE_SPIFFS,
             chanMuxDataPort);
     Debug_ASSERT_PRINTFLN(ret == true, "keyStoreContext_ctor failed!");
@@ -142,18 +131,18 @@ void testRunnerInf_runTests()
                             SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(
                                 &(encryptedPartitionFileStream1.fileStreamFactory)),
                             hCryptoLocal,
-                            KEY_STORE_INSTANCE_1_NAME);
+                            KEY_STORE_SPIFFS_INSTANCE_1_NAME);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStore_init failed with error code %d!", err);
 
     /************************** Init 2. local version of the KeyStore ****************************/
     Debug_LOG_INFO("create EncryptedPartitionFileStream for channel %d, partition ID %d",
-                   NVM_CHANNEL_NUMBER, KEY_STORE_INSTANCE_2_PARTITION);
+                   NVM_CHANNEL_NUMBER, KEY_STORE_SPIFFS_INSTANCE_2_PARTITION);
 
     ret = EncryptedPartitionFileStream_ctor(
             &encryptedPartitionFileStream2,
             NVM_CHANNEL_NUMBER,
-            KEY_STORE_INSTANCE_2_PARTITION,
+            KEY_STORE_SPIFFS_INSTANCE_2_PARTITION,
             FS_TYPE_SPIFFS,
             chanMuxDataPort);
     Debug_ASSERT_PRINTFLN(ret == true, "keyStoreContext_ctor failed!");
@@ -162,7 +151,7 @@ void testRunnerInf_runTests()
                             SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(
                                 &(encryptedPartitionFileStream2.fileStreamFactory)),
                             hCryptoLocal,
-                            KEY_STORE_INSTANCE_2_NAME);
+                            KEY_STORE_SPIFFS_INSTANCE_2_NAME);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStore_init failed with error code %d!", err);
 

@@ -36,6 +36,10 @@
 #define Logs_Config_INCLUDE_LEVEL_IN_MSG    1
 #define Logs_Config_SYSLOG_LEVEL            Log_TRACE
 
+//-----------------------------------------------------------------------------
+// ChanMux
+//-----------------------------------------------------------------------------
+#define NVM_CHANNEL_NUMBER              6
 
 //-----------------------------------------------------------------------------
 // Keystore
@@ -46,6 +50,23 @@
 
 #define MAX_KEY_LEN             2048    /* Maximum length of the raw key in bytes */
 #define MAX_KEY_NAME_LEN        16      /* Maximum length of the key name (including the null char) */
+
+#define KEYSTORE_IV         "15e1f594c54670bf"
+#define KEYSTORE_KEY_AES    "f131830db44c54742fc3f3265f0f1a0c"
+
+#define KEY_STORE_SPIFFS_INSTANCE_1_NAME           "SPIFFS_KeyStore1"
+#define KEY_STORE_SPIFFS_INSTANCE_1_PARTITION      0
+
+#define KEY_STORE_SPIFFS_INSTANCE_2_NAME           "SPIFFS_KeyStore2"
+#define KEY_STORE_SPIFFS_INSTANCE_2_PARTITION      1
+
+#define KEY_STORE_FAT_INSTANCE_1_NAME           "FAT_KeyStore1"
+#define KEY_STORE_FAT_INSTANCE_1_PARTITION      2
+
+#define KEY_STORE_FAT_INSTANCE_2_NAME           "FAT_KeyStore2"
+#define KEY_STORE_FAT_INSTANCE_2_PARTITION      3
+
+
 
 
 //-----------------------------------------------------------------------------
@@ -115,10 +136,3 @@ static const Partition_cat_t partition_conf = {
 #define GET_PROPERTY_PARTITION_NAME(x)          GET_PROPERTY_PARTITION_NAME_AT(x)
 #define GET_PROPERTY_PARTITION_SIZE(x)          GET_PROPERTY_PARTITION_SIZE_AT(x)
 #define GET_PROPERTY_BLOCK_SIZE(x)              GET_PROPERTY_BLOCK_SIZE_AT(x)
-
-
-//-----------------------------------------------------------------------------
-// Keystore
-//-----------------------------------------------------------------------------
-#define KEYSTORE_IV         "15e1f594c54670bf"
-#define KEYSTORE_KEY_AES    "f131830db44c54742fc3f3265f0f1a0c"

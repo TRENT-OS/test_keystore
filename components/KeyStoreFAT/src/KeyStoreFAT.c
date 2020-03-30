@@ -11,11 +11,6 @@
 
 #include <camkes.h>
 
-/* Defines -----------------------------------------------------------*/
-#define NVM_CHANNEL_NUMBER              6
-#define KEY_STORE_INSTANCE_NAME         "KeyStore1"
-#define KEY_STORE_INSTANCE_PARTITION    0
-
 /* Private function prototypes ------------------------------------------------*/
 static int entropyFunc(void* ctx, unsigned char* buf, size_t len);
 
@@ -85,12 +80,12 @@ KeyStore_getRpcHandle(SeosKeyStoreRpc_Handle* instance)
 
 
     Debug_LOG_INFO("create EncryptedPartitionFileStream for channel %d, partition ID %d",
-                   NVM_CHANNEL_NUMBER, KEY_STORE_INSTANCE_PARTITION);
+                   NVM_CHANNEL_NUMBER, KEY_STORE_FAT_INSTANCE_1_PARTITION);
 
     if (!EncryptedPartitionFileStream_ctor(
             &encryptedPartitionFileStream,
             NVM_CHANNEL_NUMBER,
-            KEY_STORE_INSTANCE_PARTITION,
+            KEY_STORE_FAT_INSTANCE_1_PARTITION,
             FS_TYPE_FAT32,
             chanMuxDataPort))
     {
@@ -103,7 +98,7 @@ KeyStore_getRpcHandle(SeosKeyStoreRpc_Handle* instance)
                 SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(
                     &(encryptedPartitionFileStream.fileStreamFactory)),
                 hCrypto,
-                KEY_STORE_INSTANCE_NAME);
+                KEY_STORE_FAT_INSTANCE_1_NAME);
 
     if (retval != SEOS_SUCCESS)
     {
