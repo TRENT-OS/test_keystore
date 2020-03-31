@@ -114,7 +114,6 @@ DeclareCAmkESComponent(TestRunnerKeyStoreSPIFFS
         system_config
         seos_core_api
         seos_libs
-        chanmux_client
         proxy_nvm
         seos_crypto_with_rpc_client
         seos_filesystem_fat
@@ -142,7 +141,6 @@ DeclareCAmkESComponent(KeyStoreSPIFFS
         system_config
         seos_core_api
         seos_libs
-        chanmux_client
         proxy_nvm
         seos_crypto_with_rpc_server
         seos_filesystem_fat
@@ -168,7 +166,6 @@ DeclareCAmkESComponent(ChanMux
     LIBS
         system_config
         seos_core_api
-        seos_libs
         chanmux_server
 )
 
