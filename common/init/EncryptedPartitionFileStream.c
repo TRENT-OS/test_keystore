@@ -12,7 +12,7 @@
 #include "LibMem/Nvm.h"
 #include "AesNvm.h"
 #include "seos_fs.h"
-#include "seos_pm.h"
+#include "seos_pm_api.h"
 
 #include <stdlib.h>
 #include <string.h>
