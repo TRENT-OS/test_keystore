@@ -11,7 +11,7 @@
 #include "OS_Crypto.h"
 #include "LibMem/Nvm.h"
 #include "AesNvm.h"
-#include "seos_fs_api.h"
+#include "OS_FilesystemApi.h"
 #include "seos_pm_api.h"
 
 #include <stdlib.h>
@@ -157,7 +157,7 @@ do_partition_fs_create(
 
     if (fsType <= FS_TYPE_FAT32)
     {
-        ret = partition_fs_create(
+        ret = OS_FilesystemApi_create(
                 hPartition,
                 fsType,
                 size,
@@ -170,13 +170,13 @@ do_partition_fs_create(
 
         if (ret != SEOS_SUCCESS)
         {
-            Debug_LOG_ERROR("partition_fs_create() for FAT failed, code %d", ret);
+            Debug_LOG_ERROR("OS_FilesystemApi_create() for FAT failed, code %d", ret);
             return ret;
         }
     }
     else
     {
-        ret = partition_fs_create(
+        ret = OS_FilesystemApi_create(
                 hPartition,
                 fsType,
                 SPIFFS_PARTITION_SIZE,  /* ToDo: why not use size*/
@@ -189,7 +189,7 @@ do_partition_fs_create(
 
         if (ret != SEOS_SUCCESS)
         {
-            Debug_LOG_ERROR("partition_fs_create() for SPIFFS failed, code %d", ret);
+            Debug_LOG_ERROR("OS_FilesystemApi_create() for SPIFFS failed, code %d", ret);
             return ret;
         }
     }
@@ -236,7 +236,7 @@ format_partition(
     }
 
     // Initialize the partition with RW access
-    ret = partition_init(partitionID, 0);
+    ret = OS_FilesystemApi_init(partitionID, 0);
     if (ret != SEOS_SUCCESS)
     {
         Debug_LOG_ERROR("partition_io_layer_partition_register() failed, code %d",
@@ -244,7 +244,7 @@ format_partition(
         return ret;
     }
 
-    hPartition_t hPartition = partition_open(partitionID);
+    hPartition_t hPartition = OS_FilesystemApi_open(partitionID);
     if (hPartition == NULL)
     {
         Debug_LOG_ERROR("partition_open() failed for ID %d!", partitionID);
@@ -264,10 +264,10 @@ format_partition(
         return ret;
     }
 
-    ret = partition_fs_mount(hPartition);
+    ret = OS_FilesystemApi_mount(hPartition);
     if (ret != SEOS_SUCCESS)
     {
-        Debug_LOG_ERROR("partition_fs_mount() failed, code %d", ret);
+        Debug_LOG_ERROR("OS_FilesystemApi_mount() failed, code %d", ret);
         return ret;
     }
 
@@ -340,8 +340,8 @@ EncryptedPartitionFileStream_dtor(
         EncryptedPartitionFileStream_get_FileStreamFactory(self) );
 
     // disconnect partition
-    partition_fs_unmount(self->internal.hPartition);
-    partition_close(self->internal.hPartition);
+    OS_FilesystemApi_unmount(self->internal.hPartition);
+    OS_FilesystemApi_close(self->internal.hPartition);
 
     // we can't shut down the driver stack, because we don't know how many
     // instances are there. We could have an instance counter to address this,
