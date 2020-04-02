@@ -6,8 +6,7 @@ seos_use_libs(
     SEOS_LIBS
     SEOS_LIBS_LOGGER
     SEOS_CHANMUX
-    SEOS_CRYPTO_WITH_RPC_SERVER
-    SEOS_CRYPTO_WITH_RPC_CLIENT
+    SEOS_CRYPTO
     SEOS_CRYPTO_IMPL_MBEDTLS
     SEOS_PARTITION_MANAGER
     SEOS_FILESYSTEM_CORE
@@ -15,8 +14,6 @@ seos_use_libs(
     SEOS_FILESYSTEM_SPIFFS
     SEOS_KEYSTORE
 )
-
-set(KEYSTORE_AS_COMPONENT ON CACHE BOOL "string")
 
 set(SEOS_LIBS_KEYSTORE "${SEOS_LIBS_DIR}/seos_keystore")
 
@@ -58,35 +55,7 @@ DeclareCAmkESComponent(TestRunnerKeyStoreFAT
         seos_libs
         chanmux_client
         proxy_nvm
-        seos_crypto_with_rpc_client
-        seos_filesystem_fat
-        seos_filesystem_spiffs
-        seos_partition_manager
-        seos_filesystem_core
-        seos_keystore
-)
-
-DeclareCAmkESComponent(KeyStoreFAT
-    INCLUDES
-        common/init
-        common/test
-    SOURCES
-        common/init/EncryptedPartitionFileStream.c
-        components/KeyStoreFAT/src/KeyStoreFAT.c
-        ${SEOS_LIBS_KEYSTORE}/src/SeosKeyStoreRpc.c
-    C_FLAGS
-        -Wall -Werror
-        # filesystem
-        -DSEOS_FS_BUILD_AS_LIB
-        # partition manager
-        -DSEOS_PARTITION_MANAGER_BUILD_AS_LIB
-    LIBS
-        system_config
-        seos_core_api
-        seos_libs
-        chanmux_client
-        proxy_nvm
-        seos_crypto_with_rpc_server
+        seos_crypto
         seos_filesystem_fat
         seos_filesystem_spiffs
         seos_partition_manager
@@ -115,34 +84,7 @@ DeclareCAmkESComponent(TestRunnerKeyStoreSPIFFS
         seos_core_api
         seos_libs
         proxy_nvm
-        seos_crypto_with_rpc_client
-        seos_filesystem_fat
-        seos_filesystem_spiffs
-        seos_partition_manager
-        seos_filesystem_core
-        seos_keystore
-)
-
-DeclareCAmkESComponent(KeyStoreSPIFFS
-    INCLUDES
-        common/init
-        common/test
-    SOURCES
-        common/init/EncryptedPartitionFileStream.c
-        components/KeyStoreSPIFFS/src/KeyStoreSPIFFS.c
-        ${SEOS_LIBS_KEYSTORE}/src/SeosKeyStoreRpc.c
-    C_FLAGS
-        -Wall -Werror
-        # filesystem
-        -DSEOS_FS_BUILD_AS_LIB
-        # partition manager
-        -DSEOS_PARTITION_MANAGER_BUILD_AS_LIB
-    LIBS
-        system_config
-        seos_core_api
-        seos_libs
-        proxy_nvm
-        seos_crypto_with_rpc_server
+        seos_crypto
         seos_filesystem_fat
         seos_filesystem_spiffs
         seos_partition_manager

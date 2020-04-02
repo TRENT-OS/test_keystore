@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "SeosKeyStoreCtx.h"
+#include "OS_Keystore.h"
 #include "OS_Crypto.h"
 
 #include <stdbool.h>
@@ -25,11 +25,11 @@
  *                      between 2 instances of the keystore by copying a
  *                      key from the source keystore into the destination keystore
  *
- * @param srcKeyStore   handle to the source keyStore, it can represent a local
+ * @param hSrcKeystore  handle to the source keyStore, it can represent a local
  *                      instance of the key store library, or a handle to the
  *                      context which is created in a separate camkes component
  *
- * @param dstKeyStore   handle to the destination keyStore, it can represent a local
+ * @param hDstKeystore  handle to the destination keyStore, it can represent a local
  *                      instance of the key store library, or a handle to the context
  *                      which is created in a separate camkes component
  *
@@ -51,7 +51,8 @@
  * @}
  *
  */
-bool keyStoreCopyKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeyStore, OS_Crypto_Handle_t hCrypto);
+bool keyStoreCopyKeyTest(
+    OS_Keystore_Handle_t hSrcKeystore, OS_Keystore_Handle_t hDstKeystore, OS_Crypto_Handle_t hCrypto);
 /**
  * @weakgroup KeyStore_MultiInstance_test_cases
  * @{
@@ -60,11 +61,11 @@ bool keyStoreCopyKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeySt
  *                      between 2 instances of the keystore by moving a
  *                      key from the source keystore into the destination keystore
  *
- * @param srcKeyStore   handle to the source keyStore, it can represent a local
+ * @param hSrcKeystore  handle to the source keyStore, it can represent a local
  *                      instance of the key store library, or a handle to the
  *                      context which is created in a separate camkes component
  *
- * @param dstKeyStore   handle to the destination keyStore, it can represent a local
+ * @param hDstKeystore  handle to the destination keyStore, it can represent a local
  *                      instance of the key store library, or a handle to the context
  *                      which is created in a separate camkes component
  *
@@ -89,7 +90,8 @@ bool keyStoreCopyKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeySt
  * @}
  *
  */
-bool keyStoreMoveKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeyStore, OS_Crypto_Handle_t hCrypto);
+bool keyStoreMoveKeyTest(
+    OS_Keystore_Handle_t hSrcKeystore, OS_Keystore_Handle_t hDstKeystore, OS_Crypto_Handle_t hCrypto);
 
 ///@}
 

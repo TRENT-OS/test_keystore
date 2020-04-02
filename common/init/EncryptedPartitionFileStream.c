@@ -32,15 +32,15 @@
 // can't support different instances of Nvm and Crypto in different instances
 // of the EncryptedPartitionFileStream. We fail instance creation then.
 typedef struct {
-    bool                isInitalized;
-    Nvm*                nvm;
-    OS_Crypto_Handle_t  hCrypto;
-    AesNvm              aesNvm;
+    bool isInitalized;
+    Nvm* nvm;
+    OS_Crypto_Handle_t hCrypto;
+    AesNvm aesNvm;
 } ctx_t;
 
 
 static ctx_t m_ctx = {
-                .isInitalized = false,
+    .isInitalized = false,
 };
 
 /* Private functions ---------------------------------------------------------*/
@@ -61,8 +61,8 @@ entropy(
 //------------------------------------------------------------------------------
 static seos_err_t
 encrypted_partition_init(
-    ctx_t*          ctx,
-    Nvm*            nvm)
+    ctx_t* ctx,
+    Nvm*   nvm)
 {
     seos_err_t ret;
 
@@ -149,9 +149,9 @@ encrypted_partition_init(
 // We need this helper function to hide some quirks from the rest of the code
 static seos_err_t
 do_partition_fs_create(
-    hPartition_t          hPartition,
-    uint64_t              size,
-    uint8_t               fsType)
+    hPartition_t hPartition,
+    uint64_t     size,
+    uint8_t      fsType)
 {
     seos_err_t ret;
 
@@ -200,9 +200,9 @@ do_partition_fs_create(
 //------------------------------------------------------------------------------
 static seos_err_t
 format_partition(
-    EncryptedPartitionFileStream*  self,
-    uint8_t                        partitionID,
-    uint8_t                        fsType)
+    EncryptedPartitionFileStream* self,
+    uint8_t                       partitionID,
+    uint8_t                       fsType)
 {
     seos_err_t ret;
 
@@ -218,8 +218,8 @@ format_partition(
 
     pm_partition_data_t pm_partition_data;
     ret = partition_manager_get_info_partition(
-            partitionID,
-            &pm_partition_data);
+        partitionID,
+        &pm_partition_data);
     if (ret != SEOS_SUCCESS)
     {
         Debug_LOG_ERROR("partition_manager_get_info()_partition failed, code %d",
@@ -255,9 +255,9 @@ format_partition(
 
     // create a file system in the partition, using the whole sizde
     ret = do_partition_fs_create(
-            hPartition,
-            pm_partition_data.partition_size,
-            fsType);
+        hPartition,
+        pm_partition_data.partition_size,
+        fsType);
     if (ret != SEOS_SUCCESS)
     {
         Debug_LOG_ERROR("do_partition_fs_create() failed, code %d!", ret);
@@ -284,10 +284,10 @@ format_partition(
 //------------------------------------------------------------------------------
 bool
 EncryptedPartitionFileStream_ctor(
-    EncryptedPartitionFileStream*  self,
-    Nvm*                           nvm,
-    uint8_t                        partitionID,
-    uint8_t                        fsType)
+    EncryptedPartitionFileStream* self,
+    Nvm*                          nvm,
+    uint8_t                       partitionID,
+    uint8_t                       fsType)
 {
     seos_err_t ret;
 
@@ -321,8 +321,8 @@ EncryptedPartitionFileStream_ctor(
             &(self->internal.seosFileStreamFactory),
             self->internal.hPartition))
     {
-       Debug_LOG_ERROR("SeosFileStreamFactory_ctor() failed");
-       return SEOS_ERROR_GENERIC;
+        Debug_LOG_ERROR("SeosFileStreamFactory_ctor() failed");
+        return SEOS_ERROR_GENERIC;
     }
 
 
@@ -333,7 +333,7 @@ EncryptedPartitionFileStream_ctor(
 //------------------------------------------------------------------------------
 bool
 EncryptedPartitionFileStream_dtor(
-    EncryptedPartitionFileStream*  self)
+    EncryptedPartitionFileStream* self)
 {
     // destroy file stream
     FileStreamFactory_dtor(
@@ -363,9 +363,9 @@ EncryptedPartitionFileStream_dtor(
 //------------------------------------------------------------------------------
 FileStreamFactory*
 EncryptedPartitionFileStream_get_FileStreamFactory(
-    EncryptedPartitionFileStream*  self)
+    EncryptedPartitionFileStream* self)
 {
     return SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(
-            &(self->internal.seosFileStreamFactory) );
+        &(self->internal.seosFileStreamFactory) );
 }
 

@@ -1,19 +1,10 @@
 /**
- * @addtogroup KeyStore_Tests
- * @{
- *
- * @file TestRunnerKeyStoreSPIFFS.c
- *
- * @brief Tests for the keystore based on SPIFFS
- *
  * Copyright (C) 2019, Hensoldt Cyber GmbH
  */
 
 #include "LibDebug/Debug.h"
 
-#include "SeosKeyStore.h"
-#include "SeosKeyStoreClient.h"
-
+#include "OS_Keystore.h"
 #include "OS_Crypto.h"
 
 #include "EncryptedPartitionFileStream.h"
@@ -27,42 +18,9 @@
 #include <string.h>
 
 /* Private function prototypes -----------------------------------------------------------*/
-static int entropyFunc(void* ctx, unsigned char* buf, size_t len);
+static int entropyFunc(
+    void* ctx, unsigned char* buf, size_t len);
 
-/**
- * @weakgroup KeyStore_SPIFFS_test_scenarios
- * @{
- *
- * @brief Test run for the keystore based on top of the SPIFFS filesystem
- *
- * @test \b TestKeyStoreSPIFFS_scenario_1   Perform TestKeyStore_testCase_01 - 03 for a local version of the KeyStore
- *
- * @test \b TestKeyStoreSPIFFS_scenario_2   Perform TestKeyStore_testCase_01 - 03 for a remote version of the KeyStore
- *
- * @test \b TestKeyStoreSPIFFS_scenario_3   Perform TestKeyStore_testCase_04 - 08 for a local version of the KeyStore
- *
- * @test \b TestKeyStoreSPIFFS_scenario_4   Perform TestKeyStore_testCase_04 - 08 for a remote version of the KeyStore
- *
- * @test \b TestKeyStoreSPIFFS_scenario_5   Perform TestKeyStore_testCase_09 - 11 for a local version of the KeyStore,
- *                                          for RSA and DH keypairs
- *
- * @test \b TestKeyStoreSPIFFS_scenario_6   Perform TestKeyStore_testCase_09 - 11 for a remote version of the KeyStore,
- *                                          for RSA and DH keypairs
- *
- * @test \b TestKeyStoreSPIFFS_scenario_7   Perform TestKeyStore_testCase_12 - 14 for a local source KeyStore and a
- *                                          local destination KeyStore
- *
- * @test \b TestKeyStoreSPIFFS_scenario_8   Perform TestKeyStore_testCase_12 - 14 for a local source KeyStore and a
- *                                          remote destination KeyStore
- *
- * @test \b TestKeyStoreSPIFFS_scenario_9   Perform TestKeyStore_testCase_15 - 17 for a local source KeyStore and a
- *                                          local destination KeyStore
- *
- * @test \b TestKeyStoreSPIFFS_scenario_10  Perform TestKeyStore_testCase_15 - 17 for a local source KeyStore and a
- *                                          remote destination KeyStore
- *
- * @}
- */
 void testRunnerInf_runTests()
 {
     OS_Crypto_Config_t cfgLocal =
@@ -77,32 +35,11 @@ void testRunnerInf_runTests()
             .context = NULL
         }
     };
-    OS_Crypto_Config_t cfgRemote =
-    {
-        .mode = OS_Crypto_MODE_RPC_CLIENT,
-        .mem = {
-            .malloc = malloc,
-            .free = free,
-        },
-        .impl.client.dataPort = cryptoClientDataport
-    };
-    OS_Crypto_Handle_t hCryptoLocal;
-    OS_Crypto_Handle_t hCryptoRemote;
-
+    OS_Crypto_Handle_t hCrypto;
+    OS_Keystore_Handle_t hKeystore1, hKeystore2;
     ChanMuxNvmDriver chanMuxNvm;
-
-    SeosKeyStore localKeyStore1;
-    SeosKeyStoreCtx* keyStoreApiLocal1;
     EncryptedPartitionFileStream encryptedPartitionFileStream1;
-
-    SeosKeyStore localKeyStore2;
-    SeosKeyStoreCtx* keyStoreApiLocal2;
     EncryptedPartitionFileStream encryptedPartitionFileStream2;
-
-    SeosKeyStoreClient keyStoreClient;
-    SeosKeyStoreCtx* keyStoreApiRpc;
-    SeosKeyStoreRpc_Handle keyStoreRpcHandle = NULL;
-
     seos_err_t err = SEOS_ERROR_GENERIC;
     bool ret = false;
 
@@ -119,15 +56,7 @@ void testRunnerInf_runTests()
     }
 
     /************************** Init Crypto local version ****************************/
-    err = OS_Crypto_init(&hCryptoLocal, &cfgLocal);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
-                          "OS_Crypto_init failed with error code %d!", err);
-
-    /************************** Init Crypto remote version ****************************/
-    err = CryptoRpcServer_openSession();
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
-                          "CryptoRpcServer_openSession failed with error code %d!", err);
-    err = OS_Crypto_init(&hCryptoRemote, &cfgRemote);
+    err = OS_Crypto_init(&hCrypto, &cfgLocal);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "OS_Crypto_init failed with error code %d!", err);
 
@@ -136,18 +65,18 @@ void testRunnerInf_runTests()
                    NVM_CHANNEL_NUMBER, KEY_STORE_SPIFFS_INSTANCE_1_PARTITION);
 
     ret = EncryptedPartitionFileStream_ctor(
-            &encryptedPartitionFileStream1,
-            ChanMuxNvmDriver_get_nvm(&chanMuxNvm),
-            KEY_STORE_SPIFFS_INSTANCE_1_PARTITION,
-            FS_TYPE_SPIFFS);
+        &encryptedPartitionFileStream1,
+        ChanMuxNvmDriver_get_nvm(&chanMuxNvm),
+        KEY_STORE_SPIFFS_INSTANCE_1_PARTITION,
+        FS_TYPE_SPIFFS);
     Debug_ASSERT_PRINTFLN(ret == true, "keyStoreContext_ctor failed!");
 
-    err = SeosKeyStore_init(
-            &localKeyStore1,
-            EncryptedPartitionFileStream_get_FileStreamFactory(
-                &encryptedPartitionFileStream1 ),
-            hCryptoLocal,
-            KEY_STORE_SPIFFS_INSTANCE_1_NAME);
+    err = OS_Keystore_init(
+        &hKeystore1,
+        EncryptedPartitionFileStream_get_FileStreamFactory(
+            &encryptedPartitionFileStream1 ),
+        hCrypto,
+        KEY_STORE_SPIFFS_INSTANCE_1_NAME);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStore_init failed with error code %d!", err);
 
@@ -156,41 +85,24 @@ void testRunnerInf_runTests()
                    NVM_CHANNEL_NUMBER, KEY_STORE_SPIFFS_INSTANCE_2_PARTITION);
 
     ret = EncryptedPartitionFileStream_ctor(
-            &encryptedPartitionFileStream2,
-            ChanMuxNvmDriver_get_nvm(&chanMuxNvm),
-            KEY_STORE_SPIFFS_INSTANCE_2_PARTITION,
-            FS_TYPE_SPIFFS);
+        &encryptedPartitionFileStream2,
+        ChanMuxNvmDriver_get_nvm(&chanMuxNvm),
+        KEY_STORE_SPIFFS_INSTANCE_2_PARTITION,
+        FS_TYPE_SPIFFS);
     Debug_ASSERT_PRINTFLN(ret == true, "keyStoreContext_ctor failed!");
 
-    err = SeosKeyStore_init(
-            &localKeyStore2,
-            EncryptedPartitionFileStream_get_FileStreamFactory(
-                &encryptedPartitionFileStream2 ),
-            hCryptoLocal,
-            KEY_STORE_SPIFFS_INSTANCE_2_NAME);
+    err = OS_Keystore_init(
+        &hKeystore2,
+        EncryptedPartitionFileStream_get_FileStreamFactory(
+            &encryptedPartitionFileStream2 ),
+        hCrypto,
+        KEY_STORE_SPIFFS_INSTANCE_2_NAME);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "SeosKeyStore_init failed with error code %d!", err);
 
-    /************************* Init KeyStore remote version ***************************/
-    err = KeyStore_getRpcHandle(&keyStoreRpcHandle);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
-                          "KeyStore_getRpcHandle failed with error code %d!", err);
-
-    err = SeosKeyStoreClient_init(
-            &keyStoreClient,
-            keyStoreRpcHandle,
-            keyStoreClientDataport);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
-                          "SeosKeyStoreClient_init failed with error code %d!", err);
-
-    /************************* API assignements ***************************/
-    keyStoreApiLocal1   = SeosKeyStore_TO_SEOS_KEY_STORE_CTX(&localKeyStore1);
-    keyStoreApiLocal2   = SeosKeyStore_TO_SEOS_KEY_STORE_CTX(&localKeyStore2);
-    keyStoreApiRpc      = SeosKeyStoreClient_TO_SEOS_KEY_STORE_CTX(&keyStoreClient);
-
     /******************** Test local and remote versions **********************/
     Debug_LOG_INFO("\n\n\n\n**************************** Starting 'TestKeyStoreSPIFFS_scenario_1' ****************************\n");
-    if (!keyStoreUnitTests(keyStoreApiLocal1))
+    if (!keyStoreUnitTests(hKeystore1))
     {
         Debug_LOG_ERROR("\n\nTestKeyStoreSPIFFS_scenario_1 FAILED!\n\n\n\n");
     }
@@ -199,18 +111,8 @@ void testRunnerInf_runTests()
         Debug_LOG_INFO("\n\nTestKeyStoreSPIFFS_scenario_1 succeeded!\n\n\n\n");
     }
 
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreSPIFFS_scenario_2' ****************************\n");
-    if (!keyStoreUnitTests(keyStoreApiRpc))
-    {
-        Debug_LOG_ERROR("\n\nTestKeyStoreSPIFFS_scenario_2 FAILED!\n\n\n\n");
-    }
-    else
-    {
-        Debug_LOG_INFO("\n\nTestKeyStoreSPIFFS_scenario_2 succeeded!\n\n\n\n");
-    }
-
     Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreSPIFFS_scenario_3' ****************************\n");
-    if (!testKeyStoreAES(keyStoreApiLocal1, hCryptoLocal))
+    if (!testKeyStoreAES(hKeystore1, hCrypto))
     {
         Debug_LOG_ERROR("\n\nTestKeyStoreSPIFFS_scenario_3 FAILED!\n\n\n\n");
     }
@@ -219,18 +121,8 @@ void testRunnerInf_runTests()
         Debug_LOG_INFO("\n\nTestKeyStoreSPIFFS_scenario_3 succeeded!\n\n\n\n");
     }
 
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreSPIFFS_scenario_4' ****************************\n");
-    if (!testKeyStoreAES(keyStoreApiRpc, hCryptoRemote))
-    {
-        Debug_LOG_ERROR("\n\nTestKeyStoreSPIFFS_scenario_4 FAILED!\n\n\n\n");
-    }
-    else
-    {
-        Debug_LOG_INFO("\n\nTestKeyStoreSPIFFS_scenario_4 succeeded!\n\n\n\n");
-    }
-
     Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreSPIFFS_scenario_5' ****************************\n");
-    if (!testKeyStoreKeyPair(keyStoreApiLocal1, hCryptoLocal))
+    if (!testKeyStoreKeyPair(hKeystore1, hCrypto))
     {
         Debug_LOG_ERROR("\n\nTestKeyStoreSPIFFS_scenario_5 FAILED!\n\n\n\n");
     }
@@ -239,18 +131,8 @@ void testRunnerInf_runTests()
         Debug_LOG_INFO("\n\nTestKeyStoreSPIFFS_scenario_5 succeeded!\n\n\n\n");
     }
 
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreSPIFFS_scenario_6' ****************************\n");
-    if (!testKeyStoreKeyPair(keyStoreApiRpc, hCryptoRemote))
-    {
-        Debug_LOG_ERROR("\n\nTestKeyStoreSPIFFS_scenario_6 FAILED!\n\n\n\n");
-    }
-    else
-    {
-        Debug_LOG_INFO("\n\nTestKeyStoreSPIFFS_scenario_6 succeeded!\n\n\n\n");
-    }
-
     Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreSPIFFS_scenario_7' ****************************\n");
-    if (!keyStoreCopyKeyTest(keyStoreApiLocal1, keyStoreApiLocal2, hCryptoLocal))
+    if (!keyStoreCopyKeyTest(hKeystore1, hKeystore2, hCrypto))
     {
         Debug_LOG_ERROR("\n\nTestKeyStoreSPIFFS_scenario_7 FAILED!\n\n\n\n");
     }
@@ -259,18 +141,8 @@ void testRunnerInf_runTests()
         Debug_LOG_INFO("\n\nTestKeyStoreSPIFFS_scenario_7 succeeded!\n\n\n\n");
     }
 
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreSPIFFS_scenario_8' ****************************\n");
-    if (!keyStoreCopyKeyTest(keyStoreApiLocal2, keyStoreApiRpc, hCryptoLocal))
-    {
-        Debug_LOG_ERROR("\n\nTestKeyStoreSPIFFS_scenario_8 FAILED!\n\n\n\n");
-    }
-    else
-    {
-        Debug_LOG_INFO("\n\nTestKeyStoreSPIFFS_scenario_8 succeeded!\n\n\n\n");
-    }
-
     Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreSPIFFS_scenario_9' ****************************\n");
-    if (!keyStoreMoveKeyTest(keyStoreApiLocal1, keyStoreApiLocal2, hCryptoLocal))
+    if (!keyStoreMoveKeyTest(hKeystore1, hKeystore2, hCrypto))
     {
         Debug_LOG_ERROR("\n\nTestKeyStoreSPIFFS_scenario_9 FAILED!\n\n\n\n");
     }
@@ -279,38 +151,21 @@ void testRunnerInf_runTests()
         Debug_LOG_INFO("\n\nTestKeyStoreSPIFFS_scenario_9 succeeded!\n\n\n\n");
     }
 
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStoreSPIFFS_scenario_10' ****************************\n");
-    if (!keyStoreMoveKeyTest(keyStoreApiLocal2, keyStoreApiRpc, hCryptoLocal))
-    {
-        Debug_LOG_ERROR("\n\nTestKeyStoreSPIFFS_scenario_10 FAILED!\n\n\n\n");
-    }
-    else
-    {
-        Debug_LOG_INFO("\n\nTestKeyStoreSPIFFS_scenario_10 succeeded!\n\n\n\n");
-    }
-
     /***************************** Destruction *******************************/
-    OS_Crypto_free(hCryptoLocal);
-    OS_Crypto_free(hCryptoRemote);
-    CryptoRpcServer_closeSession();
-
-    SeosKeyStore_deInit(keyStoreApiLocal1);
+    OS_Crypto_free(hCrypto);
+    OS_Keystore_free(hKeystore1);
     EncryptedPartitionFileStream_dtor(&encryptedPartitionFileStream1);
-
-    SeosKeyStore_deInit(keyStoreApiLocal2);
+    OS_Keystore_free(hKeystore2);
     EncryptedPartitionFileStream_dtor(&encryptedPartitionFileStream2);
-
-    SeosKeyStoreClient_deInit(keyStoreApiRpc);
 }
 
 /* Private functios -----------------------------------------------------------*/
-static int entropyFunc(void*           ctx,
-                unsigned char*  buf,
-                size_t          len)
+static int entropyFunc(
+    void*          ctx,
+    unsigned char* buf,
+    size_t         len)
 {
     // This would be the platform specific function to obtain entropy
     memset(buf, 0, len);
     return 0;
 }
-
-///@}

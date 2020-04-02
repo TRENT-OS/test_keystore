@@ -13,25 +13,25 @@
 typedef struct
 {
     struct {
-        SeosFileStreamFactory  seosFileStreamFactory;
-        hPartition_t           hPartition;
+        SeosFileStreamFactory seosFileStreamFactory;
+        hPartition_t hPartition;
     } internal;
 } EncryptedPartitionFileStream;
 
 
 bool
 EncryptedPartitionFileStream_ctor(
-    EncryptedPartitionFileStream*  self,
-    Nvm*                           nvm,
-    uint8_t                        partitionID,
-    uint8_t                        fsType);
+    EncryptedPartitionFileStream* self,
+    Nvm*                          nvm,
+    uint8_t                       partitionID,
+    uint8_t                       fsType);
 
 
 bool
 EncryptedPartitionFileStream_dtor(
-    EncryptedPartitionFileStream*  self);
+    EncryptedPartitionFileStream* self);
 
 
 FileStreamFactory*
 EncryptedPartitionFileStream_get_FileStreamFactory(
-    EncryptedPartitionFileStream*  self);
+    EncryptedPartitionFileStream* self);

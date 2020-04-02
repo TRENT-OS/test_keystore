@@ -6,21 +6,15 @@ import <std_connector.camkes>;
 
 import "components/TopLevelTestRunner/TopLevelTestRunner.camkes";
 import "components/TestRunnerKeyStoreFAT/TestRunnerKeyStoreFAT.camkes";
-import "components/KeyStoreFAT/KeyStoreFAT.camkes";
 import "components/TestRunnerKeyStoreSPIFFS/TestRunnerKeyStoreSPIFFS.camkes";
-import "components/KeyStoreSPIFFS/KeyStoreSPIFFS.camkes";
 import "components/ChanMux/ChanMux.camkes";
 import "components/Uart/Uart.camkes";
 
 assembly {
     composition {
         component   TopLevelTestRunner          topLevelTestRunner;
-
         component   TestRunnerKeyStoreFAT       testRunnerKeyStoreFAT;
-        component   KeyStoreFAT                 keyStoreFAT;
-
         component   TestRunnerKeyStoreSPIFFS    testRunnerKeyStoreSPIFFS;
-        component   KeyStoreSPIFFS              keyStoreSPIFFS;
 
         component   ChanMux                     chanMux;
         component   UartDev                     uartDev;
@@ -37,38 +31,11 @@ assembly {
         connection  seL4SharedData      trFAT_chanmux_data          (from testRunnerKeyStoreFAT.chanMuxDataPort, to chanMux.dataPort);
         connection  seL4Notification    trFAT_chanmux_sig           (from chanMux.dataAvailable, to testRunnerKeyStoreFAT.ChanMuxSignal_dataAvailable);
 
-        /************************** Chanmux - KeyStoreFAT connections ****************************/
-        connection  seL4RPCCall         ksFAT_chanmux_rpc           (from keyStoreFAT.ChanMuxRpc, to chanMux.ChanMuxIn);
-        connection  seL4SharedData      ksFAT_chanmux_data          (from keyStoreFAT.chanMuxDataPort, to chanMux.dataPort);
-        connection  seL4Notification    ksFAT_chanmux_sig           (from chanMux.dataAvailable, to keyStoreFAT.ChanMuxSignal_dataAvailable);
 
         /************************** Chanmux - TestRunnerKeystoreSPIFFS connections ****************************/
         connection  seL4RPCCall         trSPIFFS_chanmux_rpc        (from testRunnerKeyStoreSPIFFS.ChanMuxRpc, to chanMux.ChanMuxIn);
         connection  seL4SharedData      trSPIFFS_chanmux_data       (from testRunnerKeyStoreSPIFFS.chanMuxDataPort, to chanMux.dataPort);
         connection  seL4Notification    trSPIFFS_chanmux_sig        (from chanMux.dataAvailable, to testRunnerKeyStoreSPIFFS.ChanMuxSignal_dataAvailable);
-
-        /************************** Chanmux - KeyStoreSPIFFS connections ****************************/
-        connection  seL4RPCCall         ksSPIFFS_chanmux_rpc        (from keyStoreSPIFFS.ChanMuxRpc, to chanMux.ChanMuxIn);
-        connection  seL4SharedData      ksSPIFFS_chanmux_data       (from keyStoreSPIFFS.chanMuxDataPort, to chanMux.dataPort);
-        connection  seL4Notification    ksSPIFFS_chanmux_sig        (from chanMux.dataAvailable, to keyStoreSPIFFS.ChanMuxSignal_dataAvailable);
-
-        /************************** TestRunnerKeystoreFAT - KeyStoreFAT connections ****************************/
-        connection seL4SharedData       trFAT_ksFAT_cr_data         (from testRunnerKeyStoreFAT.cryptoClientDataport, to keyStoreFAT.cryptoServerDataport);
-        connection seL4RPCCall          trFAT_ksFAT_cr_rpc_1        (from testRunnerKeyStoreFAT.CryptoRpcServer, to keyStoreFAT.CryptoRpcServer);
-        connection seL4RPCCall          trFAT_ksFAT_cr_prc_2        (from testRunnerKeyStoreFAT.OS_CryptoRpcServer, to keyStoreFAT.OS_CryptoRpcServer);
-
-        connection seL4SharedData       trFAT_ksFAT_ks_data         (from testRunnerKeyStoreFAT.keyStoreClientDataport, to keyStoreFAT.keyStoreServerDataport);
-        connection seL4RPCCall          trFAT_ksFAT_ks_rpc_1        (from testRunnerKeyStoreFAT.KeyStore, to keyStoreFAT.KeyStore);
-        connection seL4RPCCall          trFAT_ksFAT_ks_prc_2        (from testRunnerKeyStoreFAT.SeosKeyStoreRpc, to keyStoreFAT.SeosKeyStoreRpc);
-
-        /************************** TestRunnerKeystoreSPIFFS - KeyStoreSPIFFS connections ****************************/
-        connection seL4SharedData       trSPIFFS_ksSPIFFS_cr_data   (from testRunnerKeyStoreSPIFFS.cryptoClientDataport, to keyStoreSPIFFS.cryptoServerDataport);
-        connection seL4RPCCall          trSPIFFS_ksSPIFFS_cr_rpc_1  (from testRunnerKeyStoreSPIFFS.CryptoRpcServer, to keyStoreSPIFFS.CryptoRpcServer);
-        connection seL4RPCCall          trSPIFFS_ksSPIFFS_cr_prc_2  (from testRunnerKeyStoreSPIFFS.OS_CryptoRpcServer, to keyStoreSPIFFS.OS_CryptoRpcServer);
-
-        connection seL4SharedData       trSPIFFS_ksSPIFFS_ks_data   (from testRunnerKeyStoreSPIFFS.keyStoreClientDataport, to keyStoreSPIFFS.keyStoreServerDataport);
-        connection seL4RPCCall          trSPIFFS_ksSPIFFS_ks_rpc_1  (from testRunnerKeyStoreSPIFFS.KeyStore, to keyStoreSPIFFS.KeyStore);
-        connection seL4RPCCall          trSPIFFS_ksSPIFFS_ks_prc_2  (from testRunnerKeyStoreSPIFFS.SeosKeyStoreRpc, to keyStoreSPIFFS.SeosKeyStoreRpc);
 
         /************************** TopLevelTestRunner - TestRunnerKeystoreFAT / SPIFFS connections ****************************/
         connection seL4RPCCall          topLvlTR_trFAT_rpc          (from topLevelTestRunner.testRunnerKeyStoreFatInf, to testRunnerKeyStoreFAT.testRunnerInf);

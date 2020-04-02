@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "SeosKeyStoreCtx.h"
+#include "OS_Keystore.h"
 #include "OS_Crypto.h"
 
 #include <stdbool.h>
@@ -24,7 +24,7 @@
  *                      interaction between the keystore and the crypto api on the
  *                      example of a simple AES use case
  *
- * @param keyStoreCtx   handle to the keyStore, it can represent a local instance
+ * @param hKeystore     handle to the keyStore, it can represent a local instance
  *                      of the key store library, or a handle to the context which
  *                      is created in a separate camkes component
  *
@@ -53,8 +53,9 @@
  * @}
  *
  */
-bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx,
-                     OS_Crypto_Handle_t hCrypto);
+bool testKeyStoreAES(
+    OS_Keystore_Handle_t hKeystore,
+    OS_Crypto_Handle_t   hCrypto);
 /**
  * @weakgroup KeyStore_KeyPair_test_cases
  * @{
@@ -63,7 +64,7 @@ bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx,
  *                      interaction between the keystore and the crypto api on the
  *                      example of an RSA and Diffie-Hellman key-pair generation
  *
- * @param keyStoreCtx   handle to the keyStore, it can represent a local instance
+ * @param hKeystore     handle to the keyStore, it can represent a local instance
  *                      of the key store library, or a handle to the context which
  *                      is created in a separate camkes component
  *
@@ -86,8 +87,9 @@ bool testKeyStoreAES(SeosKeyStoreCtx* keyStoreCtx,
  * @}
  *
  */
-bool testKeyStoreKeyPair(SeosKeyStoreCtx* keyStoreCtx,
-                         OS_Crypto_Handle_t hCrypto);
+bool testKeyStoreKeyPair(
+    OS_Keystore_Handle_t hKeystore,
+    OS_Crypto_Handle_t   hCrypto);
 
 ///@}
 

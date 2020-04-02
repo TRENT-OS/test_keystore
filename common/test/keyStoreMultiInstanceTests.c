@@ -4,7 +4,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "keyStoreMultiInstanceTests.h"
 #include "OS_Crypto.h"
-#include "SeosKeyStoreApi.h"
+#include "OS_Keystore.h"
 #include "LibDebug/Debug.h"
 
 /* Defines -------------------------------------------------------------------*/
@@ -25,7 +25,10 @@ static const OS_CryptoKey_Spec_t aes128Spec =
 };
 
 /* Public functions -----------------------------------------------------------*/
-bool keyStoreCopyKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeyStore, OS_Crypto_Handle_t hCrypto)
+bool keyStoreCopyKeyTest(
+    OS_Keystore_Handle_t hSrcKeystore,
+    OS_Keystore_Handle_t hDstKeystore,
+    OS_Crypto_Handle_t   hCrypto)
 {
     OS_CryptoKey_Handle_t hKey;
     size_t len;
@@ -39,49 +42,53 @@ bool keyStoreCopyKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeySt
     err = OS_CryptoKey_export(hKey, &keyData);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "OS_CryptoKey_export failed with err %d", err);
-
-    err = SeosKeyStoreApi_importKey(srcKeyStore, COPY_KEY_NAME, &keyData,
-                                    sizeof(keyData));
+    printf("0\n");
+    err = OS_Keystore_storeKey(hSrcKeystore, COPY_KEY_NAME, &keyData,
+                               sizeof(keyData));
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
-                          "SeosKeyStoreApi_importKey failed with err %d", err);
-
+                          "OS_Keystore_storeKey failed with err %d", err);
+    printf("1\n");
     err = OS_CryptoKey_free(hKey);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "OS_CryptoKey_free failed with err %d", err);
-
+    printf("2\n");
     /********************************** TestKeyStore_testCase_13 ************************************/
     len = sizeof(keyData);
-    err = SeosKeyStoreApi_getKey(dstKeyStore, COPY_KEY_NAME, &keyData, &len);
+    err = OS_Keystore_loadKey(hDstKeystore, COPY_KEY_NAME, &keyData, &len);
     Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_NOT_FOUND,
-                          "SeosKeyStoreApi_getKey supposed to fail with SEOS_ERROR_NOT_FOUND, but returned %d", err);
-
+                          "OS_Keystore_loadKey supposed to fail with SEOS_ERROR_NOT_FOUND, but returned %d",
+                          err);
+    printf("3\n");
     /********************************** TestKeyStore_testCase_14 ************************************/
-    err = SeosKeyStoreApi_copyKey(srcKeyStore, COPY_KEY_NAME, dstKeyStore);
+    err = OS_Keystore_copyKey(hSrcKeystore, COPY_KEY_NAME, hDstKeystore);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
-                          "SeosKeyStoreApi_copyKey failed with err %d", err);
-
+                          "OS_Keystore_copyKey failed with err %d", err);
+    printf("4\n");
     len = sizeof(keyData);
-    err = SeosKeyStoreApi_getKey(dstKeyStore, COPY_KEY_NAME, &keyData, &len);
+    err = OS_Keystore_loadKey(hDstKeystore, COPY_KEY_NAME, &keyData, &len);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
-                          "SeosKeyStoreApi_getKey failed with err %d", err);
-
+                          "OS_Keystore_loadKey failed with err %d", err);
+    printf("5\n");
     err = OS_CryptoKey_import(&hKey, hCrypto, &keyData);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "OS_CryptoKey_import failed with err %d", err);
-
+    printf("6\n");
     /********************************** Cleanup ************************************/
-    err = SeosKeyStoreApi_wipeKeyStore(srcKeyStore);
+    err = OS_Keystore_wipeKeystore(hSrcKeystore);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
-                          "SeosKeyStoreApi_wipeKeyStore failed with err %d", err);
+                          "OS_Keystore_wipeKeystore failed with err %d", err);
 
-    err = SeosKeyStoreApi_wipeKeyStore(dstKeyStore);
+    err = OS_Keystore_wipeKeystore(hDstKeystore);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
-                          "SeosKeyStoreApi_wipeKeyStore failed with err %d", err);
+                          "OS_Keystore_wipeKeystore failed with err %d", err);
 
     return true;
 }
 
-bool keyStoreMoveKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeyStore, OS_Crypto_Handle_t hCrypto)
+bool keyStoreMoveKeyTest(
+    OS_Keystore_Handle_t hSrcKeystore,
+    OS_Keystore_Handle_t hDstKeystore,
+    OS_Crypto_Handle_t   hCrypto)
 {
     OS_CryptoKey_Handle_t hKey;
     size_t len;
@@ -96,10 +103,10 @@ bool keyStoreMoveKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeySt
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "OS_CryptoKey_export failed with err %d", err);
 
-    err = SeosKeyStoreApi_importKey(srcKeyStore, MOVE_KEY_NAME, &keyData,
-                                    sizeof(keyData));
+    err = OS_Keystore_storeKey(hSrcKeystore, MOVE_KEY_NAME, &keyData,
+                               sizeof(keyData));
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
-                          "SeosKeyStoreApi_importKey failed with err %d", err);
+                          "OS_Keystore_storeKey failed with err %d", err);
 
     err = OS_CryptoKey_free(hKey);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
@@ -107,37 +114,39 @@ bool keyStoreMoveKeyTest(SeosKeyStoreCtx* srcKeyStore, SeosKeyStoreCtx* dstKeySt
 
     /********************************** TestKeyStore_testCase_16 ************************************/
     len = sizeof(keyData);
-    err = SeosKeyStoreApi_getKey(dstKeyStore, MOVE_KEY_NAME, &keyData, &len);
+    err = OS_Keystore_loadKey(hDstKeystore, MOVE_KEY_NAME, &keyData, &len);
     Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_NOT_FOUND,
-                          "SeosKeyStoreApi_getKey supposed to fail with SEOS_ERROR_NOT_FOUND, but returned %d", err);
+                          "OS_Keystore_loadKey supposed to fail with SEOS_ERROR_NOT_FOUND, but returned %d",
+                          err);
 
     /********************************** TestKeyStore_testCase_17 ************************************/
-    err = SeosKeyStoreApi_moveKey(srcKeyStore, MOVE_KEY_NAME, dstKeyStore);
+    err = OS_Keystore_moveKey(hSrcKeystore, MOVE_KEY_NAME, hDstKeystore);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
-                          "SeosKeyStoreApi_moveKey failed with err %d", err);
+                          "OS_Keystore_moveKey failed with err %d", err);
 
     len = sizeof(keyData);
-    err = SeosKeyStoreApi_getKey(srcKeyStore, MOVE_KEY_NAME, &keyData, &len);
+    err = OS_Keystore_loadKey(hSrcKeystore, MOVE_KEY_NAME, &keyData, &len);
     Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_NOT_FOUND,
-                          "SeosKeyStoreApi_getKey supposed to fail with SEOS_ERROR_NOT_FOUND, but returned %d", err);
+                          "OS_Keystore_loadKey supposed to fail with SEOS_ERROR_NOT_FOUND, but returned %d",
+                          err);
 
     len = sizeof(keyData);
-    err = SeosKeyStoreApi_getKey(dstKeyStore, MOVE_KEY_NAME, &keyData, &len);
+    err = OS_Keystore_loadKey(hDstKeystore, MOVE_KEY_NAME, &keyData, &len);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
-                          "SeosKeyStoreApi_getKey failed with err %d", err);
+                          "OS_Keystore_loadKey failed with err %d", err);
 
     err = OS_CryptoKey_import(&hKey, hCrypto, &keyData);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
                           "OS_CryptoKey_import failed with err %d", err);
 
     /********************************** Cleanup ************************************/
-    err = SeosKeyStoreApi_wipeKeyStore(srcKeyStore);
+    err = OS_Keystore_wipeKeystore(hSrcKeystore);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
-                          "SeosKeyStoreApi_wipeKeyStore failed with err %d", err);
+                          "OS_Keystore_wipeKeystore failed with err %d", err);
 
-    err = SeosKeyStoreApi_wipeKeyStore(dstKeyStore);
+    err = OS_Keystore_wipeKeystore(hDstKeystore);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
-                          "SeosKeyStoreApi_wipeKeyStore failed with err %d", err);
+                          "OS_Keystore_wipeKeystore failed with err %d", err);
 
     return true;
 }

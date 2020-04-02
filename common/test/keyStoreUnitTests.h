@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "SeosKeyStoreCtx.h"
+#include "OS_Keystore.h"
 
 #include <stdbool.h>
 
@@ -22,7 +22,7 @@
  * @brief               Test scenario which performs unit tests (positive/negative cases)
  *                      for the most basic operations of the keystore
  *
- * @param keyStoreCtx   handle to the keyStore, it can represent a local instance
+ * @param hKeystore     handle to the keyStore, it can represent a local instance
  *                      of the key store library, or a handle to the context which
  *                      is created in a separate camkes component
  *
@@ -65,7 +65,8 @@
  * @}
  *
  */
-bool keyStoreUnitTests(SeosKeyStoreCtx* keyStoreCtx);
+bool keyStoreUnitTests(
+    OS_Keystore_Handle_t hKeystore);
 
 ///@}
 
