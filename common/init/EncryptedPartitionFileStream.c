@@ -92,12 +92,12 @@ encrypted_partition_init(
     // the same instance everywhere
     static OS_Crypto_Config_t cfgLib =
     {
-        .mode = OS_Crypto_MODE_LIBRARY,
+        .mode = OS_Crypto_MODE_LIBRARY_ONLY,
         .mem = {
             .malloc = malloc,
             .free = free,
         },
-        .impl.lib.rng.entropy = entropy,
+        .library.rng.entropy = entropy,
     };
 
     ret = OS_Crypto_init(&(ctx->hCrypto), &cfgLib);

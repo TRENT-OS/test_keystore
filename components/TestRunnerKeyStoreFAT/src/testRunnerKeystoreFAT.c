@@ -24,12 +24,12 @@ void testRunnerInf_runTests()
 {
     OS_Crypto_Config_t cfgLocal =
     {
-        .mode = OS_Crypto_MODE_LIBRARY,
+        .mode = OS_Crypto_MODE_LIBRARY_ONLY,
         .mem = {
             .malloc = malloc,
             .free = free,
         },
-        .impl.lib.rng = {
+        .library.rng = {
             .entropy = entropyFunc,
             .context = NULL
         }
