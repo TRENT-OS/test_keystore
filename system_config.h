@@ -42,6 +42,12 @@
 #define NVM_CHANNEL_NUMBER              6
 
 //-----------------------------------------------------------------------------
+// ChanMux clients
+//-----------------------------------------------------------------------------
+#define CHANMUX_ID_TESTRUNNER_FAT       101
+#define CHANMUX_ID_TESTRUNNER_SPIFFS    102
+
+//-----------------------------------------------------------------------------
 // Keystore
 //-----------------------------------------------------------------------------
 #define KEY_INT_PROPERTY_LEN    4       /* Used to initialize the buffers for serialization of the size_t type
@@ -67,24 +73,18 @@
 #define KEY_STORE_FAT_INSTANCE_2_PARTITION      3
 
 
-
-
 //-----------------------------------------------------------------------------
 // ChanMUX
 //-----------------------------------------------------------------------------
 
-enum
-{
-    CHANNEL_LAN_DATA,       // 0
-    CHANNEL_WAN_DATA,       // 1
-    CHANNEL_LAN_CTRL,       // 2
-    CHANNEL_WAN_CTRL,       // 3
-    CHANNEL_NW_STACK_CTRL,  // 4
-    CHANNEL_NW_STACK_DATA,  // 5
-    CHANNEL_MAIN_DATA,      // 6
+#define CHANMUX_CHANNEL_NVM         6
 
-    CHANMUX_NUM_CHANNELS    // 7
-};
+
+//-----------------------------------------------------------------------------
+// ChanMUX clients
+//-----------------------------------------------------------------------------
+
+#define CHANMUX_ID_NIC        101
 
 
 //-----------------------------------------------------------------------------
@@ -113,6 +113,9 @@ enum
 //-----------------------------------------------------------------------------
 // PARTITION MANAGER
 //-----------------------------------------------------------------------------
+
+#if !defined(CAMKES_TOOL_PROCESSING)
+
 typedef struct
 {
     const char *partition_name;
@@ -139,6 +142,8 @@ static const Partition_cat_t partition_conf = {
     .partition[3].partition_size = 0x2000000,     // FAT32
     .partition[3].block_size = 512
 };
+
+#endif // !defined(CAMKES_TOOL_PROCESSING)
 
 // internal defines
 #define PM_CONF_ARRAY_SIZE(x)                   (sizeof(x)/sizeof(x[0]))

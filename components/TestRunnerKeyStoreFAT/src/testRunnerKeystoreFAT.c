@@ -17,6 +17,13 @@
 #include <camkes.h>
 #include <string.h>
 
+static const ChanMuxClientConfig_t chanMuxNvmDriverConfig = {
+    .port  = CHANMUX_DATAPORT_DUPLEX_SHARED_ASSIGN(chanMux_port),
+    .wait  = chanMux_event_hasData_wait,
+    .write = chanMux_rpc_write,
+    .read  = chanMux_rpc_read
+};
+
 static int entropyFunc(
     void* ctx, unsigned char* buf, size_t len);
 
@@ -43,10 +50,7 @@ void testRunnerInf_runTests()
     bool ret = false;
 
     /************************** Init NVM driver *******************************/
-    if (!ChanMuxNvmDriver_ctor(
-            &chanMuxNvm,
-            NVM_CHANNEL_NUMBER,
-            chanMuxDataPort))
+    if (!ChanMuxNvmDriver_ctor(&chanMuxNvm, &chanMuxNvmDriverConfig))
     {
         Debug_ASSERT_PRINTFLN(
             false,

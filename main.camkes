@@ -7,8 +7,14 @@ import <std_connector.camkes>;
 import "components/TopLevelTestRunner/TopLevelTestRunner.camkes";
 import "components/TestRunnerKeyStoreFAT/TestRunnerKeyStoreFAT.camkes";
 import "components/TestRunnerKeyStoreSPIFFS/TestRunnerKeyStoreSPIFFS.camkes";
-import "components/ChanMux/ChanMux.camkes";
 import "components/Uart/Uart.camkes";
+
+#include "system_config.h"
+
+#define CHANMUX_COMPONENT_NAME  ChanMux
+#define CHANMUX_UPPER_INTERFACES "components/ChanMux/ChanMux_upper_interface.camkes"
+#include "ChanMux/ChanMux.camkes"
+
 
 assembly {
     composition {
@@ -16,26 +22,28 @@ assembly {
         component   TestRunnerKeyStoreFAT       testRunnerKeyStoreFAT;
         component   TestRunnerKeyStoreSPIFFS    testRunnerKeyStoreSPIFFS;
 
-        component   ChanMux                     chanMux;
+
+        /************************** Uart internal connections ****************************/
         component   UartDev                     uartDev;
         component   UartDrv                     uartDrv;
-
-        /************************** Chanmux / Uart internal connections ****************************/
-        connection  seL4RPCCall         chanmux_uart                (from chanMux.Output, to uartDrv.UartDrv);
-        connection  seL4RPCCall         uart_chanmux                (from uartDrv.Output, to chanMux.ChanMuxOut);
-        connection  seL4SharedData      uart_dataConnection         (from chanMux.outputDataPort, to uartDrv.inputDataPort);
         connection  seL4HardwareMMIO    uart_memio                  (from uartDrv.uartRegBase, to uartDev.uartRegBase);
 
+        /************************** Chanmux / Uart internal connections ****************************/
+        DECLARE_AND_CONNECT_INSTANCE_CHANMUX(
+            ChanMux, chanMux,
+            uartDrv.UartDrv, uartDrv.inputDataPort,
+            uartDrv.Output)
+
         /************************** Chanmux - TestRunnerKeystoreFAT connections ****************************/
-        connection  seL4RPCCall         trFAT_chanmux_rpc           (from testRunnerKeyStoreFAT.ChanMuxRpc, to chanMux.ChanMuxIn);
-        connection  seL4SharedData      trFAT_chanmux_data          (from testRunnerKeyStoreFAT.chanMuxDataPort, to chanMux.dataPort);
-        connection  seL4Notification    trFAT_chanmux_sig           (from chanMux.dataAvailable, to testRunnerKeyStoreFAT.ChanMuxSignal_dataAvailable);
+        connection  seL4RPCCall         trFAT_chanmux_rpc           (from testRunnerKeyStoreFAT.chanMux_rpc, to chanMux.chanMux_rpc);
+        connection  seL4SharedData      trFAT_chanmux_data          (from testRunnerKeyStoreFAT.chanMux_port, to chanMux.tester_port);
+        connection  seL4Notification    trFAT_chanmux_sig           (from chanMux.tester_event_hasData, to testRunnerKeyStoreFAT.chanMux_event_hasData);
 
 
         /************************** Chanmux - TestRunnerKeystoreSPIFFS connections ****************************/
-        connection  seL4RPCCall         trSPIFFS_chanmux_rpc        (from testRunnerKeyStoreSPIFFS.ChanMuxRpc, to chanMux.ChanMuxIn);
-        connection  seL4SharedData      trSPIFFS_chanmux_data       (from testRunnerKeyStoreSPIFFS.chanMuxDataPort, to chanMux.dataPort);
-        connection  seL4Notification    trSPIFFS_chanmux_sig        (from chanMux.dataAvailable, to testRunnerKeyStoreSPIFFS.ChanMuxSignal_dataAvailable);
+        connection  seL4RPCCall         trSPIFFS_chanmux_rpc        (from testRunnerKeyStoreSPIFFS.chanMux_rpc, to chanMux.chanMux_rpc);
+        connection  seL4SharedData      trSPIFFS_chanmux_data       (from testRunnerKeyStoreSPIFFS.chanMux_port, to chanMux.tester_port);
+        connection  seL4Notification    trSPIFFS_chanmux_sig        (from chanMux.tester_event_hasData, to testRunnerKeyStoreSPIFFS.chanMux_event_hasData);
 
         /************************** TopLevelTestRunner - TestRunnerKeystoreFAT / SPIFFS connections ****************************/
         connection seL4RPCCall          topLvlTR_trFAT_rpc          (from topLevelTestRunner.testRunnerKeyStoreFatInf, to testRunnerKeyStoreFAT.testRunnerInf);
@@ -48,6 +56,10 @@ assembly {
         uartDev.uartRegBase_size   = 0x1000;
 
         uartDrv.inputDataPort       = "R";
+
+        testRunnerKeyStoreFAT.chanMux_rpc_attributes    = CHANMUX_ID_TESTRUNNER_FAT;
+        testRunnerKeyStoreSPIFFS.chanMux_rpc_attributes = CHANMUX_ID_TESTRUNNER_SPIFFS;
+
     }
 }
 
