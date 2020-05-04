@@ -93,10 +93,6 @@ encrypted_partition_init(
     static OS_Crypto_Config_t cfgLib =
     {
         .mode = OS_Crypto_MODE_LIBRARY_ONLY,
-        .mem = {
-            .malloc = malloc,
-            .free = free,
-        },
         .library.rng.entropy = entropy,
     };
 
