@@ -54,7 +54,7 @@ importExportKeyPairTest(
     OS_Keystore_Handle_t       hKeystore,
     OS_Crypto_Handle_t         hCrypto,
     const OS_CryptoKey_Spec_t* spec);
-static seos_err_t
+static OS_Error_t
 aesEncrypt(
     OS_Crypto_Handle_t    hCrypto,
     OS_CryptoKey_Handle_t hKey,
@@ -62,7 +62,7 @@ aesEncrypt(
     size_t                inDataSize,
     void*                 outBuf,
     size_t*               outDataSize);
-static seos_err_t
+static OS_Error_t
 aesDecrypt(
     OS_Crypto_Handle_t    hCrypto,
     OS_CryptoKey_Handle_t hKey,
@@ -81,7 +81,7 @@ bool testKeyStoreAES(
     size_t len;
     size_t decOutSize = 0;
     size_t encOutSize = 0;
-    seos_err_t err = SEOS_ERROR_GENERIC;
+    OS_Error_t err = SEOS_ERROR_GENERIC;
     char buffEnc[AES_BLOCK_LEN] = {0};
     char buffDec[AES_BLOCK_LEN] = {0};
 
@@ -172,7 +172,7 @@ importExportKeyPairTest(
     OS_Crypto_Handle_t         hCrypto,
     const OS_CryptoKey_Spec_t* spec)
 {
-    seos_err_t err = SEOS_ERROR_GENERIC;
+    OS_Error_t err = SEOS_ERROR_GENERIC;
     OS_CryptoKey_Handle_t hPrvKey;
     OS_CryptoKey_Handle_t hPubKey;
     size_t len = 0;
@@ -235,7 +235,7 @@ importExportKeyPairTest(
     return true;
 }
 
-static seos_err_t
+static OS_Error_t
 aesEncrypt(
     OS_Crypto_Handle_t    hCrypto,
     OS_CryptoKey_Handle_t hKey,
@@ -244,7 +244,7 @@ aesEncrypt(
     void*                 outBuf,
     size_t*               outDataSize)
 {
-    seos_err_t err = SEOS_ERROR_GENERIC;
+    OS_Error_t err = SEOS_ERROR_GENERIC;
     OS_CryptoCipher_Handle_t hCipher;
 
     *outDataSize = AES_BLOCK_LEN;
@@ -280,7 +280,7 @@ aesEncrypt(
     return err;
 }
 
-static seos_err_t
+static OS_Error_t
 aesDecrypt(
     OS_Crypto_Handle_t    hCrypto,
     OS_CryptoKey_Handle_t hKey,
@@ -289,7 +289,7 @@ aesDecrypt(
     void*                 outBuf,
     size_t*               outDataSize)
 {
-    seos_err_t err = SEOS_ERROR_GENERIC;
+    OS_Error_t err = SEOS_ERROR_GENERIC;
     OS_CryptoCipher_Handle_t hCipher;
 
     *outDataSize = AES_BLOCK_LEN;

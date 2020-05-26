@@ -32,7 +32,7 @@ bool keyStoreCopyKeyTest(
 {
     OS_CryptoKey_Handle_t hKey;
     size_t len;
-    seos_err_t err = SEOS_ERROR_GENERIC;
+    OS_Error_t err = SEOS_ERROR_GENERIC;
 
     /********************************** TestKeyStore_testCase_12 ************************************/
     err = OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec);
@@ -92,7 +92,7 @@ bool keyStoreMoveKeyTest(
 {
     OS_CryptoKey_Handle_t hKey;
     size_t len;
-    seos_err_t err = SEOS_ERROR_GENERIC;
+    OS_Error_t err = SEOS_ERROR_GENERIC;
 
     /********************************** TestKeyStore_testCase_15 ************************************/
     err = OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec);

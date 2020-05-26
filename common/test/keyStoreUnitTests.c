@@ -43,7 +43,7 @@ static void
 testImportKey(
     OS_Keystore_Handle_t hKeystore)
 {
-    seos_err_t err = SEOS_ERROR_GENERIC;
+    OS_Error_t err = SEOS_ERROR_GENERIC;
 
     /********************************** TestKeyStore_testCase_01 ************************************/
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME, KEY_DATA,
@@ -98,7 +98,7 @@ static void
 testGetKey(
     OS_Keystore_Handle_t hKeystore)
 {
-    seos_err_t err = SEOS_ERROR_GENERIC;
+    OS_Error_t err = SEOS_ERROR_GENERIC;
     char keyData[128] = {0};
     size_t keySize = sizeof(keyData);
 
@@ -152,7 +152,7 @@ static void
 testDeleteKey(
     OS_Keystore_Handle_t hKeystore)
 {
-    seos_err_t err = SEOS_ERROR_GENERIC;
+    OS_Error_t err = SEOS_ERROR_GENERIC;
 
     /********************************** TestKeyStore_testCase_03 ************************************/
     err = OS_Keystore_deleteKey(hKeystore, KEY_NAME_NOT_THERE);

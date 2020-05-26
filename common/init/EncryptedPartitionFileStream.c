@@ -59,12 +59,12 @@ entropy(
 
 
 //------------------------------------------------------------------------------
-static seos_err_t
+static OS_Error_t
 encrypted_partition_init(
     ctx_t* ctx,
     Nvm*   nvm)
 {
-    seos_err_t ret;
+    OS_Error_t ret;
 
     // Since we can't have multiple instances of the partition manager, the AES
     // encrypted NVM is a singleton also, and as a consequence, we can have a
@@ -143,13 +143,13 @@ encrypted_partition_init(
 
 //------------------------------------------------------------------------------
 // We need this helper function to hide some quirks from the rest of the code
-static seos_err_t
+static OS_Error_t
 do_partition_fs_create(
     hPartition_t hPartition,
     uint64_t     size,
     uint8_t      fsType)
 {
-    seos_err_t ret;
+    OS_Error_t ret;
 
     if (fsType <= FS_TYPE_FAT32)
     {
@@ -194,13 +194,13 @@ do_partition_fs_create(
 }
 
 //------------------------------------------------------------------------------
-static seos_err_t
+static OS_Error_t
 format_partition(
     EncryptedPartitionFileStream* self,
     uint8_t                       partitionID,
     uint8_t                       fsType)
 {
-    seos_err_t ret;
+    OS_Error_t ret;
 
     // check if disk is accessible.
     static pm_disk_data_t pm_disk_data;
@@ -285,7 +285,7 @@ EncryptedPartitionFileStream_ctor(
     uint8_t                       partitionID,
     uint8_t                       fsType)
 {
-    seos_err_t ret;
+    OS_Error_t ret;
 
     // There is only one partition manager per task. If multiple instances of
     // EncryptedPartitionFileStream are created, only the first instance

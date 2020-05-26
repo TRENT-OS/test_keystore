@@ -43,7 +43,7 @@ void testRunnerInf_runTests()
     ChanMuxNvmDriver chanMuxNvm;
     EncryptedPartitionFileStream encryptedPartitionFileStream1;
     EncryptedPartitionFileStream encryptedPartitionFileStream2;
-    seos_err_t err = SEOS_ERROR_GENERIC;
+    OS_Error_t err = SEOS_ERROR_GENERIC;
     bool ret = false;
 
     /************************** Init NVM driver *******************************/
