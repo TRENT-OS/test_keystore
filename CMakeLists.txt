@@ -3,18 +3,18 @@ cmake_minimum_required(VERSION 3.7.2)
 seos_set_config_file(system_config.h)
 
 seos_use_libs(
-    SEOS_LIBS
-    SEOS_LIBS_LOGGER
-    SEOS_CHANMUX
-    SEOS_CRYPTO
-    SEOS_PARTITION_MANAGER
-    SEOS_FILESYSTEM_CORE
-    SEOS_FILESYSTEM_FAT
-    SEOS_FILESYSTEM_SPIFFS
-    SEOS_KEYSTORE
+    OS_LIBS
+    OS_LIBS_LOGGER
+    OS_CHANMUX
+    OS_CRYPTO
+    OS_PARTITION_MANAGER
+    OS_FILESYSTEM_CORE
+    OS_FILESYSTEM_FAT
+    OS_FILESYSTEM_SPIFFS
+    OS_KEYSTORE
 )
 
-set(SEOS_LIBS_KEYSTORE "${SEOS_LIBS_DIR}/seos_keystore")
+set(OS_LIBS_KEYSTORE "${OS_LIBS_DIR}/seos_keystore")
 
 project(system_config C)
 add_library(${PROJECT_NAME} INTERFACE)
@@ -45,9 +45,9 @@ DeclareCAmkESComponent(TestRunnerKeyStoreFAT
     C_FLAGS
         -Wall -Werror
         # filesystem
-        -DSEOS_FS_BUILD_AS_LIB
+        -DOS_FS_BUILD_AS_LIB
         # partition manager
-        -DSEOS_PARTITION_MANAGER_BUILD_AS_LIB
+        -DOS_PARTITION_MANAGER_BUILD_AS_LIB
     LIBS
         system_config
         seos_core_api
@@ -74,9 +74,9 @@ DeclareCAmkESComponent(TestRunnerKeyStoreSPIFFS
     C_FLAGS
         -Wall -Werror
         # filesystem
-        -DSEOS_FS_BUILD_AS_LIB
+        -DOS_FS_BUILD_AS_LIB
         # partition manager
-        -DSEOS_PARTITION_MANAGER_BUILD_AS_LIB
+        -DOS_PARTITION_MANAGER_BUILD_AS_LIB
     LIBS
         system_config
         seos_core_api
