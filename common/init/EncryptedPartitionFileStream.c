@@ -79,10 +79,10 @@ encrypted_partition_init(
         if (ctx->nvm != nvm)
         {
             Debug_LOG_ERROR("different nvm instances are not supported");
-            return SEOS_ERROR_GENERIC;
+            return OS_ERROR_GENERIC;
         }
 
-        return SEOS_SUCCESS;
+        return OS_SUCCESS;
     }
 
     Debug_LOG_INFO("create AES encrypted NVM and partition manager");
@@ -97,7 +97,7 @@ encrypted_partition_init(
     };
 
     ret = OS_Crypto_init(&(ctx->hCrypto), &cfgLib);
-    if (ret != SEOS_SUCCESS)
+    if (ret != OS_SUCCESS)
     {
         Debug_LOG_ERROR("OS_Crypto_init failed, code %d", ret);
         return ret;
@@ -122,12 +122,12 @@ encrypted_partition_init(
             &masterKeyData))
     {
         Debug_LOG_ERROR("AesNvm_ctor() failed");
-        return SEOS_ERROR_GENERIC;
+        return OS_ERROR_GENERIC;
     }
 
     // pass AES NVM driver as NVM layer to partition manager.
     ret = partition_manager_init( AesNvm_TO_NVM( &(ctx->aesNvm) ) );
-    if (ret != SEOS_SUCCESS)
+    if (ret != OS_SUCCESS)
     {
         Debug_LOG_ERROR("partition_manager_init() failed, code %d",
                         ret);
@@ -137,7 +137,7 @@ encrypted_partition_init(
     ctx->nvm          = nvm;
     ctx->isInitalized = true;
 
-    return SEOS_SUCCESS;
+    return OS_SUCCESS;
 }
 
 
@@ -164,7 +164,7 @@ do_partition_fs_create(
                 0,  // default value: count header sectors: 512
                 FS_PARTITION_OVERWRITE_CREATE);
 
-        if (ret != SEOS_SUCCESS)
+        if (ret != OS_SUCCESS)
         {
             Debug_LOG_ERROR("OS_Filesystem_create() for FAT failed, code %d", ret);
             return ret;
@@ -183,14 +183,14 @@ do_partition_fs_create(
                 0,                      /* fs_header_sector_count, if 0 the default value is used */
                 FS_PARTITION_OVERWRITE_CREATE);
 
-        if (ret != SEOS_SUCCESS)
+        if (ret != OS_SUCCESS)
         {
             Debug_LOG_ERROR("OS_Filesystem_create() for SPIFFS failed, code %d", ret);
             return ret;
         }
     }
 
-    return SEOS_SUCCESS;
+    return OS_SUCCESS;
 }
 
 //------------------------------------------------------------------------------
@@ -205,7 +205,7 @@ format_partition(
     // check if disk is accessible.
     static pm_disk_data_t pm_disk_data;
     ret = partition_manager_get_info_disk(&pm_disk_data);
-    if (ret != SEOS_SUCCESS)
+    if (ret != OS_SUCCESS)
     {
         Debug_LOG_ERROR("partition_manager_get_info_disk() failed with error code %d",
                         ret);
@@ -216,7 +216,7 @@ format_partition(
     ret = partition_manager_get_info_partition(
         partitionID,
         &pm_partition_data);
-    if (ret != SEOS_SUCCESS)
+    if (ret != OS_SUCCESS)
     {
         Debug_LOG_ERROR("partition_manager_get_info()_partition failed, code %d",
                         ret);
@@ -228,12 +228,12 @@ format_partition(
     {
         Debug_LOG_ERROR("partitionID %d does not match pm_partition_data.partition_id %d",
                         partitionID, pm_partition_data.partition_id);
-        return SEOS_ERROR_GENERIC;
+        return OS_ERROR_GENERIC;
     }
 
     // Initialize the partition with RW access
     ret = OS_Filesystem_init(partitionID, 0);
-    if (ret != SEOS_SUCCESS)
+    if (ret != OS_SUCCESS)
     {
         Debug_LOG_ERROR("partition_io_layer_partition_register() failed, code %d",
                         ret);
@@ -244,7 +244,7 @@ format_partition(
     if (hPartition == NULL)
     {
         Debug_LOG_ERROR("partition_open() failed for ID %d!", partitionID);
-        return SEOS_ERROR_GENERIC;
+        return OS_ERROR_GENERIC;
     }
 
     self->internal.hPartition = hPartition;
@@ -254,14 +254,14 @@ format_partition(
         hPartition,
         pm_partition_data.partition_size,
         fsType);
-    if (ret != SEOS_SUCCESS)
+    if (ret != OS_SUCCESS)
     {
         Debug_LOG_ERROR("do_partition_fs_create() failed, code %d!", ret);
         return ret;
     }
 
     ret = OS_Filesystem_mount(hPartition);
-    if (ret != SEOS_SUCCESS)
+    if (ret != OS_SUCCESS)
     {
         Debug_LOG_ERROR("OS_Filesystem_mount() failed, code %d", ret);
         return ret;
@@ -271,7 +271,7 @@ format_partition(
                    partitionID,
                    (fsType <= FS_TYPE_FAT32) ? "FAT" : "SPIFFS");
 
-    return SEOS_SUCCESS;
+    return OS_SUCCESS;
 }
 
 
@@ -294,7 +294,7 @@ EncryptedPartitionFileStream_ctor(
 
     // setup the encrspted partition (or re-use what has already been set up)
     ret = encrypted_partition_init(&m_ctx, nvm);
-    if (ret != SEOS_SUCCESS)
+    if (ret != OS_SUCCESS)
     {
         Debug_LOG_ERROR("encrypted_partition_init() failed for partition ID %d, code %d",
                         partitionID, ret);
@@ -306,7 +306,7 @@ EncryptedPartitionFileStream_ctor(
     // global partition manager contenxt that is used automatically, we don't
     // have any paramter that could be passed here as reference
     ret = format_partition(self, partitionID, fsType);
-    if (ret != SEOS_SUCCESS)
+    if (ret != OS_SUCCESS)
     {
         Debug_LOG_ERROR("format_partition() failed for partition ID %d, code %d",
                         partitionID, ret);
@@ -318,7 +318,7 @@ EncryptedPartitionFileStream_ctor(
             self->internal.hPartition))
     {
         Debug_LOG_ERROR("SeosFileStreamFactory_ctor() failed");
-        return SEOS_ERROR_GENERIC;
+        return OS_ERROR_GENERIC;
     }
 
 

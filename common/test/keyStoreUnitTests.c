@@ -43,54 +43,54 @@ static void
 testImportKey(
     OS_Keystore_Handle_t hKeystore)
 {
-    OS_Error_t err = SEOS_ERROR_GENERIC;
+    OS_Error_t err = OS_ERROR_GENERIC;
 
     /********************************** TestKeyStore_testCase_01 ************************************/
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME, KEY_DATA,
                                strlen(KEY_DATA));
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
+    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
                           "OS_Keystore_storeKey failed with err %d", err);
 
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME_TOO_LARGE, KEY_DATA,
                                strlen(KEY_DATA));
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_storeKey supposed to fail with SEOS_ERROR_INVALID_PARAMETER, but returned %d",
+    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
+                          "OS_Keystore_storeKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
                           err);
 
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME_EMPTY, KEY_DATA,
                                strlen(KEY_DATA));
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_storeKey supposed to fail with SEOS_ERROR_INVALID_PARAMETER, but returned %d",
+    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
+                          "OS_Keystore_storeKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
                           err);
 
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME, KEY_DATA,
                                strlen(KEY_DATA));
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_storeKey supposed to fail with SEOS_ERROR_INVALID_PARAMETER, but returned %d",
+    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
+                          "OS_Keystore_storeKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
                           err);
 
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME, KEY_DATA_TOO_LARGE,
                                strlen(KEY_DATA_TOO_LARGE));
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_storeKey supposed to fail with SEOS_ERROR_INVALID_PARAMETER, but returned %d",
+    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
+                          "OS_Keystore_storeKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
                           err);
 
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME, KEY_DATA_EMPTY,
                                strlen(KEY_DATA_EMPTY));
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_storeKey supposed to fail with SEOS_ERROR_INVALID_PARAMETER, but returned %d",
+    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
+                          "OS_Keystore_storeKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
                           err);
 
     err = OS_Keystore_storeKey(hKeystore, NULL, KEY_DATA,
                                strlen(KEY_DATA_TOO_LARGE));
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_storeKey supposed to fail with SEOS_ERROR_INVALID_PARAMETER, but returned %d",
+    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
+                          "OS_Keystore_storeKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
                           err);
 
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME_NOT_THERE, NULL,
                                strlen(KEY_DATA));
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_storeKey supposed to fail with SEOS_ERROR_INVALID_PARAMETER, but returned %d",
+    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
+                          "OS_Keystore_storeKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
                           err);
 }
 
@@ -98,53 +98,53 @@ static void
 testGetKey(
     OS_Keystore_Handle_t hKeystore)
 {
-    OS_Error_t err = SEOS_ERROR_GENERIC;
+    OS_Error_t err = OS_ERROR_GENERIC;
     char keyData[128] = {0};
     size_t keySize = sizeof(keyData);
 
     /********************************** TestKeyStore_testCase_02 ************************************/
     err = OS_Keystore_loadKey(hKeystore, KEY_NAME, keyData, &keySize);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
+    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
                           "OS_Keystore_loadKey failed with err %d", err);
     Debug_ASSERT_PRINTFLN(keySize == sizeof(keyData),
                           "KeySize after GetKey expected %d, but is equal %zu", 128, keySize);
 
     keySize = 0;
     err = OS_Keystore_loadKey(hKeystore, KEY_NAME, keyData, &keySize);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_BUFFER_TOO_SMALL,
-                          "OS_Keystore_storeKey supposed to fail with SEOS_ERROR_BUFFER_TOO_SMALL, but returned %d",
+    Debug_ASSERT_PRINTFLN(err == OS_ERROR_BUFFER_TOO_SMALL,
+                          "OS_Keystore_storeKey supposed to fail with OS_ERROR_BUFFER_TOO_SMALL, but returned %d",
                           err);
 
     err = OS_Keystore_loadKey(hKeystore, KEY_NAME_NOT_THERE, keyData,
                               &keySize);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_NOT_FOUND,
-                          "OS_Keystore_storeKey supposed to fail with SEOS_ERROR_NOT_FOUND, but returned %d",
+    Debug_ASSERT_PRINTFLN(err == OS_ERROR_NOT_FOUND,
+                          "OS_Keystore_storeKey supposed to fail with OS_ERROR_NOT_FOUND, but returned %d",
                           err);
 
     err = OS_Keystore_loadKey(hKeystore, KEY_NAME_EMPTY, keyData, &keySize);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_loadKey supposed to fail with SEOS_ERROR_INVALID_PARAMETER, but returned %d",
+    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
+                          "OS_Keystore_loadKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
                           err);
 
     err = OS_Keystore_loadKey(hKeystore, KEY_NAME_TOO_LARGE, keyData,
                               &keySize);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_loadKey supposed to fail with SEOS_ERROR_INVALID_PARAMETER, but returned %d",
+    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
+                          "OS_Keystore_loadKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
                           err);
 
     err = OS_Keystore_loadKey(hKeystore, KEY_NAME, NULL, &keySize);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_loadKey supposed to fail with SEOS_ERROR_INVALID_PARAMETER, but returned %d",
+    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
+                          "OS_Keystore_loadKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
                           err);
 
     err = OS_Keystore_loadKey(hKeystore, KEY_NAME, keyData, NULL);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_loadKey supposed to fail with SEOS_ERROR_INVALID_PARAMETER, but returned %d",
+    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
+                          "OS_Keystore_loadKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
                           err);
 
     err = OS_Keystore_loadKey(hKeystore, NULL, keyData, &keySize);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_loadKey supposed to fail with SEOS_ERROR_INVALID_PARAMETER, but returned %d",
+    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
+                          "OS_Keystore_loadKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
                           err);
 }
 
@@ -152,30 +152,30 @@ static void
 testDeleteKey(
     OS_Keystore_Handle_t hKeystore)
 {
-    OS_Error_t err = SEOS_ERROR_GENERIC;
+    OS_Error_t err = OS_ERROR_GENERIC;
 
     /********************************** TestKeyStore_testCase_03 ************************************/
     err = OS_Keystore_deleteKey(hKeystore, KEY_NAME_NOT_THERE);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_NOT_FOUND,
-                          "OS_Keystore_deleteKey supposed to fail with SEOS_ERROR_NOT_FOUND, but returned %d",
+    Debug_ASSERT_PRINTFLN(err == OS_ERROR_NOT_FOUND,
+                          "OS_Keystore_deleteKey supposed to fail with OS_ERROR_NOT_FOUND, but returned %d",
                           err);
 
     err = OS_Keystore_deleteKey(hKeystore, KEY_NAME_TOO_LARGE);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_deleteKey supposed to fail with SEOS_ERROR_INVALID_PARAMETER, but returned %d",
+    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
+                          "OS_Keystore_deleteKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
                           err);
 
     err = OS_Keystore_deleteKey(hKeystore, KEY_NAME_EMPTY);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_deleteKey supposed to fail with SEOS_ERROR_INVALID_PARAMETER, but returned %d",
+    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
+                          "OS_Keystore_deleteKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
                           err);
 
     err = OS_Keystore_deleteKey(hKeystore, NULL);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_deleteKey supposed to fail with SEOS_ERROR_INVALID_PARAMETER, but returned %d",
+    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
+                          "OS_Keystore_deleteKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
                           err);
 
     err = OS_Keystore_deleteKey(hKeystore, KEY_NAME);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
+    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
                           "OS_Keystore_deleteKey failed with err %d", err);
 }

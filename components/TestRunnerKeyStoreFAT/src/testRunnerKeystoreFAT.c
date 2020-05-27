@@ -42,7 +42,7 @@ void testRunnerInf_runTests()
     ChanMuxNvmDriver chanMuxNvm;
     EncryptedPartitionFileStream encryptedPartitionFileStream1;
     EncryptedPartitionFileStream encryptedPartitionFileStream2;
-    OS_Error_t err = SEOS_ERROR_GENERIC;
+    OS_Error_t err = OS_ERROR_GENERIC;
     bool ret = false;
 
     /************************** Init NVM driver *******************************/
@@ -56,7 +56,7 @@ void testRunnerInf_runTests()
 
     /************************** Init Crypto local version ****************************/
     err = OS_Crypto_init(&hCrypto, &cfgLocal);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
+    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
                           "OS_Crypto_init() failed with error code %d!", err);
 
     /************************** Init 1. local version of the KeyStore ****************************/
@@ -76,7 +76,7 @@ void testRunnerInf_runTests()
                                &encryptedPartitionFileStream1 ),
                            hCrypto,
                            KEY_STORE_FAT_INSTANCE_1_NAME);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "OS_Keystore_init() failed with error code %d!", err);
+    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS, "OS_Keystore_init() failed with error code %d!", err);
 
     /************************** Init 2. local version of the KeyStore ****************************/
     Debug_LOG_INFO("create EncryptedPartitionFileStream for channel %d, partition ID %d",
@@ -95,7 +95,7 @@ void testRunnerInf_runTests()
             &encryptedPartitionFileStream2 ),
         hCrypto,
         KEY_STORE_FAT_INSTANCE_2_NAME);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS,
+    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
                           "OS_Keystore_init() failed with error code %d!", err);
 
     /******************** Test local and remote versions **********************/
