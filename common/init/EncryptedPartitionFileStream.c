@@ -12,7 +12,7 @@
 #include "LibMem/Nvm.h"
 #include "AesNvm.h"
 #include "OS_Filesystem.h"
-#include "seos_pm_api.h"
+#include "OS_PartitionManager.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -126,10 +126,10 @@ encrypted_partition_init(
     }
 
     // pass AES NVM driver as NVM layer to partition manager.
-    ret = partition_manager_init( AesNvm_TO_NVM( &(ctx->aesNvm) ) );
+    ret = OS_PartitionManager_init( AesNvm_TO_NVM( &(ctx->aesNvm) ) );
     if (ret != OS_SUCCESS)
     {
-        Debug_LOG_ERROR("partition_manager_init() failed, code %d",
+        Debug_LOG_ERROR("OS_PartitionManager_init() failed, code %d",
                         ret);
         return ret;
     }
@@ -203,17 +203,17 @@ format_partition(
     OS_Error_t ret;
 
     // check if disk is accessible.
-    static pm_disk_data_t pm_disk_data;
-    ret = partition_manager_get_info_disk(&pm_disk_data);
+    static OS_PartitionManagerDataTypes_DiskData_t pm_disk_data;
+    ret = OS_PartitionManager_getInfoDisk(&pm_disk_data);
     if (ret != OS_SUCCESS)
     {
-        Debug_LOG_ERROR("partition_manager_get_info_disk() failed with error code %d",
+        Debug_LOG_ERROR("OS_PartitionManager_getInfoDisk() failed with error code %d",
                         ret);
         return ret;
     }
 
-    pm_partition_data_t pm_partition_data;
-    ret = partition_manager_get_info_partition(
+    OS_PartitionManagerDataTypes_PartitionData_t pm_partition_data;
+    ret = OS_PartitionManager_getInfoPartition(
         partitionID,
         &pm_partition_data);
     if (ret != OS_SUCCESS)
@@ -313,11 +313,11 @@ EncryptedPartitionFileStream_ctor(
         return false;
     }
 
-    if (!SeosFileStreamFactory_ctor(
+    if (!OS_FilesystemFileStreamFactory_ctor(
             &(self->internal.seosFileStreamFactory),
             self->internal.hPartition))
     {
-        Debug_LOG_ERROR("SeosFileStreamFactory_ctor() failed");
+        Debug_LOG_ERROR("OS_FilesystemFileStreamFactory_ctor() failed");
         return OS_ERROR_GENERIC;
     }
 

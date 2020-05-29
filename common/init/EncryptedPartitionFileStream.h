@@ -6,14 +6,14 @@
 #pragma once
 
 #include "LibMem/Nvm.h"
-#include "SeosFileStream.h"
-#include "SeosFileStreamFactory.h"
+#include "OS_FilesystemFileStream.h"
+#include "OS_FilesystemFileStreamFactory.h"
 
 
 typedef struct
 {
     struct {
-        SeosFileStreamFactory seosFileStreamFactory;
+        OS_FilesystemFileStreamFactory_t seosFileStreamFactory;
         hPartition_t hPartition;
     } internal;
 } EncryptedPartitionFileStream;
