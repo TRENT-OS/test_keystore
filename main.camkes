@@ -53,7 +53,10 @@ assembly {
 
     configuration{
         /************************** Uart configuration ****************************/
-        CONFIGURE_INSTANCE_UART(uartDrv, 0xE0000000, 59)
+        CONFIGURE_INSTANCE_UART(
+            uartDrv,
+            CFG_CHANMUX_DEFAULT_UART_PHYS_ADDR,
+            CFG_CHANMUX_DEFAULT_UART_INTR)
 
         testRunnerKeyStoreFAT.chanMux_rpc_attributes    = CHANMUX_ID_TESTRUNNER_FAT;
         testRunnerKeyStoreSPIFFS.chanMux_rpc_attributes = CHANMUX_ID_TESTRUNNER_SPIFFS;
