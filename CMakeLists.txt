@@ -14,7 +14,7 @@ os_use_libs(
     OS_KEYSTORE
 )
 
-set(OS_LIBS_KEYSTORE "${OS_LIBS_DIR}/seos_keystore")
+set(OS_LIBS_KEYSTORE "${OS_LIBS_DIR}/os_keystore")
 
 project(system_config C)
 add_library(${PROJECT_NAME} INTERFACE)
@@ -29,7 +29,7 @@ DeclareCAmkESComponent(TopLevelTestRunner
     C_FLAGS
         -Wall -Werror
     LIBS
-        seos_core_api
+        os_core_api
 )
 
 DeclareCAmkESComponent(TestRunnerKeyStoreFAT
@@ -50,15 +50,15 @@ DeclareCAmkESComponent(TestRunnerKeyStoreFAT
         -DOS_PARTITION_MANAGER_BUILD_AS_LIB
     LIBS
         system_config
-        seos_core_api
-        seos_libs
+        os_core_api
+        os_libs
         proxy_nvm
-        seos_crypto
-        seos_filesystem_fat
-        seos_filesystem_spiffs
-        seos_partition_manager
-        seos_filesystem_core
-        seos_keystore
+        os_crypto
+        os_filesystem_fat
+        os_filesystem_spiffs
+        os_partition_manager
+        os_filesystem_core
+        os_keystore
 )
 
 DeclareCAmkESComponent(TestRunnerKeyStoreSPIFFS
@@ -79,15 +79,15 @@ DeclareCAmkESComponent(TestRunnerKeyStoreSPIFFS
         -DOS_PARTITION_MANAGER_BUILD_AS_LIB
     LIBS
         system_config
-        seos_core_api
-        seos_libs
+        os_core_api
+        os_libs
         proxy_nvm
-        seos_crypto
-        seos_filesystem_fat
-        seos_filesystem_spiffs
-        seos_partition_manager
-        seos_filesystem_core
-        seos_keystore
+        os_crypto
+        os_filesystem_fat
+        os_filesystem_spiffs
+        os_partition_manager
+        os_filesystem_core
+        os_keystore
 )
 
 DeclareCAmkESComponent_UART(
