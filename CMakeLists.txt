@@ -38,6 +38,7 @@ DeclareCAmkESComponent(
         -Werror
     LIBS
         os_core_api
+        os_libs
 )
 
 DeclareCAmkESComponent(
