@@ -22,23 +22,29 @@ os_use_libs(
 
 set(OS_LIBS_KEYSTORE "${OS_LIBS_DIR}/os_keystore")
 
+
+#-------------------------------------------------------------------------------
 project(system_config C)
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_LIST_DIR})
 
 
+#-------------------------------------------------------------------------------
 project(test_keystore C)
 
-DeclareCAmkESComponent(TopLevelTestRunner
+DeclareCAmkESComponent(
+    TopLevelTestRunner
     SOURCES
         components/TopLevelTestRunner/src/topLevelTestRunner.c
     C_FLAGS
-        -Wall -Werror
+        -Wall
+        -Werror
     LIBS
         os_core_api
 )
 
-DeclareCAmkESComponent(TestRunnerKeyStoreFAT
+DeclareCAmkESComponent(
+    TestRunnerKeyStoreFAT
     INCLUDES
         common/init
         common/test
@@ -49,10 +55,9 @@ DeclareCAmkESComponent(TestRunnerKeyStoreFAT
         common/test/keyStoreMultiInstanceTests.c
         components/TestRunnerKeyStoreFAT/src/testRunnerKeystoreFAT.c
     C_FLAGS
-        -Wall -Werror
-        # filesystem
+        -Wall
+        -Werror
         -DOS_FS_BUILD_AS_LIB
-        # partition manager
         -DOS_PARTITION_MANAGER_BUILD_AS_LIB
     LIBS
         system_config
@@ -67,7 +72,8 @@ DeclareCAmkESComponent(TestRunnerKeyStoreFAT
         os_keystore
 )
 
-DeclareCAmkESComponent(TestRunnerKeyStoreSPIFFS
+DeclareCAmkESComponent(
+    TestRunnerKeyStoreSPIFFS
     INCLUDES
         common/init
         common/test
@@ -78,10 +84,9 @@ DeclareCAmkESComponent(TestRunnerKeyStoreSPIFFS
         common/test/keyStoreMultiInstanceTests.c
         components/TestRunnerKeyStoreSPIFFS/src/TestRunnerKeyStoreSPIFFS.c
     C_FLAGS
-        -Wall -Werror
-        # filesystem
+        -Wall
+        -Werror
         -DOS_FS_BUILD_AS_LIB
-        # partition manager
         -DOS_PARTITION_MANAGER_BUILD_AS_LIB
     LIBS
         system_config
