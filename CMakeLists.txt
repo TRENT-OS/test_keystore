@@ -20,9 +20,6 @@ os_use_libs(
     OS_KEYSTORE
 )
 
-set(OS_LIBS_KEYSTORE "${OS_LIBS_DIR}/os_keystore")
-
-
 #-------------------------------------------------------------------------------
 project(system_config C)
 add_library(${PROJECT_NAME} INTERFACE)
