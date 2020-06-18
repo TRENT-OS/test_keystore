@@ -4,6 +4,8 @@
 
 import <std_connector.camkes>;
 
+import <if_OS_EntropySource.camkes>;
+
 import "components/TopLevelTestRunner/TopLevelTestRunner.camkes";
 import "components/TestRunnerKeyStoreFAT/TestRunnerKeyStoreFAT.camkes";
 import "components/TestRunnerKeyStoreSPIFFS/TestRunnerKeyStoreSPIFFS.camkes";
@@ -17,6 +19,8 @@ DECLARE_COMPONENT_UART(UART)
 #define CHANMUX_UPPER_INTERFACES "components/ChanMux/ChanMux_upper_interface.camkes"
 #include "ChanMux/ChanMux.camkes"
 
+#include "EntropySource/camkes/EntropySource.camkes"
+DECLARE_COMPONENT_EntropySource(EntropySource)
 
 assembly {
     composition {
@@ -34,6 +38,18 @@ assembly {
             ChanMux, chanMux,
             uartDrv.UartDrv, uartDrv.inputDataPort,
             uartDrv.Output)
+
+        /************************** EntropySource ****************************/
+        DECLARE_AND_CONNECT_INSTANCE_EntropySource(
+            EntropySource,
+            entropySource0,
+            testRunnerKeyStoreFAT.entropySource_rpc,
+            testRunnerKeyStoreFAT.entropySource_dp)
+        DECLARE_AND_CONNECT_INSTANCE_EntropySource(
+            EntropySource,
+            entropySource1,
+            testRunnerKeyStoreSPIFFS.entropySource_rpc,
+            testRunnerKeyStoreSPIFFS.entropySource_dp)
 
         /************************** Chanmux - TestRunnerKeystoreFAT connections ****************************/
         connection  seL4RPCCall         trFAT_chanmux_rpc           (from testRunnerKeyStoreFAT.chanMux_rpc, to chanMux.chanMux_rpc);

@@ -25,18 +25,13 @@ static const ChanMuxClientConfig_t chanMuxNvmDriverConfig = {
 };
 
 /* Private function prototypes -----------------------------------------------------------*/
-static int entropyFunc(
-    void* ctx, unsigned char* buf, size_t len);
-
 void testRunnerInf_runTests()
 {
     OS_Crypto_Config_t cfgLocal =
     {
         .mode = OS_Crypto_MODE_LIBRARY_ONLY,
-        .library.rng = {
-            .entropy = entropyFunc,
-            .context = NULL
-        }
+        .library.entropy = OS_CRYPTO_ASSIGN_EntropySource(entropySource_rpc_read,
+                                                          entropySource_dp),
     };
     OS_Crypto_Handle_t hCrypto;
     OS_Keystore_Handle_t hKeystore1, hKeystore2;
@@ -157,15 +152,4 @@ void testRunnerInf_runTests()
     EncryptedPartitionFileStream_dtor(&encryptedPartitionFileStream1);
     OS_Keystore_free(hKeystore2);
     EncryptedPartitionFileStream_dtor(&encryptedPartitionFileStream2);
-}
-
-/* Private functios -----------------------------------------------------------*/
-static int entropyFunc(
-    void*          ctx,
-    unsigned char* buf,
-    size_t         len)
-{
-    // This would be the platform specific function to obtain entropy
-    memset(buf, 0, len);
-    return 0;
 }

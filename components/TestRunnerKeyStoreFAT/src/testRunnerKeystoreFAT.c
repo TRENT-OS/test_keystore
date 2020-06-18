@@ -17,25 +17,21 @@
 #include <camkes.h>
 #include <string.h>
 
-static const ChanMuxClientConfig_t chanMuxNvmDriverConfig = {
+static const ChanMuxClientConfig_t chanMuxNvmDriverConfig =
+{
     .port  = CHANMUX_DATAPORT_DUPLEX_SHARED_ASSIGN(chanMux_port),
     .wait  = chanMux_event_hasData_wait,
     .write = chanMux_rpc_write,
     .read  = chanMux_rpc_read
 };
 
-static int entropyFunc(
-    void* ctx, unsigned char* buf, size_t len);
-
 void testRunnerInf_runTests()
 {
     OS_Crypto_Config_t cfgLocal =
     {
         .mode = OS_Crypto_MODE_LIBRARY_ONLY,
-        .library.rng = {
-            .entropy = entropyFunc,
-            .context = NULL
-        }
+        .library.entropy = OS_CRYPTO_ASSIGN_EntropySource(entropySource_rpc_read,
+                                                          entropySource_dp),
     };
     OS_Crypto_Handle_t hCrypto;
     OS_Keystore_Handle_t hKeystore1, hKeystore2;
@@ -65,36 +61,39 @@ void testRunnerInf_runTests()
                    NVM_CHANNEL_NUMBER, KEY_STORE_FAT_INSTANCE_1_PARTITION);
 
     ret = EncryptedPartitionFileStream_ctor(
-        &encryptedPartitionFileStream1,
-        ChanMuxNvmDriver_get_nvm(&chanMuxNvm),
-        KEY_STORE_FAT_INSTANCE_1_PARTITION,
-        FS_TYPE_FAT32);
-    Debug_ASSERT_PRINTFLN(ret == true, "EncryptedPartitionFileStream_ctor() failed!");
+              &encryptedPartitionFileStream1,
+              ChanMuxNvmDriver_get_nvm(&chanMuxNvm),
+              KEY_STORE_FAT_INSTANCE_1_PARTITION,
+              FS_TYPE_FAT32);
+    Debug_ASSERT_PRINTFLN(ret == true,
+                          "EncryptedPartitionFileStream_ctor() failed!");
 
     err = OS_Keystore_init(&hKeystore1,
                            EncryptedPartitionFileStream_get_FileStreamFactory(
                                &encryptedPartitionFileStream1 ),
                            hCrypto,
                            KEY_STORE_FAT_INSTANCE_1_NAME);
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS, "OS_Keystore_init() failed with error code %d!", err);
+    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
+                          "OS_Keystore_init() failed with error code %d!", err);
 
     /************************** Init 2. local version of the KeyStore ****************************/
     Debug_LOG_INFO("create EncryptedPartitionFileStream for channel %d, partition ID %d",
                    NVM_CHANNEL_NUMBER, KEY_STORE_FAT_INSTANCE_2_PARTITION);
 
     ret = EncryptedPartitionFileStream_ctor(
-        &encryptedPartitionFileStream2,
-        ChanMuxNvmDriver_get_nvm(&chanMuxNvm),
-        KEY_STORE_FAT_INSTANCE_2_PARTITION,
-        FS_TYPE_FAT32);
-    Debug_ASSERT_PRINTFLN(ret == true, "EncryptedPartitionFileStream_ctor() failed!");
+              &encryptedPartitionFileStream2,
+              ChanMuxNvmDriver_get_nvm(&chanMuxNvm),
+              KEY_STORE_FAT_INSTANCE_2_PARTITION,
+              FS_TYPE_FAT32);
+    Debug_ASSERT_PRINTFLN(ret == true,
+                          "EncryptedPartitionFileStream_ctor() failed!");
 
     err = OS_Keystore_init(
-        &hKeystore2,
-        EncryptedPartitionFileStream_get_FileStreamFactory(
-            &encryptedPartitionFileStream2 ),
-        hCrypto,
-        KEY_STORE_FAT_INSTANCE_2_NAME);
+              &hKeystore2,
+              EncryptedPartitionFileStream_get_FileStreamFactory(
+                  &encryptedPartitionFileStream2 ),
+              hCrypto,
+              KEY_STORE_FAT_INSTANCE_2_NAME);
     Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
                           "OS_Keystore_init() failed with error code %d!", err);
 
@@ -155,15 +154,4 @@ void testRunnerInf_runTests()
     EncryptedPartitionFileStream_dtor(&encryptedPartitionFileStream1);
     OS_Keystore_free(hKeystore2);
     EncryptedPartitionFileStream_dtor(&encryptedPartitionFileStream2);
-}
-
-/* Private functios -----------------------------------------------------------*/
-static int entropyFunc(
-    void*          ctx,
-    unsigned char* buf,
-    size_t         len)
-{
-    // This would be the platform specific function to obtain entropy
-    memset(buf, 0, len);
-    return 0;
 }

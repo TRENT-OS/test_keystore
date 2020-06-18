@@ -16,7 +16,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-
+#include <camkes.h>
 
 /* FAT defines ---------------------------------------------------------------*/
 
@@ -31,7 +31,8 @@
 // partition manger does not support multiple instance. As a consequence, we
 // can't support different instances of Nvm and Crypto in different instances
 // of the EncryptedPartitionFileStream. We fail instance creation then.
-typedef struct {
+typedef struct
+{
     bool isInitalized;
     Nvm* nvm;
     OS_Crypto_Handle_t hCrypto;
@@ -39,24 +40,10 @@ typedef struct {
 } ctx_t;
 
 
-static ctx_t m_ctx = {
+static ctx_t m_ctx =
+{
     .isInitalized = false,
 };
-
-/* Private functions ---------------------------------------------------------*/
-
-//------------------------------------------------------------------------------
-static int
-entropy(
-    void*          ctx,
-    unsigned char* buf,
-    size_t         len)
-{
-    // This would be the platform specific function to obtain entropy
-    memset(buf, 0, len);
-    return 0;
-}
-
 
 //------------------------------------------------------------------------------
 static OS_Error_t
@@ -93,7 +80,8 @@ encrypted_partition_init(
     static OS_Crypto_Config_t cfgLib =
     {
         .mode = OS_Crypto_MODE_LIBRARY_ONLY,
-        .library.rng.entropy = entropy,
+        .library.entropy = OS_CRYPTO_ASSIGN_EntropySource(entropySource_rpc_read,
+                                                          entropySource_dp),
     };
 
     ret = OS_Crypto_init(&(ctx->hCrypto), &cfgLib);
@@ -107,7 +95,7 @@ encrypted_partition_init(
     static const OS_CryptoKey_Data_t masterKeyData =
     {
         .type = OS_CryptoKey_TYPE_AES,
-        .data.aes.len = sizeof(KEYSTORE_KEY_AES)-1,
+        .data.aes.len = sizeof(KEYSTORE_KEY_AES) - 1,
         .data.aes.bytes = KEYSTORE_KEY_AES
     };
 
@@ -154,15 +142,15 @@ do_partition_fs_create(
     if (fsType <= FS_TYPE_FAT32)
     {
         ret = OS_Filesystem_create(
-                hPartition,
-                fsType,
-                size,
-                0,  // default value: size of sector:   512
-                0,  // default value: size of cluster:  512
-                0,  // default value: reserved sectors count: FAT12/FAT16 = 1; FAT32 = 3
-                0,  // default value: count file/dir entries: FAT12/FAT16 = 16; FAT32 = 0
-                0,  // default value: count header sectors: 512
-                FS_PARTITION_OVERWRITE_CREATE);
+                  hPartition,
+                  fsType,
+                  size,
+                  0,  // default value: size of sector:   512
+                  0,  // default value: size of cluster:  512
+                  0,  // default value: reserved sectors count: FAT12/FAT16 = 1; FAT32 = 3
+                  0,  // default value: count file/dir entries: FAT12/FAT16 = 16; FAT32 = 0
+                  0,  // default value: count header sectors: 512
+                  FS_PARTITION_OVERWRITE_CREATE);
 
         if (ret != OS_SUCCESS)
         {
@@ -173,15 +161,15 @@ do_partition_fs_create(
     else
     {
         ret = OS_Filesystem_create(
-                hPartition,
-                fsType,
-                SPIFFS_PARTITION_SIZE,  /* ToDo: why not use size*/
-                SPIFFS_LOG_PAGE_SIZE,   /* sector_size, if 0 the default value is used */
-                SPIFFS_LOG_BLOCK_SIZE,  /* cluster_size, if 0 the default value is used */
-                0,                      /* offset_sectors_count, if 0 the default value is used */
-                0,                      /* file_dir_entry_count, if 0 the default value is used */
-                0,                      /* fs_header_sector_count, if 0 the default value is used */
-                FS_PARTITION_OVERWRITE_CREATE);
+                  hPartition,
+                  fsType,
+                  SPIFFS_PARTITION_SIZE,  /* ToDo: why not use size*/
+                  SPIFFS_LOG_PAGE_SIZE,   /* sector_size, if 0 the default value is used */
+                  SPIFFS_LOG_BLOCK_SIZE,  /* cluster_size, if 0 the default value is used */
+                  0,                      /* offset_sectors_count, if 0 the default value is used */
+                  0,                      /* file_dir_entry_count, if 0 the default value is used */
+                  0,                      /* fs_header_sector_count, if 0 the default value is used */
+                  FS_PARTITION_OVERWRITE_CREATE);
 
         if (ret != OS_SUCCESS)
         {
@@ -214,8 +202,8 @@ format_partition(
 
     OS_PartitionManagerDataTypes_PartitionData_t pm_partition_data;
     ret = OS_PartitionManager_getInfoPartition(
-        partitionID,
-        &pm_partition_data);
+              partitionID,
+              &pm_partition_data);
     if (ret != OS_SUCCESS)
     {
         Debug_LOG_ERROR("partition_manager_get_info()_partition failed, code %d",
@@ -251,9 +239,9 @@ format_partition(
 
     // create a file system in the partition, using the whole sizde
     ret = do_partition_fs_create(
-        hPartition,
-        pm_partition_data.partition_size,
-        fsType);
+              hPartition,
+              pm_partition_data.partition_size,
+              fsType);
     if (ret != OS_SUCCESS)
     {
         Debug_LOG_ERROR("do_partition_fs_create() failed, code %d!", ret);
@@ -362,6 +350,6 @@ EncryptedPartitionFileStream_get_FileStreamFactory(
     EncryptedPartitionFileStream* self)
 {
     return SeosFileStreamFactory_TO_FILE_STREAM_FACTORY(
-        &(self->internal.seosFileStreamFactory) );
+               &(self->internal.seosFileStreamFactory) );
 }
 

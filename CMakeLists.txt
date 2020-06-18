@@ -98,6 +98,9 @@ DeclareCAmkESComponent_ChanMux(
     system_config
 )
 
+DeclareCAmkESComponent_EntropySource(
+    EntropySource
+)
 
 DeclareAndCreateCamkESSystem(main.camkes)
 GenerateSimulateScript()
