@@ -19,10 +19,11 @@
 
 static const ChanMuxClientConfig_t chanMuxNvmDriverConfig =
 {
-    .port  = CHANMUX_DATAPORT_DUPLEX_SHARED_ASSIGN(chanMux_port),
-    .wait  = chanMux_event_hasData_wait,
-    .write = chanMux_rpc_write,
-    .read  = chanMux_rpc_read
+    .port  = CHANMUX_DATAPORT_ASSIGN(chanMux_fat_portRead,
+                                     chanMux_fat_portWrite),
+    .wait  = chanMux_fat_EventHasData_wait,
+    .write = chanMux_Rpc_write,
+    .read  = chanMux_Rpc_read
 };
 
 void testRunnerInf_runTests()

@@ -49,15 +49,17 @@ assembly {
             testRunnerKeyStoreSPIFFS.entropySource_dp)
 
         /************************** Chanmux - TestRunnerKeystoreFAT connections ****************************/
-        connection  seL4RPCCall         trFAT_chanmux_rpc           (from testRunnerKeyStoreFAT.chanMux_rpc, to chanMux.chanMux_rpc);
-        connection  seL4SharedData      trFAT_chanmux_data          (from testRunnerKeyStoreFAT.chanMux_port, to chanMux.tester_port);
-        connection  seL4Notification    trFAT_chanmux_sig           (from chanMux.tester_event_hasData, to testRunnerKeyStoreFAT.chanMux_event_hasData);
+        connection  seL4RPCCall         trFAT_chanmux_rpc           (from testRunnerKeyStoreFAT.chanMux_Rpc, to chanMux.ChanMuxRpc);
+        connection  seL4SharedData      trFAT_chanmux_data_r        (from testRunnerKeyStoreFAT.chanMux_fat_portRead, to chanMux.tester_chan_portRead);
+        connection  seL4SharedData      trFAT_chanmux_data_w        (from testRunnerKeyStoreFAT.chanMux_fat_portWrite, to chanMux.tester_chan_portWrite);
+        connection  seL4Notification    trFAT_chanmux_sig           (from chanMux.tester_chan_DataAvailable, to testRunnerKeyStoreFAT.chanMux_fat_EventHasData);
 
 
         /************************** Chanmux - TestRunnerKeystoreSPIFFS connections ****************************/
-        connection  seL4RPCCall         trSPIFFS_chanmux_rpc        (from testRunnerKeyStoreSPIFFS.chanMux_rpc, to chanMux.chanMux_rpc);
-        connection  seL4SharedData      trSPIFFS_chanmux_data       (from testRunnerKeyStoreSPIFFS.chanMux_port, to chanMux.tester_port);
-        connection  seL4Notification    trSPIFFS_chanmux_sig        (from chanMux.tester_event_hasData, to testRunnerKeyStoreSPIFFS.chanMux_event_hasData);
+        connection  seL4RPCCall         trSPIFFS_chanmux_rpc        (from testRunnerKeyStoreSPIFFS.chanMux_Rpc, to chanMux.ChanMuxRpc);
+        connection  seL4SharedData      trSPIFFS_chanmux_data_r     (from testRunnerKeyStoreSPIFFS.chanMux_spiffs_portRead, to chanMux.tester_chan_portRead);
+        connection  seL4SharedData      trSPIFFS_chanmux_data_w     (from testRunnerKeyStoreSPIFFS.chanMux_spiffs_portWrite, to chanMux.tester_chan_portWrite);
+        connection  seL4Notification    trSPIFFS_chanmux_sig        (from chanMux.tester_chan_DataAvailable, to testRunnerKeyStoreSPIFFS.chanMux_spiffs_EventHasData);
 
         /************************** TopLevelTestRunner - TestRunnerKeystoreFAT / SPIFFS connections ****************************/
         connection seL4RPCCall          topLvlTR_trFAT_rpc          (from topLevelTestRunner.testRunnerKeyStoreFatInf, to testRunnerKeyStoreFAT.testRunnerInf);
@@ -71,9 +73,8 @@ assembly {
             CFG_CHANMUX_DEFAULT_UART_PHYS_ADDR,
             CFG_CHANMUX_DEFAULT_UART_INTR)
 
-        testRunnerKeyStoreFAT.chanMux_rpc_attributes    = CHANMUX_ID_TESTRUNNER_FAT;
-        testRunnerKeyStoreSPIFFS.chanMux_rpc_attributes = CHANMUX_ID_TESTRUNNER_SPIFFS;
-
+        CHANMUX_ASSIGN_CLIENT_BADGE(chanMux, testRunnerKeyStoreFAT, CHANMUX_ID_TESTRUNNER_FAT)
+        CHANMUX_ASSIGN_CLIENT_BADGE(chanMux, testRunnerKeyStoreSPIFFS, CHANMUX_ID_TESTRUNNER_SPIFFS)
     }
 }
 

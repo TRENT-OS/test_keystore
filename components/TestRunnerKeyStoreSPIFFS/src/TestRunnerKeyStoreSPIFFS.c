@@ -18,10 +18,11 @@
 #include <string.h>
 
 static const ChanMuxClientConfig_t chanMuxNvmDriverConfig = {
-    .port  = CHANMUX_DATAPORT_DUPLEX_SHARED_ASSIGN(chanMux_port),
-    .wait  = chanMux_event_hasData_wait,
-    .write = chanMux_rpc_write,
-    .read  = chanMux_rpc_read
+    .port  = CHANMUX_DATAPORT_ASSIGN(chanMux_spiffs_portRead,
+                                     chanMux_spiffs_portWrite),
+    .wait  = chanMux_spiffs_EventHasData_wait,
+    .write = chanMux_Rpc_write,
+    .read  = chanMux_Rpc_read
 };
 
 /* Private function prototypes -----------------------------------------------------------*/

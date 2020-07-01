@@ -8,8 +8,8 @@
  *  component will include this
  *
  */
+#include "ChanMux/ChanMuxHelper.camkes"
 
 //-------------------------------------------------
 // upper interface to Tester
-dataport  Buf                 tester_port;
-emits     DataAvailableEvent  tester_event_hasData;
+DECLARE_CHANMUX_CHANNEL_INTERFACE(tester, chan)
