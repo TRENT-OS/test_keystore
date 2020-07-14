@@ -19,87 +19,32 @@ target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_LIST_DIR})
 project(test_keystore C)
 
 DeclareCAmkESComponent(
-    TopLevelTestRunner
-    SOURCES
-        components/TopLevelTestRunner/src/topLevelTestRunner.c
-    C_FLAGS
-        -Wall
-        -Werror
-    LIBS
-        os_core_api
-        os_libs
-)
-
-DeclareCAmkESComponent(
-    TestRunnerKeyStoreFAT
+    test_OS_Keystore
     INCLUDES
-        common/init
-        common/test
+        components/Tests/include
     SOURCES
-        common/init/EncryptedPartitionFileStream.c
-        common/test/keyStoreUnitTests.c
-        common/test/keyStoreIntegrationTests.c
-        common/test/keyStoreMultiInstanceTests.c
-        components/TestRunnerKeyStoreFAT/src/testRunnerKeystoreFAT.c
+        components/Tests/src/test_OS_Keystore.c
+        components/Tests/src/keyStoreUnitTests.c
+        components/Tests/src/keyStoreIntegrationTests.c
+        components/Tests/src/keyStoreMultiInstanceTests.c
     C_FLAGS
         -Wall
         -Werror
-        -DOS_FS_BUILD_AS_LIB
-        -DOS_PARTITION_MANAGER_BUILD_AS_LIB
     LIBS
-        system_config
         os_core_api
         os_libs
-        proxy_nvm
-        os_crypto
-        os_filesystem_fat
-        os_filesystem_spiffs
-        os_partition_manager
-        os_filesystem_core
         os_keystore
-)
-
-DeclareCAmkESComponent(
-    TestRunnerKeyStoreSPIFFS
-    INCLUDES
-        common/init
-        common/test
-    SOURCES
-        common/init/EncryptedPartitionFileStream.c
-        common/test/keyStoreUnitTests.c
-        common/test/keyStoreIntegrationTests.c
-        common/test/keyStoreMultiInstanceTests.c
-        components/TestRunnerKeyStoreSPIFFS/src/TestRunnerKeyStoreSPIFFS.c
-    C_FLAGS
-        -Wall
-        -Werror
-        -DOS_FS_BUILD_AS_LIB
-        -DOS_PARTITION_MANAGER_BUILD_AS_LIB
-    LIBS
-        system_config
-        os_core_api
-        os_libs
-        proxy_nvm
+        os_filesystem
         os_crypto
-        os_filesystem_fat
-        os_filesystem_spiffs
-        os_partition_manager
-        os_filesystem_core
-        os_keystore
-)
-
-DeclareCAmkESComponent_UART(
-    UART
-)
-
-DeclareCAmkESComponent_ChanMux(
-    ChanMux
-    components/ChanMux/ChanMux_config.c
-    system_config
 )
 
 DeclareCAmkESComponent_EntropySource(
     EntropySource
+)
+
+DeclareCAmkESComponent_RamDisk(
+    RamDisk
+    system_config
 )
 
 DeclareAndCreateCamkESSystem(main.camkes)
