@@ -21,8 +21,8 @@ assembly {
         DECLARE_AND_CONNECT_INSTANCE_EntropySource(
             EntropySource,
             entropySource,
-            unitTests.entropySource_rpc,
-            unitTests.entropySource_dp)
+            unitTests.entropy_rpc,
+            unitTests.entropy_port)
 
         DECLARE_AND_CONNECT_INSTANCE_RamDisk(
           RamDisk, ramDisk,
