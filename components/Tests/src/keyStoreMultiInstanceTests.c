@@ -19,7 +19,7 @@ static const OS_CryptoKey_Spec_t aes128Spec =
     .type = OS_CryptoKey_SPECTYPE_BITS,
     .key = {
         .type = OS_CryptoKey_TYPE_AES,
-        .attribs.exportable = true,
+        .attribs.keepLocal = true,
         .params.bits = 128
     }
 };

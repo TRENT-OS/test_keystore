@@ -22,7 +22,7 @@ static const OS_CryptoKey_Spec_t aes256Spec =
     .type = OS_CryptoKey_SPECTYPE_BITS,
     .key = {
         .type = OS_CryptoKey_TYPE_AES,
-        .attribs.exportable = true,
+        .attribs.keepLocal = true,
         .params.bits = 256
     }
 };
@@ -31,7 +31,7 @@ static const OS_CryptoKey_Spec_t dh64Spec =
     .type = OS_CryptoKey_SPECTYPE_BITS,
     .key = {
         .type = OS_CryptoKey_TYPE_DH_PRV,
-        .attribs.exportable = true,
+        .attribs.keepLocal = true,
         .params.bits = 64
     }
 };
@@ -40,7 +40,7 @@ static const OS_CryptoKey_Spec_t rsa128Spec =
     .type = OS_CryptoKey_SPECTYPE_BITS,
     .key = {
         .type = OS_CryptoKey_TYPE_RSA_PRV,
-        .attribs.exportable = true,
+        .attribs.keepLocal = true,
         .params.bits = 128
     }
 };
