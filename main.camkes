@@ -9,10 +9,10 @@ import <if_OS_Entropy.camkes>;
 import "components/Tests/test_OS_Keystore.camkes";
 
 #include "EntropySource/camkes/EntropySource.camkes"
-EntropySource_COMPONENT_DECLARE(EntropySource)
+EntropySource_COMPONENT_DEFINE(EntropySource)
 
 #include "RamDisk/RamDisk.camkes"
-RamDisk_COMPONENT_DECLARE(RamDisk)
+RamDisk_COMPONENT_DEFINE(RamDisk)
 
 assembly {
     composition {
