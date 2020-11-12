@@ -12,7 +12,7 @@ import "components/Tests/test_OS_Keystore.camkes";
 DECLARE_COMPONENT_EntropySource(EntropySource)
 
 #include "RamDisk/RamDisk.camkes"
-DECLARE_COMPONENT_RamDisk(RamDisk)
+RamDisk_COMPONENT_DECLARE(RamDisk)
 
 assembly {
     composition {
@@ -24,8 +24,10 @@ assembly {
             unitTests.entropy_rpc,
             unitTests.entropy_port)
 
-        DECLARE_AND_CONNECT_INSTANCE_RamDisk(
-          RamDisk, ramDisk,
+        component   RamDisk               ramDisk;
+
+        RamDisk_INSTANCE_CONNECT_CLIENT(
+          ramDisk,
           unitTests.storage_rpc,
           unitTests.storage_dp)
     }
