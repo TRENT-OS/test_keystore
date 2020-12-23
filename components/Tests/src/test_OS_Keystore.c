@@ -6,8 +6,8 @@
 #include "OS_Crypto.h"
 #include "OS_FileSystem.h"
 
-#include "LibDebug/Debug.h"
-#include "LibMacros/Test.h"
+#include "lib_debug/Debug.h"
+#include "lib_macros/Test.h"
 
 #include "keyStoreIntegrationTests.h"
 #include "keyStoreMultiInstanceTests.h"

@@ -4,8 +4,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "keyStoreUnitTests.h"
 #include "OS_Keystore.h"
-#include "LibDebug/Debug.h"
-#include "LibMacros/Test.h"
+#include "lib_debug/Debug.h"
+#include "lib_macros/Test.h"
 #include <string.h>
 
 /* Defines -------------------------------------------------------------------*/

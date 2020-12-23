@@ -5,8 +5,8 @@
 #include "keyStoreMultiInstanceTests.h"
 #include "OS_Crypto.h"
 #include "OS_Keystore.h"
-#include "LibDebug/Debug.h"
-#include "LibMacros/Test.h"
+#include "lib_debug/Debug.h"
+#include "lib_macros/Test.h"
 
 /* Defines -------------------------------------------------------------------*/
 #define COPY_KEY_NAME       "KeyCpy"
