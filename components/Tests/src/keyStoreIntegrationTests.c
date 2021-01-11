@@ -6,6 +6,7 @@
 #include "OS_Crypto.h"
 #include "OS_Keystore.h"
 #include "LibDebug/Debug.h"
+#include "LibMacros/Test.h"
 #include <string.h>
 
 /* Defines -------------------------------------------------------------------*/
@@ -72,10 +73,12 @@ aesDecrypt(
     size_t*               outDataSize);
 
 /* Public functions -----------------------------------------------------------*/
-bool testKeyStoreAES(
+void testKeyStoreAES(
     OS_Keystore_Handle_t hKeystore,
     OS_Crypto_Handle_t   hCrypto)
 {
+    TEST_START();
+
     OS_CryptoKey_Handle_t hWriteKey;
     OS_CryptoKey_Handle_t hReadKey;
     size_t len;
@@ -87,82 +90,71 @@ bool testKeyStoreAES(
 
     /********************************** TestKeyStore_testCase_04 ************************************/
     err = OS_CryptoKey_generate(&hWriteKey, hCrypto, &aes256Spec);
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
-                          "OS_CryptoKey_generate failed with err %d", err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     err = aesEncrypt(hCrypto, hWriteKey, SAMPLE_STRING, strlen(SAMPLE_STRING),
                      buffEnc, &decOutSize);
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS, "aesEncrypt failed with err %d",
-                          err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     /********************************** TestKeyStore_testCase_05 ************************************/
     err = OS_CryptoKey_export(hWriteKey, &keyData);
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
-                          "OS_CryptoKey_export failed with err %d", err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     err = OS_Keystore_storeKey(hKeystore, AES_KEY_NAME, &keyData,
                                sizeof(keyData));
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
-                          "OS_Keystore_storeKey failed with err %d", err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     err = OS_CryptoKey_free(hWriteKey);
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
-                          "OS_CryptoKey_free failed with err %d", err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     /********************************** TestKeyStore_testCase_06 ************************************/
     len = sizeof(keyData);
     err = OS_Keystore_loadKey(hKeystore, AES_KEY_NAME, &keyData, &len);
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
-                          "OS_Keystore_loadKey failed with err %d", err);
-    Debug_ASSERT(len == sizeof(keyData));
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
+    ASSERT_EQ_SZ(sizeof(keyData), len);
 
     err = OS_CryptoKey_import(&hReadKey, hCrypto, &keyData);
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
-                          "OS_CryptoKey_import failed with err %d", err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     /********************************** TestKeyStore_testCase_07 ************************************/
     err = aesDecrypt(hCrypto, hReadKey, buffEnc, decOutSize, buffDec,
                      &encOutSize);
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS, "aesDecrypt failed with err %d",
-                          err);
-    Debug_ASSERT_PRINTFLN(strncmp(SAMPLE_STRING, buffDec, AES_BLOCK_LEN) == 0,
-                          "Decrypted string doesn't match the original!");
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
+    // Decrypted string shall match the original!
+    ASSERT_EQ_INT(0, strncmp(SAMPLE_STRING, buffDec, AES_BLOCK_LEN));
 
     /********************************** TestKeyStore_testCase_08 ************************************/
     err = OS_Keystore_wipeKeystore(hKeystore);
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
-                          "OS_Keystore_wipeKeystore failed with err %d", err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     len = sizeof(keyData);
     err = OS_Keystore_loadKey(hKeystore, AES_KEY_NAME, &keyData, &len);
-    Debug_ASSERT_PRINTFLN(err == OS_ERROR_NOT_FOUND,
-                          "OS_Keystore_loadKey supposed to fail with OS_ERROR_NOT_FOUND, but returned %d",
-                          err);
+    ASSERT_EQ_OS_ERR(OS_ERROR_NOT_FOUND, err);
 
-    return true;
+    TEST_FINISH();
 }
 
-bool testKeyStoreKeyPair(
+void testKeyStoreKeyPair(
     OS_Keystore_Handle_t hKeystore,
     OS_Crypto_Handle_t   hCrypto)
 {
+    TEST_START();
+
     bool result = false;
 
     /********************************** TestKeyStore_testCase_09 - 11 for RSA keys ************************************/
     result = importExportKeyPairTest(hKeystore,
                                      hCrypto,
                                      &rsa128Spec);
-    Debug_ASSERT_PRINTFLN(true == result,
-                          "importExportKeyPairTest failed for RSA keys");
+    ASSERT_TRUE(result);
 
     /********************************** TestKeyStore_testCase_09 - 11 for DH keys ************************************/
     result = importExportKeyPairTest(hKeystore,
                                      hCrypto,
                                      &dh64Spec);
-    Debug_ASSERT_PRINTFLN(true == result,
-                          "importExportKeyPairTest failed for DH keys");
+    ASSERT_TRUE(result);
 
-    return result;
+    TEST_FINISH();
 }
 
 /* Private functions ---------------------------------------------------------*/
@@ -179,58 +171,45 @@ importExportKeyPairTest(
 
     /********************************** TestKeyStore_testCase_09 ************************************/
     err = OS_CryptoKey_generate(&hPrvKey, hCrypto, spec);
-    Debug_ASSERT_PRINTFLN(OS_SUCCESS == err,
-                          "OS_CryptoKey_generate failed with err %d", err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
+
     err = OS_CryptoKey_makePublic(&hPubKey, hCrypto, hPrvKey,
                                   &spec->key.attribs);
-    Debug_ASSERT_PRINTFLN(OS_SUCCESS == err,
-                          "OS_CryptoKey_makePublic failed with err %d", err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     /********************************** TestKeyStore_testCase_10 ************************************/
     err = OS_CryptoKey_export(hPrvKey, &keyData);
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
-                          "OS_CryptoKey_export failed with err %d", err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     err = OS_Keystore_storeKey(hKeystore, PRV_KEY_NAME, &keyData,
                                sizeof(OS_CryptoKey_Data_t));
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
-                          "OS_Keystore_storeKey failed with err %d", err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     err = OS_CryptoKey_export(hPubKey, &keyData);
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
-                          "OS_CryptoKey_export failed with err %d", err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     err = OS_Keystore_storeKey(hKeystore, PUB_KEY_NAME, &keyData,
                                sizeof(OS_CryptoKey_Data_t));
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
-                          "OS_Keystore_storeKey failed with err %d", err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     /********************************** TestKeyStore_testCase_11 ************************************/
     err = OS_Keystore_deleteKey(hKeystore, PRV_KEY_NAME);
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
-                          "OS_Keystore_deleteKey failed with err %d", err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     err = OS_Keystore_deleteKey(hKeystore, PUB_KEY_NAME);
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
-                          "OS_Keystore_deleteKey failed with err %d", err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     err = OS_Keystore_loadKey(hKeystore, PRV_KEY_NAME, &keyData, &len);
-    Debug_ASSERT_PRINTFLN(err == OS_ERROR_NOT_FOUND,
-                          "OS_Keystore_loadKey supposed to fail with OS_ERROR_NOT_FOUND, but returned %d",
-                          err);
+    ASSERT_EQ_OS_ERR(OS_ERROR_NOT_FOUND, err);
 
     err = OS_Keystore_loadKey(hKeystore, PUB_KEY_NAME, &keyData, &len);
-    Debug_ASSERT_PRINTFLN(err == OS_ERROR_NOT_FOUND,
-                          "OS_Keystore_loadKey supposed to fail with OS_ERROR_NOT_FOUND, but returned %d",
-                          err);
+    ASSERT_EQ_OS_ERR(OS_ERROR_NOT_FOUND, err);
 
     err = OS_CryptoKey_free(hPrvKey);
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
-                          "OS_CryptoKey_free failed with err %d", err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     err = OS_CryptoKey_free(hPubKey);
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
-                          "OS_CryptoKey_free failed with err %d", err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     return true;
 }

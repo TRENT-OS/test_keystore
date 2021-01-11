@@ -5,6 +5,7 @@
 #include "keyStoreUnitTests.h"
 #include "OS_Keystore.h"
 #include "LibDebug/Debug.h"
+#include "LibMacros/Test.h"
 #include <string.h>
 
 /* Defines -------------------------------------------------------------------*/
@@ -27,15 +28,16 @@ static void testDeleteKey(
     OS_Keystore_Handle_t hKeystore);
 
 /* Public functions -----------------------------------------------------------*/
-bool keyStoreUnitTests(
+void keyStoreUnitTests(
     OS_Keystore_Handle_t hKeystore)
 {
-    /********************************** TestKeyStore_testCase_01 - 03 ************************************/
+    TEST_START();
+
     testImportKey(hKeystore);
     testGetKey(hKeystore);
     testDeleteKey(hKeystore);
 
-    return 1;
+    TEST_FINISH();
 }
 
 /* Private functions ---------------------------------------------------------*/
@@ -48,50 +50,37 @@ testImportKey(
     /********************************** TestKeyStore_testCase_01 ************************************/
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME, KEY_DATA,
                                strlen(KEY_DATA));
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
-                          "OS_Keystore_storeKey failed with err %d", err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME_TOO_LARGE, KEY_DATA,
                                strlen(KEY_DATA));
-    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_storeKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
-                          err);
+    ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME_EMPTY, KEY_DATA,
                                strlen(KEY_DATA));
-    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_storeKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
-                          err);
+    ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME, KEY_DATA,
                                strlen(KEY_DATA));
-    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_storeKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
-                          err);
+    ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME, KEY_DATA_TOO_LARGE,
                                strlen(KEY_DATA_TOO_LARGE));
-    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_storeKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
-                          err);
+    ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME, KEY_DATA_EMPTY,
                                strlen(KEY_DATA_EMPTY));
-    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_storeKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
-                          err);
+    ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
     err = OS_Keystore_storeKey(hKeystore, NULL, KEY_DATA,
                                strlen(KEY_DATA_TOO_LARGE));
-    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_storeKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
-                          err);
+    ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME_NOT_THERE, NULL,
                                strlen(KEY_DATA));
-    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_storeKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
-                          err);
+    ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
+
+    TEST_FINISH();
 }
 
 static void
@@ -104,48 +93,32 @@ testGetKey(
 
     /********************************** TestKeyStore_testCase_02 ************************************/
     err = OS_Keystore_loadKey(hKeystore, KEY_NAME, keyData, &keySize);
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
-                          "OS_Keystore_loadKey failed with err %d", err);
-    Debug_ASSERT_PRINTFLN(keySize == sizeof(keyData),
-                          "KeySize after GetKey expected %d, but is equal %zu", 128, keySize);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
+    ASSERT_EQ_SZ(sizeof(keyData), keySize);
 
     keySize = 0;
     err = OS_Keystore_loadKey(hKeystore, KEY_NAME, keyData, &keySize);
-    Debug_ASSERT_PRINTFLN(err == OS_ERROR_BUFFER_TOO_SMALL,
-                          "OS_Keystore_storeKey supposed to fail with OS_ERROR_BUFFER_TOO_SMALL, but returned %d",
-                          err);
+    ASSERT_EQ_OS_ERR(OS_ERROR_BUFFER_TOO_SMALL, err);
 
     err = OS_Keystore_loadKey(hKeystore, KEY_NAME_NOT_THERE, keyData,
                               &keySize);
-    Debug_ASSERT_PRINTFLN(err == OS_ERROR_NOT_FOUND,
-                          "OS_Keystore_storeKey supposed to fail with OS_ERROR_NOT_FOUND, but returned %d",
-                          err);
+    ASSERT_EQ_OS_ERR(OS_ERROR_NOT_FOUND, err);
 
     err = OS_Keystore_loadKey(hKeystore, KEY_NAME_EMPTY, keyData, &keySize);
-    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_loadKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
-                          err);
+    ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
     err = OS_Keystore_loadKey(hKeystore, KEY_NAME_TOO_LARGE, keyData,
                               &keySize);
-    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_loadKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
-                          err);
+    ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
     err = OS_Keystore_loadKey(hKeystore, KEY_NAME, NULL, &keySize);
-    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_loadKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
-                          err);
+    ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
     err = OS_Keystore_loadKey(hKeystore, KEY_NAME, keyData, NULL);
-    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_loadKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
-                          err);
+    ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
     err = OS_Keystore_loadKey(hKeystore, NULL, keyData, &keySize);
-    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_loadKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
-                          err);
+    ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 }
 
 static void
@@ -156,26 +129,17 @@ testDeleteKey(
 
     /********************************** TestKeyStore_testCase_03 ************************************/
     err = OS_Keystore_deleteKey(hKeystore, KEY_NAME_NOT_THERE);
-    Debug_ASSERT_PRINTFLN(err == OS_ERROR_NOT_FOUND,
-                          "OS_Keystore_deleteKey supposed to fail with OS_ERROR_NOT_FOUND, but returned %d",
-                          err);
+    ASSERT_EQ_OS_ERR(OS_ERROR_NOT_FOUND, err);
 
     err = OS_Keystore_deleteKey(hKeystore, KEY_NAME_TOO_LARGE);
-    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_deleteKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
-                          err);
+    ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
     err = OS_Keystore_deleteKey(hKeystore, KEY_NAME_EMPTY);
-    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_deleteKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
-                          err);
+    ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
     err = OS_Keystore_deleteKey(hKeystore, NULL);
-    Debug_ASSERT_PRINTFLN(err == OS_ERROR_INVALID_PARAMETER,
-                          "OS_Keystore_deleteKey supposed to fail with OS_ERROR_INVALID_PARAMETER, but returned %d",
-                          err);
+    ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
     err = OS_Keystore_deleteKey(hKeystore, KEY_NAME);
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
-                          "OS_Keystore_deleteKey failed with err %d", err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 }

@@ -32,9 +32,6 @@
  *                      of the library, or a handle to the context which is created in a
  *                      separate camkes component
  *
- * @return              true => test scenario passed
- *                      false => test scenario failed
- *
  *
  * @test \b TestKeyStore_testCase_04    Generate a key from the crypto api (InitKey + GenerateKey) and
  *                                      encrypt an example string with the generated key
@@ -53,7 +50,7 @@
  * @}
  *
  */
-bool testKeyStoreAES(
+void testKeyStoreAES(
     OS_Keystore_Handle_t hKeystore,
     OS_Crypto_Handle_t   hCrypto);
 /**
@@ -72,9 +69,6 @@ bool testKeyStoreAES(
  *                      of the library, or a handle to the context which is created in a
  *                      separate camkes component
  *
- * @return                          true => test scenario passed
- *                                  false => test scenario failed
- *
  *
  *
  * @test \b TestKeyStore_testCase_09    Generate a key-pair from the crypto api (InitKey + GenerateKeyPair)
@@ -87,7 +81,7 @@ bool testKeyStoreAES(
  * @}
  *
  */
-bool testKeyStoreKeyPair(
+void testKeyStoreKeyPair(
     OS_Keystore_Handle_t hKeystore,
     OS_Crypto_Handle_t   hCrypto);
 

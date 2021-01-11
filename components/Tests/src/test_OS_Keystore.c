@@ -7,6 +7,7 @@
 #include "OS_FileSystem.h"
 
 #include "LibDebug/Debug.h"
+#include "LibMacros/Test.h"
 
 #include "keyStoreIntegrationTests.h"
 #include "keyStoreMultiInstanceTests.h"
@@ -35,6 +36,8 @@ static OS_FileSystem_Config_t cfgFs =
 int run(
     void)
 {
+    TEST_START();
+
     OS_FileSystem_Handle_t hFs;
     OS_Crypto_Handle_t hCrypto;
     OS_Keystore_Handle_t hKeystore1, hKeystore2;
@@ -42,17 +45,16 @@ int run(
 
     // Init FS and Crypto
     err = OS_FileSystem_init(&hFs, &cfgFs);
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
-                          "OS_FileSystem_init failed with error code %d!", err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
+
     err = OS_FileSystem_format(hFs);
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
-                          "OS_FileSystem_format failed with error code %d!", err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
+
     err = OS_FileSystem_mount(hFs);
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
-                          "OS_FileSystem_mount failed with error code %d!", err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
+
     err = OS_Crypto_init(&hCrypto, &cfgCrypto);
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
-                          "OS_Crypto_init failed with error code %d!", err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     // Create two keystores
     err = OS_Keystore_init(
@@ -60,67 +62,28 @@ int run(
               hFs,
               hCrypto,
               "keystore1");
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
-                          "OS_Keystore_init failed with error code %d!", err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
+
     err = OS_Keystore_init(
               &hKeystore2,
               hFs,
               hCrypto,
               "keystore2");
-    Debug_ASSERT_PRINTFLN(err == OS_SUCCESS,
-                          "OS_Keystore_init failed with error code %d!", err);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
-    Debug_LOG_INFO("\n\n\n\n**************************** Starting 'TestKeyStore_scenario_1' ****************************\n");
-    if (!keyStoreUnitTests(hKeystore1))
-    {
-        Debug_LOG_ERROR("\n\nTestKeyStore_scenario_1 FAILED!\n\n\n\n");
-    }
-    else
-    {
-        Debug_LOG_INFO("\n\nTestKeyStore_scenario_1 succeeded!\n\n\n\n");
-    }
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStore_scenario_3' ****************************\n");
-    if (!testKeyStoreAES(hKeystore1, hCrypto))
-    {
-        Debug_LOG_ERROR("\n\nTestKeyStore_scenario_3 FAILED!\n\n\n\n");
-    }
-    else
-    {
-        Debug_LOG_INFO("\n\nTestKeyStore_scenario_3 succeeded!\n\n\n\n");
-    }
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStore_scenario_5' ****************************\n");
-    if (!testKeyStoreKeyPair(hKeystore1, hCrypto))
-    {
-        Debug_LOG_ERROR("\n\nTestKeyStore_scenario_5 FAILED!\n\n\n\n");
-    }
-    else
-    {
-        Debug_LOG_INFO("\n\nTestKeyStore_scenario_5 succeeded!\n\n\n\n");
-    }
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStore_scenario_7' ****************************\n");
-    if (!keyStoreCopyKeyTest(hKeystore1, hKeystore2, hCrypto))
-    {
-        Debug_LOG_ERROR("\n\nTestKeyStore_scenario_7 FAILED!\n\n\n\n");
-    }
-    else
-    {
-        Debug_LOG_INFO("\n\nTestKeyStore_scenario_7 succeeded!\n\n\n\n");
-    }
-    Debug_LOG_INFO("\n**************************** Starting 'TestKeyStore_scenario_9' ****************************\n");
-    if (!keyStoreMoveKeyTest(hKeystore1, hKeystore2, hCrypto))
-    {
-        Debug_LOG_ERROR("\n\nTestKeyStore_scenario_9 FAILED!\n\n\n\n");
-    }
-    else
-    {
-        Debug_LOG_INFO("\n\nTestKeyStore_scenario_9 succeeded!\n\n\n\n");
-    }
+    keyStoreUnitTests(hKeystore1);
+    testKeyStoreAES(hKeystore1, hCrypto);
+    testKeyStoreKeyPair(hKeystore1, hCrypto);
+    keyStoreCopyKeyTest(hKeystore1, hKeystore2, hCrypto);
+    keyStoreMoveKeyTest(hKeystore1, hKeystore2, hCrypto);
 
     // Cleanup
     OS_Keystore_free(hKeystore1);
     OS_Crypto_free(hCrypto);
     OS_FileSystem_unmount(hFs);
     OS_FileSystem_free(hFs);
+
+    TEST_FINISH();
 
     return 0;
 }

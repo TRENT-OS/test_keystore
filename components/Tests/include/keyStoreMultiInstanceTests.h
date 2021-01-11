@@ -37,9 +37,6 @@
  *                      of the library, or a handle to the context which is created in a
  *                      separate camkes component
  *
- * @return              true => test scenario passed
- *                      false => test scenario failed
- *
  *
  *
  * @test \b TestKeyStore_testCase_12    Generate a key and import it into the source keystore
@@ -51,7 +48,7 @@
  * @}
  *
  */
-bool keyStoreCopyKeyTest(
+void keyStoreCopyKeyTest(
     OS_Keystore_Handle_t hSrcKeystore, OS_Keystore_Handle_t hDstKeystore, OS_Crypto_Handle_t hCrypto);
 /**
  * @weakgroup KeyStore_MultiInstance_test_cases
@@ -73,9 +70,6 @@ bool keyStoreCopyKeyTest(
  *                      of the library, or a handle to the context which is created in a
  *                      separate camkes component
  *
- * @return              true => test scenario passed
- *                      false => test scenario failed
- *
  *
  *
  * @test \b TestKeyStore_testCase_15    Generate a key and import it into the source keystore
@@ -90,7 +84,7 @@ bool keyStoreCopyKeyTest(
  * @}
  *
  */
-bool keyStoreMoveKeyTest(
+void keyStoreMoveKeyTest(
     OS_Keystore_Handle_t hSrcKeystore, OS_Keystore_Handle_t hDstKeystore, OS_Crypto_Handle_t hCrypto);
 
 ///@}

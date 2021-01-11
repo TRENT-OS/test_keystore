@@ -26,9 +26,6 @@
  *                      of the key store library, or a handle to the context which
  *                      is created in a separate camkes component
  *
- * @return              true => test scenario passed
- *                      false => test scenario failed
- *
  *
  * @test \b TestKeyStore_testCase_01    \n <b> 1) Positive cases: </b>
  *                                      \n          Import a key with dummy key data into the keystore
@@ -65,7 +62,7 @@
  * @}
  *
  */
-bool keyStoreUnitTests(
+void keyStoreUnitTests(
     OS_Keystore_Handle_t hKeystore);
 
 ///@}
