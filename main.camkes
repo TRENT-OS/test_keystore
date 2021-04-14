@@ -29,6 +29,6 @@ assembly {
         RamDisk_INSTANCE_CONNECT_CLIENT(
           ramDisk,
           unitTests.storage_rpc,
-          unitTests.storage_dp)
+          unitTests.storage_port)
     }
 }
