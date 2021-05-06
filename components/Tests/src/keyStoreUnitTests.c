@@ -11,7 +11,8 @@
 /* Defines -------------------------------------------------------------------*/
 // Various values for the keyStoreUnitTests
 #define KEY_NAME            "Key"
-#define KEY_NAME_TOO_LARGE  "PrivateKeyPrivateKeyPrivateKeyPrivateKey"
+#define KEY_NAME_MAX_LEN    "PrivateKey123456" // strlen is 16
+#define KEY_NAME_TOO_LARGE  "PrivateKey1234567" // strlen is 17
 #define KEY_NAME_EMPTY      ""
 #define KEY_NAME_NOT_THERE  "KeyNotThere"
 
@@ -49,6 +50,10 @@ testImportKey(
 
     /********************************** TestKeyStore_testCase_01 ************************************/
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME, KEY_DATA,
+                               strlen(KEY_DATA));
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
+
+    err = OS_Keystore_storeKey(hKeystore, KEY_NAME_MAX_LEN, KEY_DATA,
                                strlen(KEY_DATA));
     ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
@@ -93,6 +98,10 @@ testGetKey(
 
     /********************************** TestKeyStore_testCase_02 ************************************/
     err = OS_Keystore_loadKey(hKeystore, KEY_NAME, keyData, &keySize);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
+    ASSERT_EQ_SZ(sizeof(keyData), keySize);
+
+    err = OS_Keystore_loadKey(hKeystore, KEY_NAME_MAX_LEN, keyData, &keySize);
     ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
     ASSERT_EQ_SZ(sizeof(keyData), keySize);
 
@@ -141,5 +150,8 @@ testDeleteKey(
     ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
     err = OS_Keystore_deleteKey(hKeystore, KEY_NAME);
+    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
+
+    err = OS_Keystore_deleteKey(hKeystore, KEY_NAME_MAX_LEN);
     ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 }

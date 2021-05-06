@@ -56,14 +56,23 @@ int run(
     err = OS_Crypto_init(&hCrypto, &cfgCrypto);
     ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
-    // Create two keystores
+    // Test keystore name too large
     err = OS_Keystore_init(
               &hKeystore1,
               hFs,
               hCrypto,
-              "keystore1");
+              "keystore1_1234567"); // strlen is 17
+    ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
+
+    // Create 1st keystore with max len name
+    err = OS_Keystore_init(
+              &hKeystore1,
+              hFs,
+              hCrypto,
+              "keystore1_123456"); // strlen is 16
     ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
+    // Create 2nd keystore
     err = OS_Keystore_init(
               &hKeystore2,
               hFs,
