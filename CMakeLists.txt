@@ -35,6 +35,7 @@ DeclareCAmkESComponent(
         lib_debug
         lib_macros
         os_keystore_file
+        os_keystore_ram_fv
         os_filesystem
         os_crypto
 )
