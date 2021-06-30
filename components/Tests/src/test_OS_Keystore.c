@@ -2,9 +2,10 @@
  * Copyright (C) 2020, Hensoldt Cyber GmbH
  */
 
-#include "OS_Keystore.h"
 #include "OS_Crypto.h"
 #include "OS_FileSystem.h"
+
+#include "OS_KeystoreFile.h"
 
 #include "lib_debug/Debug.h"
 #include "lib_macros/Test.h"
@@ -41,6 +42,7 @@ int run(
     OS_FileSystem_Handle_t hFs;
     OS_Crypto_Handle_t hCrypto;
     OS_Keystore_Handle_t hKeystore1, hKeystore2;
+
     OS_Error_t err = OS_ERROR_GENERIC;
 
     // Init FS and Crypto
@@ -57,7 +59,7 @@ int run(
     ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     // Test keystore name too large
-    err = OS_Keystore_init(
+    err = OS_KeystoreFile_init(
               &hKeystore1,
               hFs,
               hCrypto,
@@ -65,7 +67,7 @@ int run(
     ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
     // Create 1st keystore with max len name
-    err = OS_Keystore_init(
+    err = OS_KeystoreFile_init(
               &hKeystore1,
               hFs,
               hCrypto,
@@ -73,7 +75,7 @@ int run(
     ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     // Create 2nd keystore
-    err = OS_Keystore_init(
+    err = OS_KeystoreFile_init(
               &hKeystore2,
               hFs,
               hCrypto,
@@ -88,6 +90,7 @@ int run(
 
     // Cleanup
     OS_Keystore_free(hKeystore1);
+    OS_Keystore_free(hKeystore2);
     OS_Crypto_free(hCrypto);
     OS_FileSystem_unmount(hFs);
     OS_FileSystem_free(hFs);
