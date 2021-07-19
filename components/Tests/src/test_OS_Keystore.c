@@ -19,6 +19,10 @@
 
 #include <camkes.h>
 
+#define KEYSTORE_NAME_MAX_LEN   "keystore1_12345"
+#define KEYSTORE_NAME_TOO_LARGE "keystore1_123456"
+
+
 static OS_Crypto_Config_t cfgCrypto =
 {
     .mode = OS_Crypto_MODE_LIBRARY,
@@ -72,7 +76,7 @@ int run(
               &hKeystoreFile1,
               hFs,
               hCrypto,
-              "keystore1_1234567"); // strlen is 17
+              KEYSTORE_NAME_TOO_LARGE);
     ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
     // Create 1st KeystoreFile with max len name
@@ -80,7 +84,7 @@ int run(
               &hKeystoreFile1,
               hFs,
               hCrypto,
-              "keystore1_123456"); // strlen is 16
+              KEYSTORE_NAME_MAX_LEN);
     ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     // Create 2nd KeystoreFile
