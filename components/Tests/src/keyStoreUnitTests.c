@@ -11,8 +11,8 @@
 /* Defines -------------------------------------------------------------------*/
 // Various values for the keyStoreUnitTests
 #define KEY_NAME            "Key"
-#define KEY_NAME_MAX_LEN    "PrivateKey123456" // strlen is 16
-#define KEY_NAME_TOO_LARGE  "PrivateKey1234567" // strlen is 17
+#define KEY_NAME_MAX_LEN    "PrivateKey12345"   // strlen is 15
+#define KEY_NAME_TOO_LARGE  "PrivateKey123456"  // strlen is 16
 #define KEY_NAME_EMPTY      ""
 #define KEY_NAME_NOT_THERE  "KeyNotThere"
 
