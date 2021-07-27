@@ -99,14 +99,14 @@ int run(
     err = OS_KeystoreRamFV_init(
         &hKeystoreRamFV1,
         keystoreRam1Buf,
-        OS_KeystoreRamFV_NUM_ELEMENTS_BUFFER(sizeof(keystoreRam1Buf)));
+        sizeof(keystoreRam1Buf));
     ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     // Create 2nd KeystoreRamFV
     err = OS_KeystoreRamFV_init(
         &hKeystoreRamFV2,
         keystoreRam2Buf,
-        OS_KeystoreRamFV_NUM_ELEMENTS_BUFFER(sizeof(keystoreRam2Buf)));
+        sizeof(keystoreRam2Buf));
     ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     keyStoreUnitTests(hKeystoreFile1);
