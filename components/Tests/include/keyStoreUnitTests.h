@@ -31,5 +31,20 @@
 void keyStoreUnitTests(
     OS_Keystore_Handle_t hKeystore);
 
+/**
+ * Performs unit tests special cases dedicated to the OS_KeystoreRamFV
+ * implementation.
+ *
+ * @param[in]   hKeystore           Handle to the keystore. The precondition
+ *                                  that the implementation behind the handle is
+ *                                  an OS_KeystoreRamFV must be known and grant
+ *                                  by the caller.
+ * @param[in]   keyStoreCapacity    Maximum number of keys that the keystore can
+ *                                  store.
+*/
+void keyStoreRamFVUnitTests(
+    OS_Keystore_Handle_t hKeystore,
+    int keyStoreCapacity);
+
 ///@}
 

@@ -111,6 +111,7 @@ int run(
 
     keyStoreUnitTests(hKeystoreFile1);
     keyStoreUnitTests(hKeystoreRamFV1);
+    keyStoreRamFVUnitTests(hKeystoreRamFV1,NUM_ELEMENTS_KEYSTORE_RAM);
     testKeyStoreAES(hKeystoreFile1, hCrypto);
     testKeyStoreAES(hKeystoreRamFV1, hCrypto);
     testKeyStoreKeyPair(hKeystoreFile1, hCrypto);

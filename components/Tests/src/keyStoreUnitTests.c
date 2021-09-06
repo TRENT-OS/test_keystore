@@ -4,6 +4,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "keyStoreUnitTests.h"
 #include "OS_Keystore.h"
+#include "OS_KeystoreRamFV.h"
 #include "lib_debug/Debug.h"
 #include "lib_macros/Test.h"
 #include <string.h>
@@ -30,6 +31,11 @@ static void testGetKey(
     OS_Keystore_Handle_t hKeystore);
 static void testDeleteKey(
     OS_Keystore_Handle_t hKeystore);
+// KeyStoreRamFV dedicated tests
+static void
+testKeyStoreRamFVSaturation(
+    OS_Keystore_Handle_t hKeystore,
+    int keyStoreCapacity);
 
 /* Public functions -----------------------------------------------------------*/
 void keyStoreUnitTests(
@@ -41,6 +47,15 @@ void keyStoreUnitTests(
     testGetKey(hKeystore);
     testDeleteKey(hKeystore);
 
+    TEST_FINISH();
+}
+
+void keyStoreRamFVUnitTests(
+    OS_Keystore_Handle_t hKeystore,
+    int keyStoreCapacity)
+{
+    TEST_START();
+    testKeyStoreRamFVSaturation(hKeystore, keyStoreCapacity);
     TEST_FINISH();
 }
 
@@ -98,6 +113,32 @@ testImportKey(
     ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
     TEST_FINISH();
+}
+
+static void
+testKeyStoreRamFVSaturation(
+    OS_Keystore_Handle_t hKeystore,
+    int keyStoreCapacity)
+{
+    char name[sizeof(KEY_NAME) + 8]; // 8 more chars to append '-' and the
+                                     // iteration counter (e.g. 'key_name-187')
+                                     // number
+    int i = 0;
+    OS_Error_t err = OS_Keystore_wipeKeystore(hKeystore);
+
+    while (err == OS_SUCCESS && i++ <= keyStoreCapacity)
+    {
+        sprintf(name, "%s-%d", KEY_NAME, i);
+        err = OS_Keystore_storeKey(
+            hKeystore,
+            name,
+            KEY_DATA,
+            strlen(KEY_DATA));
+    }
+    ASSERT_TRUE(OS_ERROR_INSUFFICIENT_SPACE == err);
+    ASSERT_EQ_INT(i, keyStoreCapacity + 1);
+
+    OS_Keystore_wipeKeystore(hKeystore);
 }
 
 static void
