@@ -14,6 +14,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 static OS_CryptoKey_Data_t keyData;
+static OS_CryptoKey_Data_t keyDataCopy;
 
 static const OS_CryptoKey_Spec_t aes128Spec =
 {
@@ -61,8 +62,10 @@ void keyStoreCopyKeyTest(
     ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     len = sizeof(keyData);
-    err = OS_Keystore_loadKey(hDstKeystore, COPY_KEY_NAME, &keyData, &len);
+    err = OS_Keystore_loadKey(hDstKeystore, COPY_KEY_NAME, &keyDataCopy, &len);
     ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
+    ASSERT_EQ_SZ(len, sizeof(keyData));
+    ASSERT_TRUE(!memcmp(&keyData, &keyDataCopy, sizeof(keyData)));
 
     err = OS_CryptoKey_import(&hKey, hCrypto, &keyData);
     ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
@@ -116,8 +119,10 @@ void keyStoreMoveKeyTest(
     ASSERT_EQ_OS_ERR(OS_ERROR_NOT_FOUND, err);
 
     len = sizeof(keyData);
-    err = OS_Keystore_loadKey(hDstKeystore, MOVE_KEY_NAME, &keyData, &len);
+    err = OS_Keystore_loadKey(hDstKeystore, MOVE_KEY_NAME, &keyDataCopy, &len);
     ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
+    ASSERT_EQ_SZ(len, sizeof(keyData));
+    ASSERT_TRUE(!memcmp(&keyData, &keyDataCopy, sizeof(keyData)));
 
     err = OS_CryptoKey_import(&hKey, hCrypto, &keyData);
     ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
