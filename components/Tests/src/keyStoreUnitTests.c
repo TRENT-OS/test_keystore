@@ -52,41 +52,53 @@ testImportKey(
     OS_Error_t err = OS_ERROR_GENERIC;
 
     /********************************** TestKeyStore_testCase_01 ************************************/
+    // Test storage of a normal key
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME, KEY_DATA,
                                strlen(KEY_DATA));
     ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
+    // Test storage of a key whose name length is maximum allowed
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME_MAX_LEN, KEY_DATA,
                                strlen(KEY_DATA));
     ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
+    // Test storage of a key whose name length is maximum allowed
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME_TOO_LARGE, KEY_DATA,
                                strlen(KEY_DATA));
     ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
+    // Test storage of a key whose name is empty
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME_EMPTY, KEY_DATA,
                                strlen(KEY_DATA));
     ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
+    // Test storage of a key which is already stored
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME, KEY_DATA,
                                strlen(KEY_DATA));
     ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
+    // Test storage of a key whose data is too large
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME, KEY_DATA_TOO_LARGE,
                                strlen(KEY_DATA_TOO_LARGE));
     ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
+    // Test storage of a key whose data is empty
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME, KEY_DATA_EMPTY,
                                strlen(KEY_DATA_EMPTY));
     ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
+    // Test storage of a key whose name is NULL
     err = OS_Keystore_storeKey(hKeystore, NULL, KEY_DATA, strlen(KEY_DATA));
     ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
+    // Test storage of a key whose data is NULL and no key is yet stored
+    // under that name
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME_NOT_THERE, NULL,
                                strlen(KEY_DATA));
     ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
+    // Test storage of a key whose size is smaller than the buffer that will
+    // be used to get it back. It does check that the returned size is correct
     err = OS_Keystore_storeKey(hKeystore, SMALL_KEY_NAME, SMALL_KEY_DATA,
                                strlen(SMALL_KEY_DATA));
     ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
@@ -103,38 +115,49 @@ testGetKey(
     size_t keySize = sizeof(keyData);
 
     /********************************** TestKeyStore_testCase_02 ************************************/
+    // Test loading of "KEY_NAME" which is already in the key storage
     err = OS_Keystore_loadKey(hKeystore, KEY_NAME, keyData, &keySize);
     ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
     ASSERT_EQ_SZ(sizeof(keyData), keySize);
 
+    // Test loading of "KEY_NAME_MAX_LEN" which is already in the key storage
     err = OS_Keystore_loadKey(hKeystore, KEY_NAME_MAX_LEN, keyData, &keySize);
     ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
     ASSERT_EQ_SZ(sizeof(keyData), keySize);
 
+    // Test loading of a key when passing a caller buffer size of 0
     keySize = 0;
     err = OS_Keystore_loadKey(hKeystore, KEY_NAME, keyData, &keySize);
     ASSERT_EQ_OS_ERR(OS_ERROR_BUFFER_TOO_SMALL, err);
 
+    // Test loading of a key which is not there
     err = OS_Keystore_loadKey(hKeystore, KEY_NAME_NOT_THERE, keyData,
                               &keySize);
     ASSERT_EQ_OS_ERR(OS_ERROR_NOT_FOUND, err);
 
+    // Test loading of a key whose name is empty
     err = OS_Keystore_loadKey(hKeystore, KEY_NAME_EMPTY, keyData, &keySize);
     ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
+    // Test loading of a key whose name is too large
     err = OS_Keystore_loadKey(hKeystore, KEY_NAME_TOO_LARGE, keyData,
                               &keySize);
     ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
+    // Test loading of a key when passing a caller buffer which is NULL
     err = OS_Keystore_loadKey(hKeystore, KEY_NAME, NULL, &keySize);
     ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
+    // Test loading of a key when passing a keySize which is NULL
     err = OS_Keystore_loadKey(hKeystore, KEY_NAME, keyData, NULL);
     ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
+    // Test loading of a key when passing a caller buffer which is NULL
     err = OS_Keystore_loadKey(hKeystore, NULL, keyData, &keySize);
     ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
+    // Test loading of a key whose size is smaller than the buffer that will
+    // be used to get it back. It does check that the returned size is correct
     keySize = sizeof(keyData);
     err = OS_Keystore_loadKey(hKeystore, SMALL_KEY_NAME, keyData, &keySize);
     ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
