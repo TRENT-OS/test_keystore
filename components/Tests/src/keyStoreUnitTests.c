@@ -80,8 +80,7 @@ testImportKey(
                                strlen(KEY_DATA_EMPTY));
     ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
-    err = OS_Keystore_storeKey(hKeystore, NULL, KEY_DATA,
-                               strlen(KEY_DATA_TOO_LARGE));
+    err = OS_Keystore_storeKey(hKeystore, NULL, KEY_DATA, strlen(KEY_DATA));
     ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
 
     err = OS_Keystore_storeKey(hKeystore, KEY_NAME_NOT_THERE, NULL,
