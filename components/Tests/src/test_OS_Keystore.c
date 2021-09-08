@@ -116,10 +116,18 @@ int run(
     testKeyStoreAES(hKeystoreRamFV1, hCrypto);
     testKeyStoreKeyPair(hKeystoreFile1, hCrypto);
     testKeyStoreKeyPair(hKeystoreRamFV1, hCrypto);
+    // Test copy on same implementations of keystore
     keyStoreCopyKeyTest(hKeystoreFile1, hKeystoreFile2, hCrypto);
     keyStoreCopyKeyTest(hKeystoreRamFV1, hKeystoreRamFV2, hCrypto);
+    // Test copy on diverse implementations of keystore (all directions)
+    keyStoreCopyKeyTest(hKeystoreRamFV1, hKeystoreFile1, hCrypto);
+    keyStoreCopyKeyTest(hKeystoreFile1, hKeystoreRamFV1, hCrypto);
+    // Test move on same implementations of keystore
     keyStoreMoveKeyTest(hKeystoreFile1, hKeystoreFile2, hCrypto);
     keyStoreMoveKeyTest(hKeystoreRamFV1, hKeystoreRamFV2, hCrypto);
+    // Test move on diverse implementations of keystore (all directions)
+    keyStoreMoveKeyTest(hKeystoreFile1, hKeystoreRamFV1, hCrypto);
+    keyStoreMoveKeyTest(hKeystoreRamFV1, hKeystoreFile1, hCrypto);
 
     // Cleanup
     OS_Keystore_free(hKeystoreFile1);
