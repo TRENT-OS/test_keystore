@@ -177,7 +177,7 @@ testGetKey(
     keySize = KEY_SIZE_MAX;
     err = OS_Keystore_loadKey(hKeystore, KEY_NAME_MAX_SIZE, keyData, &keySize);
     ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
-    ASSERT_EQ_SZ(KEY_SIZE_MAX, keySize);
+    ASSERT_EQ_SZ((size_t)KEY_SIZE_MAX, keySize);
 
     // Test loading of a key when passing a caller buffer size of 0
     keySize = 0;
