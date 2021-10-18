@@ -31,4 +31,8 @@ assembly {
           unitTests.storage_rpc,
           unitTests.storage_port)
     }
+
+    configuration {
+        ramDisk.storage_size = (1 * 1024 * 1024);
+    }
 }
