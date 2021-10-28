@@ -134,8 +134,8 @@ testKeyStoreRamFVSaturation(
     int keyStoreCapacity)
 {
     char name[sizeof(KEY_NAME) + 11]; // 11 more chars to append '-' and the
-                                      // iteration counter (e.g. 'key_name-187')
-                                      // number
+                                      // iteration counter(e.g. 'key_name-187').
+                                      // INT_MAX is 2147483647 (10 chars).
     int i = 0;
     OS_Error_t err = OS_Keystore_wipeKeystore(hKeystore);
 
