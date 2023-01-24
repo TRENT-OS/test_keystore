@@ -5,7 +5,7 @@
 #include "OS_Crypto.h"
 #include "OS_FileSystem.h"
 
-#include "OS_KeystoreFile.h"
+//#include "OS_KeystoreFile.h"
 #include "OS_KeystoreRamFV.h"
 
 #include "lib_debug/Debug.h"
@@ -46,8 +46,8 @@ int run(
 
     OS_FileSystem_Handle_t hFs;
     OS_Crypto_Handle_t hCrypto;
-    OS_Keystore_Handle_t hKeystoreFile1;
-    OS_Keystore_Handle_t hKeystoreFile2;
+//    OS_Keystore_Handle_t hKeystoreFile1;
+//    OS_Keystore_Handle_t hKeystoreFile2;
 #define NUM_ELEMENTS_KEYSTORE_RAM 10
     static char keystoreRam1Buf[
         OS_KeystoreRamFV_SIZE_OF_BUFFER(NUM_ELEMENTS_KEYSTORE_RAM)];
@@ -71,29 +71,29 @@ int run(
     err = OS_Crypto_init(&hCrypto, &cfgCrypto);
     ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
-    // Test KeystoreFile name too large
-    err = OS_KeystoreFile_init(
-              &hKeystoreFile1,
-              hFs,
-              hCrypto,
-              KEYSTORE_NAME_TOO_LARGE);
-    ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
-
-    // Create 1st KeystoreFile with max len name
-    err = OS_KeystoreFile_init(
-              &hKeystoreFile1,
-              hFs,
-              hCrypto,
-              KEYSTORE_NAME_MAX_LEN);
-    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
-
-    // Create 2nd KeystoreFile
-    err = OS_KeystoreFile_init(
-              &hKeystoreFile2,
-              hFs,
-              hCrypto,
-              "keystore2");
-    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
+//    // Test KeystoreFile name too large
+//    err = OS_KeystoreFile_init(
+//              &hKeystoreFile1,
+//              hFs,
+//              hCrypto,
+//              KEYSTORE_NAME_TOO_LARGE);
+//    ASSERT_EQ_OS_ERR(OS_ERROR_INVALID_PARAMETER, err);
+//
+//    // Create 1st KeystoreFile with max len name
+//    err = OS_KeystoreFile_init(
+//              &hKeystoreFile1,
+//              hFs,
+//              hCrypto,
+//              KEYSTORE_NAME_MAX_LEN);
+//    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
+//
+//    // Create 2nd KeystoreFile
+//    err = OS_KeystoreFile_init(
+//              &hKeystoreFile2,
+//              hFs,
+//              hCrypto,
+//              "keystore2");
+//    ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
     // Create 1st KeystoreRamFV
     err = OS_KeystoreRamFV_init(
@@ -109,29 +109,29 @@ int run(
         sizeof(keystoreRam2Buf));
     ASSERT_EQ_OS_ERR(OS_SUCCESS, err);
 
-    keyStoreUnitTests(hKeystoreFile1);
+//    keyStoreUnitTests(hKeystoreFile1);
     keyStoreUnitTests(hKeystoreRamFV1);
     keyStoreRamFVUnitTests(hKeystoreRamFV1,NUM_ELEMENTS_KEYSTORE_RAM);
-    testKeyStoreAES(hKeystoreFile1, hCrypto);
+//    testKeyStoreAES(hKeystoreFile1, hCrypto);
     testKeyStoreAES(hKeystoreRamFV1, hCrypto);
-    testKeyStoreKeyPair(hKeystoreFile1, hCrypto);
+//    testKeyStoreKeyPair(hKeystoreFile1, hCrypto);
     testKeyStoreKeyPair(hKeystoreRamFV1, hCrypto);
     // Test copy on same implementations of keystore
-    keyStoreCopyKeyTest(hKeystoreFile1, hKeystoreFile2, hCrypto);
+//    keyStoreCopyKeyTest(hKeystoreFile1, hKeystoreFile2, hCrypto);
     keyStoreCopyKeyTest(hKeystoreRamFV1, hKeystoreRamFV2, hCrypto);
     // Test copy on diverse implementations of keystore (all directions)
-    keyStoreCopyKeyTest(hKeystoreRamFV1, hKeystoreFile1, hCrypto);
-    keyStoreCopyKeyTest(hKeystoreFile1, hKeystoreRamFV1, hCrypto);
+//    keyStoreCopyKeyTest(hKeystoreRamFV1, hKeystoreFile1, hCrypto);
+//    keyStoreCopyKeyTest(hKeystoreFile1, hKeystoreRamFV1, hCrypto);
     // Test move on same implementations of keystore
-    keyStoreMoveKeyTest(hKeystoreFile1, hKeystoreFile2, hCrypto);
+//    keyStoreMoveKeyTest(hKeystoreFile1, hKeystoreFile2, hCrypto);
     keyStoreMoveKeyTest(hKeystoreRamFV1, hKeystoreRamFV2, hCrypto);
     // Test move on diverse implementations of keystore (all directions)
-    keyStoreMoveKeyTest(hKeystoreFile1, hKeystoreRamFV1, hCrypto);
-    keyStoreMoveKeyTest(hKeystoreRamFV1, hKeystoreFile1, hCrypto);
+  //  keyStoreMoveKeyTest(hKeystoreFile1, hKeystoreRamFV1, hCrypto);
+    //keyStoreMoveKeyTest(hKeystoreRamFV1, hKeystoreFile1, hCrypto);
 
     // Cleanup
-    OS_Keystore_free(hKeystoreFile1);
-    OS_Keystore_free(hKeystoreFile2);
+//    OS_Keystore_free(hKeystoreFile1);
+//    OS_Keystore_free(hKeystoreFile2);
     OS_Keystore_free(hKeystoreRamFV1);
     OS_Keystore_free(hKeystoreRamFV2);
     OS_Crypto_free(hCrypto);

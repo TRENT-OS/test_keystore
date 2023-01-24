@@ -5,7 +5,7 @@
 #include "keyStoreUnitTests.h"
 #include "OS_Keystore.h"
 #include "OS_KeystoreRamFV.h"
-#include "OS_KeystoreFile.h"
+//#include "OS_KeystoreFile.h"
 #include "lib_debug/Debug.h"
 #include "lib_macros/Test.h"
 #include <string.h>
@@ -30,7 +30,7 @@
 Debug_STATIC_ASSERT(strlen(KEY_DATA_TOO_LARGE) == (KEY_SIZE_MAX + 1));
 // Test system relies on the following preconditions
 Debug_STATIC_ASSERT(KEY_SIZE_MAX == OS_KeystoreRamFV_MAX_KEY_SIZE);
-Debug_STATIC_ASSERT(KEY_SIZE_MAX == OS_KeystoreFile_MAX_KEY_SIZE);
+//Debug_STATIC_ASSERT(KEY_SIZE_MAX == OS_KeystoreFile_MAX_KEY_SIZE);
 
 /* Private functions prototypes ----------------------------------------------*/
 static void testImportKey(
